@@ -213,7 +213,6 @@ def main():
             newClientThread = threading.Thread(target=clientThread,
                 args=(conn,addr,runEvent)
             )
-            newClientThread.daemon = True
             newClientThread.start()
             clientThreads.append(newClientThread)
             print("client thread started")
@@ -225,6 +224,7 @@ def main():
                     clientThread.join()
             print("successfully joined client threads")
             server.close()
+            break
         except:
             print(traceback.format_exc())
             break
