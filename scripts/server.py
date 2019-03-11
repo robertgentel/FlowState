@@ -217,10 +217,8 @@ def main():
             print("Cleaning up threads...")
             runEvent.clear()
             for clientThread in clientThreads:
-                try:
+                if(clientThread!=None):
                     clientThread.join()
-                except Exception as e:
-                    print(traceback.format_exc())
             print("successfully joined client threads")
             server.close()
         except:
