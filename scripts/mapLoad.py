@@ -35,7 +35,10 @@ def main():
 
         if('s' in asset):
             s = asset['s']
-            owner.localScale = s
+            if asset['n']=="asset checkpoint square":
+                owner.localScale = [s[0],0.5,s[2]] #checkpoints should always be fixed depth
+            else:
+                owner.localScale = s
         o = asset['o']
         owner.orientation = [math.radians(o[0]),math.radians(o[1]),math.radians(o[2])]
         #cont.actuators['spawner']
