@@ -212,7 +212,9 @@ def main():
             #start_new_thread(clientThread,(conn,addr))
             newClientThread = threading.Thread(target=clientThread,
                 args=(conn,addr,runEvent)
-            ).start()
+            )
+            newClientThread.daemon = True
+            newClientThread.start()
             clientThreads.append(newClientThread)
             print("client thread started")
         except KeyboardInterrupt:
