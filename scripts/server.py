@@ -217,6 +217,7 @@ def main():
             clientThreads.append(newClientThread)
             print("client thread started")
         except KeyboardInterrupt:
+            server.close()
             print("Cleaning up threads...")
             runEvent.clear()
             for clientThread in clientThreads:
@@ -224,7 +225,7 @@ def main():
                 if(clientThread!=None):
                     clientThread.join()
             print("successfully joined client threads")
-            server.close()
+            
             break
         except:
             print(traceback.format_exc())
