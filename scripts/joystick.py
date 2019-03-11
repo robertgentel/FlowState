@@ -329,29 +329,32 @@ def main():
     getAcc()
     if (own['oporational'] == True)&armed:
         if own['settled']:
-            if(cont.sensors['PropStrike'].positive):
-                print("PROP STRIKE!")
-                own['damage'] += own['acc']*0.1*throttlePercent
-                print(own['damage'])
-            if (own['acc'] > 65*2):
-                own['oporational'] = False
-                own['vtxOporational'] = False
-                #pass
-                print("Linear acceleration limit reached")
-            if (abs(own['angularAcc']) > 50):
-                own['oporational'] = False
-                own['vtxOporational'] = False
-                #pass
-                print("Rotational acceleration limit reached")
-            #if (own['acc'] > 35):
-            #    if(own['propContact']):
-            #        own['damage'] += own['acc']*0.005
-            #if (abs(own['angularAcc']) > 25):
-            #    if(own['propContact']):
-            #        own['damage'] += own['angularAcc']*0.01
-            if (own['damage'] > 2.5):
-                own['oporational'] = False
-                #pass
+            if(utils.getMode()!=utils.MODE_MULTIPLAYER):
+                #WAYS YOU CAN KILL YOUR QUAD
+                if(cont.sensors['PropStrike'].positive):
+                    
+                    print("PROP STRIKE!")
+                    own['damage'] += own['acc']*0.1*throttlePercent
+                    print(own['damage'])
+                if (own['acc'] > 65*2):
+                    own['oporational'] = False
+                    own['vtxOporational'] = False
+                    #pass
+                    print("Linear acceleration limit reached")
+                if (abs(own['angularAcc']) > 50):
+                    own['oporational'] = False
+                    own['vtxOporational'] = False
+                    #pass
+                    print("Rotational acceleration limit reached")
+                #if (own['acc'] > 35):
+                #    if(own['propContact']):
+                #        own['damage'] += own['acc']*0.005
+                #if (abs(own['angularAcc']) > 25):
+                #    if(own['propContact']):
+                #        own['damage'] += own['angularAcc']*0.01
+                if (own['damage'] > 2.5):
+                    own['oporational'] = False
+                    #pass
     lv = own.getLinearVelocity(True)
     if(own['oporational']):
         applyVideoStatic()
