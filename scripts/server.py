@@ -155,8 +155,7 @@ def send(message, socket):
         socket.send(dataOut)
     except Exception as e:
         print(traceback.format_exc())
-        #socketsToDisconnect.append(socket)
-        #socket.close()
+        socket.close()
         # if the link is broken, we remove the client
         #remove(socket)
 
