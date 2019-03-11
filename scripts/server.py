@@ -156,9 +156,9 @@ def send(message, socket):
     except Exception as e:
         print(traceback.format_exc())
         #socketsToDisconnect.append(socket)
-        socket.close()
+        #socket.close()
         # if the link is broken, we remove the client
-        remove(socket)
+        #remove(socket)
 
 def remove(socketToRemove):
     global clientStates
@@ -186,43 +186,47 @@ def remove(socketToRemove):
     broadcast(quitEvent, None)
 
 def main():
-    global clientThreads
-    global clientThread
-    """Accepts a connection request and stores two parameters,
-    conn which is a socket object for that user, and addr
-    which contains the IP address of the client that just
-    connected"""
-    runEvent = threading.Event()
-    runEvent.set()
-    try:
-        #print("waiting for new clients...")
-        conn, addr = server.accept()
-        conn.settimeout(10)
-        """Maintains a list of clients for ease of broadcasting
-        a message to all available people in the chatroom"""
+    while True:
+        global clientThreads
+        global clientThread
+        """Accepts a connection request and stores two parameters,
+        conn which is a socket object for that user, and addr
+        which contains the IP address of the client that just
+        connected"""
+        runEvent = threading.Event()
+        runEvent.set()
+        try:
+            #print("waiting for new clients...")
+            conn, addr = server.accept()
+            conn.settimeout(10)
+            """Maintains a list of clients for ease of broadcasting
+            a message to all available people in the chatroom"""
 
-        # prints the address of the user that just connected
-        print(str(addr) + " connected")
+            # prints the address of the user that just connected
+            print(str(addr) + " connected")
 
-        # creates and individual thread for every user
-        # that connects
-        #start_new_thread(clientThread,(conn,addr))
-        newClientThread = threading.Thread(target=clientThread,
-            args=(conn,addr,runEvent)
-        ).start()
-        clientThreads.append(newClientThread)
-        print("client thread started")
-    except KeyboardInterrupt:
-        print("Cleaning up threads...")
-        runEvent.clear()
-        for clientThread in clientThreads:
-            clientThread.join()
-        print("successfully joined client threads")
-        conn.close()
-        server.close()
-        print(traceback.format_exc())
+            # creates and individual thread for every user
+            # that connects
+            #start_new_thread(clientThread,(conn,addr))
+            newClientThread = threading.Thread(target=clientThread,
+                args=(conn,addr,runEvent)
+            ).start()
+            clientThreads.append(newClientThread)
+            print("client thread started")
+        except KeyboardInterrupt:
+            print("Cleaning up threads...")
+            runEvent.clear()
+            for clientThread in clientThreads:
+                try:
+                    clientThread.join()
+                except Exception as e:
+                    print(traceback.format_exc())
+            print("successfully joined client threads")
+            server.close()
+        except:
+            print(traceback.format_exc())
+            break
 
 
 if __name__=='__main__':
-    while True:
-        main()
+    main()
