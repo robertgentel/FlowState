@@ -41,6 +41,9 @@ clientConnections = {}
 outboundMessages = []
 clientThreads = []
 
+runEvent = threading.Event()
+runEvent.set()  
+
 def clientThread(conn, addr,runEvent):
     connectionOpen = True
     # sends a message to the client whose user object is conn
@@ -191,12 +194,11 @@ def main():
     while True:
         global clientThreads
         global clientThread
+        global runEvent
         """Accepts a connection request and stores two parameters,
         conn which is a socket object for that user, and addr
         which contains the IP address of the client that just
         connected"""
-        runEvent = threading.Event()
-        runEvent.set()
         try:
             #print("waiting for new clients...")
             conn, addr = server.accept()
