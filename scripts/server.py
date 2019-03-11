@@ -90,8 +90,8 @@ def clientThread(conn, addr,runEvent):
                         
                     if(message.eventType==FSNObjects.PlayerEvent.PLAYER_QUIT):
                         print("player quit: "+str(message.senderID))
-                        remove(conn)
                         connectionOpen = False
+                        break
 
                     if(message.eventType==FSNObjects.PlayerEvent.PLAYER_MESSAGE):
                         print("player sent game message :"+str(message.extra))
@@ -117,11 +117,14 @@ def clientThread(conn, addr,runEvent):
 
         except Exception as e:
             print(traceback.format_exc())
-            remove(conn)
             connectionOpen = False
             break
     try:
         conn.close()
+    except:
+        print(traceback.format_exc())
+    try:
+        remove(conn)
     except:
         print(traceback.format_exc())
     print("client thread ending")
