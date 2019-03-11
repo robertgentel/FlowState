@@ -220,6 +220,7 @@ def main():
             print("Cleaning up threads...")
             runEvent.clear()
             for clientThread in clientThreads:
+                print("cleaning thread "+str(clientThread))
                 if(clientThread!=None):
                     clientThread.join()
             print("successfully joined client threads")
