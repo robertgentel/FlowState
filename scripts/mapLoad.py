@@ -26,7 +26,10 @@ def spawnMapElements(mapData):
     scene = logic.getCurrentScene()
     utils.log("getting assets...")
     utils.log(len(mapData['assets']))
-    owner = logic.getCurrentScene().objects['Game']
+    try:
+        owner = logic.getCurrentScene().objects['Game']
+    except:
+        owner = cont.owner
     #clear any dead checkpoints
     logic.utils.gameState['track']['checkpoints'] = []
 
