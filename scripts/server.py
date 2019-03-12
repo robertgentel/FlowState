@@ -43,7 +43,7 @@ outboundMessages = []
 clientThreads = []
 mapFileName = raw_input("Map file name: ")
 if(mapFileName==""):
-    mapFileName = "Rotorcross.fmp"
+    mapFileName = "2019 MultiGP Qualifier.fmp"
 mapContents = FSFileHandler.FileHandler().getMapContents(mapFileName)
 runEvent = threading.Event()
 runEvent.set()  
