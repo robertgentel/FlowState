@@ -49,17 +49,20 @@ class ServerEvent:
     PLAYER_LEFT = 1
     SERVER_QUIT = 2
     ACK = 3
+    MAP_SET = 4
 
     def __init__(self, eventType, extra=None):
         self.messageType = SERVER_EVENT_TYPE_KEY
         self.eventType = eventType
         self.extra = extra
 
+    #converts a dictionary object into a ServerEvent object
     @staticmethod
     def getMessage(message):
         obj = ServerEvent(message[SERVER_EVENT_TYPE_KEY], message[MESSAGE_EXTRA_KEY])
         return obj
 
+    #converts this ServerEvent object into a string so that we can send it via tcp
     def __str__(self):
         message = {}
         message[MESSAGE_TYPE_KEY] = self.messageType

@@ -27,7 +27,7 @@ def updateLaps():
 
 def addLastLap():
     own['lap']+=1
-    #cont.actuators['Sound'].startSound()
+    cont.actuators['Sound'].startSound()
     #if(own['lap'] != 0):
 
     if own['lap'] >= 0:

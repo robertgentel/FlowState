@@ -55,6 +55,7 @@ def applySettings():
             if(scene.name == "Main Game"):
                 currentMap = utils.getSelectedMap()
                 logic.utils.resetGameState()
+                logic.utils.gameState["selectedMap"] = currentMap
                 scene.restart()
     
     logic.saveGlobalDict()

@@ -5,7 +5,6 @@ import ast
 import os
 import math
 cont = logic.getCurrentController()
-owner = cont.owner
 blendPath = logic.expandPath("//")
 def readFile(fileName):
     fileName = blendPath+"maps"+os.sep+fileName
@@ -18,13 +17,16 @@ def readFile(fileName):
     return ast.literal_eval(saveDataString)
 
 def main():
-    selectedMap = logic.utils.gameState['selectedMap']
-    mapData = readFile(selectedMap)
-
+    if(utils.getMode()!=utils.MODE_MULTIPLAYER):
+        selectedMap = logic.utils.gameState['selectedMap']
+        mapData = readFile(selectedMap)
+        spawnMapElements(mapData)
+        
+def spawnMapElements(mapData):
     scene = logic.getCurrentScene()
     utils.log("getting assets...")
     utils.log(len(mapData['assets']))
-
+    owner = logic.getCurrentScene().objects['Game']
     #clear any dead checkpoints
     logic.utils.gameState['track']['checkpoints'] = []
 
@@ -36,7 +38,7 @@ def main():
         if('s' in asset):
             s = asset['s']
             if asset['n']=="asset checkpoint square":
-                owner.localScale = [s[0],0.5,s[2]] #checkpoints should always be fixed depth
+                owner.localScale = [s[0],0.75,s[2]] #checkpoints should always be fixed depth
             else:
                 owner.localScale = s
         o = asset['o']
@@ -78,4 +80,3 @@ def main():
                 logic.utils.gameState['launchPads'] = [newSpawnPoint]
             #utils.log("setting spawn point "+str(logic.utils.gameState))
 
-main()

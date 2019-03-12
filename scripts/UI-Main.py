@@ -17,11 +17,10 @@ def soloGameAction():
     currentScene.replace("UI-map-select")
 
 def multiplayerGameAction():
-    pass
-    #scenes = logic.getSceneList()
-    #currentScene = logic.getCurrentScene()
-    #render.showMouse(0)
-    #currentScene.replace("UI-server-ip")
+    scenes = logic.getSceneList()
+    currentScene = logic.getCurrentScene()
+    render.showMouse(0)
+    currentScene.replace("UI-server-ip")
 
 def deleteMe():
     logic.utils.gameState['selectedMap'] = "custom.fmp"
@@ -69,7 +68,7 @@ if(owner['init']!=True):
     soloGameButton = UI.UIButton(soloGameText,soloGameBlockElement,soloGameAction)
 
     multiplayerGameBlockElement = UI.BoxElement(window,[30,30],2.5,1.25, blockColor, 1)
-    multiplayerGameText = UI.TextElement(window,multiplayerGameBlockElement.position, [0.3,0.3,0.3,0.75], 0, "MULTIPLAYER")
+    multiplayerGameText = UI.TextElement(window,multiplayerGameBlockElement.position, textColor, 0, "MULTIPLAYER")
     multiplayerGameButton = UI.UIButton(multiplayerGameText,multiplayerGameBlockElement,multiplayerGameAction)
 
     #asdf = UI.BoxElement(window,[50,50],10,9.9, [1,0,0,.5], 1)

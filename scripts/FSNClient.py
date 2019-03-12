@@ -26,7 +26,7 @@ class FSNClient:
         self.serverReady = True
         self.readyToQuit = False
         self.clientID = str(time.time())+str(get_mac())
-        
+
     def connect(self):
         if(not self.serverConnected):
             self.server.connect((self.serverIP, self.serverPort))
@@ -58,8 +58,8 @@ class FSNClient:
                         else:
                             self.buffer = b''
                         break
-                        
-                    if len(self.buffer) > 4096:
+
+                    if len(self.buffer) > 655360:
                         print("message too long! Disregarding")
                         self.buffer = b''
                         break
@@ -68,7 +68,7 @@ class FSNClient:
                     print("server unresponsive")
                     self.quit()
                     break
-                
+
         return frame
 
     def sendFrame(self,data):
@@ -78,20 +78,20 @@ class FSNClient:
 
     def updateState(self,newState):
         self.state = newState
-        
+
     def sendEvent(self,event):
         self.sendFrame(str(event).encode("utf-8"))
 
     def setMessageHandler(self,method):
         self.messageHandler = method
-        
+
     def quit(self):
         print("quit")
         #quitEvent = FSNObjects.PlayerEvent(FSNObjects.PlayerEvent.PLAYER_QUIT,self.clientID)
         #self.sendEvent(quitEvent)
         self.server.close()
         self.serverConnected = False
-        
+
     def isConnected(self):
         return self.serverConnected
 
@@ -102,10 +102,3 @@ class FSNClient:
                 self.sendFrame(messageOut)
                 self.serverReady = False #this gets set true once we get another ack
             frame = self.recvFrame() #let's recv and handle anything the server has sent
-            
-                
-        
-
-    
-    
-    

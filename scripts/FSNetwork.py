@@ -10,6 +10,7 @@ import random
 logic = bge.logic
 scene = logic.getCurrentScene()
 utils = logic.utils
+import mapLoad
 def quitGame():
     print("exiting game")
     try:
@@ -56,6 +57,11 @@ def clientMessageHandler(message):
             addNewPlayer(message.senderID)
         if(message.eventType == FSNObjects.ServerEvent.ACK):
             utils.getNetworkClient().serverReady = True
+        if(message.eventType == FSNObjects.ServerEvent.MAP_SET):
+            print("we should load a map!")
+            mapData = message.extra
+            mapLoad.spawnMapElements(mapData)
+            print("map load complete!")
             
     #player state
     if messageType == FSNObjects.PLAYER_STATE: 
@@ -125,28 +131,29 @@ def run():
     utils.getNetworkClient().run()
 
 def main():
-    if hasattr(logic, 'isSettled'):
-        try:
-            logic.lastNetworkTick
-        except:
+    #if hasattr(logic, 'isSettled'):
+    try:
+        logic.lastNetworkTick
+    except:
+        logic.lastNetworkTick = 0
+    try:
+        logic.lastLogicTic
+    except:
+        logic.lastLogicTic = float(time.time())
+    if utils.getNetworkClient()!=None:
+        #if(logic.lastNetworkTick>=0.1):
+        #if(logic.lastNetworkTick>=0.01):
+        if utils.getNetworkClient().isConnected():
+            run()
             logic.lastNetworkTick = 0
-        try:
-            logic.lastLogicTic
-        except:
-            logic.lastLogicTic = float(time.time())
-        if utils.getNetworkClient()!=None:
-            #if(logic.lastNetworkTick>=0.1):
-            #if(logic.lastNetworkTick>=0.01):
-            if utils.getNetworkClient().isConnected():
-                run()
-                logic.lastNetworkTick = 0
-            else:
-                quitGame()
-                
         else:
-            setup()
-            logic.lastNetworkTick = 0
-        lastFrameExecution = float(time.time())-logic.lastLogicTic
-        logic.lastNetworkTick+=lastFrameExecution
-        
-main()
+            quitGame()
+            
+    else:
+        setup()
+        logic.lastNetworkTick = 0
+    lastFrameExecution = float(time.time())-logic.lastLogicTic
+    logic.lastNetworkTick+=lastFrameExecution
+    
+if(utils.getMode()==utils.MODE_MULTIPLAYER):        
+    main()

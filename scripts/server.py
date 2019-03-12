@@ -9,6 +9,7 @@ import time
 import platform
 import threading
 import copy
+import FSFileHandler
 
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -40,7 +41,10 @@ clientStates = {}
 clientConnections = {}
 outboundMessages = []
 clientThreads = []
-
+mapFileName = input("Map file name: ")
+if(mapFileName==""):
+    mapFileName = "Rotorcross.fmp"
+mapContents = FSFileHandler.FileHandler().getMapContents(mapFileName)
 runEvent = threading.Event()
 runEvent.set()  
 
@@ -71,15 +75,17 @@ def clientThread(conn, addr,runEvent):
                 if messageType == FSNObjects.PLAYER_EVENT:
                     message = FSNObjects.PlayerEvent.getMessage(frame)
                     
-                    
                     #a new player is joining the game
                     if(message.eventType==FSNObjects.PlayerEvent.PLAYER_JOINED):
                         print("player joined")
                         print(message)
-                        #event = FSNObjects.ServerState(clientStates)
-                        #send(event,conn)
                         clientStates[message.senderID] = {}
                         clientConnections[message.senderID] = {"socket":conn}
+
+                        
+                        mapSetEvent = FSNObjects.ServerEvent(FSNObjects.ServerEvent.MAP_SET,mapContents)
+                        send(mapSetEvent,conn)
+                        
                         #let's let him know the state of the game
                         serverState = FSNObjects.ServerState(clientStates)
                         send(serverState,conn)
@@ -91,11 +97,13 @@ def clientThread(conn, addr,runEvent):
                                 clientStates[key]['senderID'] = message.senderID
                         #let's let the new player know the state of the game
                         
+                    #A player has just quit the game
                     if(message.eventType==FSNObjects.PlayerEvent.PLAYER_QUIT):
                         print("player quit: "+str(message.senderID))
                         connectionOpen = False
                         break
 
+                    #A player event has occured
                     if(message.eventType==FSNObjects.PlayerEvent.PLAYER_MESSAGE):
                         print("player sent game message :"+str(message.extra))
                         send(message, conn)

@@ -49,7 +49,7 @@ def loadMultiplayerServer(serverName):
     render.showMouse(0)
     
     utils.setMode(utils.MODE_MULTIPLAYER)
-    utils.selectMap("Rotorcross.fmp")
+    #utils.selectMap("multiplayer.fmp")
     currentScene.replace("Main Game")
     utils.setServerIP(serverName)
 
