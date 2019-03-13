@@ -29,7 +29,7 @@ def spawnMapElements(mapData):
     try:
         owner = logic.getCurrentScene().objects['Game']
     except:
-        owner = cont.owner
+        owner = logic.getCurrentScene().objects['Game.001']
     #clear any dead checkpoints
     logic.utils.gameState['track']['checkpoints'] = []
 
