@@ -28,10 +28,8 @@ except:
 eTime = float(time.time())-logic.lastLogicTic
 logic.lastLogicTic = float(time.time())
 if(logic.getAverageFrameRate()!=0):
-    dm = (60/logic.getAverageFrameRate())
+    dm = (1/logic.getAverageFrameRate())*60
 else:
-    dm = 1
-if(dm>1):
     dm = 1
 def getAngularAcceleration():
     av = own.getAngularVelocity(True)
