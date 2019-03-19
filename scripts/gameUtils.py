@@ -130,7 +130,7 @@ class utils:
         defaultProfile = {}
         defaultProfile['username'] = "Unkown Pilot"
         defaultProfile['color'] = [255,255,255]
-        defaultProfile["droneSettings"] = {'cameraTilt':35,'thrust':4800,'rpm':38600,'weight':500,'yawExpo':0.0,'pitchExpo':0.0,'rollExpo':0.0,'pitchRate':100,'rollRate':100,'yawRate':100,'pitchSuperRate':70,'rollSuperRate':70,'yawSuperRate':70}
+        defaultProfile["droneSettings"] = {'cameraTilt':35,'thrust':4800,'motorKV':2300,'batteryCellCount':4,'weight':500,'yawExpo':0.0,'pitchExpo':0.0,'rollExpo':0.0,'pitchRate':100,'rollRate':100,'yawRate':100,'pitchSuperRate':70,'rollSuperRate':70,'yawSuperRate':70}
         defaultProfile['radioSettings'] = {'throttleInverted':False,'yawInverted':False,'pitchInverted':False,'rollInverted':False,'armInverted':False,'resetInverted':False,'yawChannel':1,'pitchChannel':4,'throttleChannel':2,'rollChannel':3,'resetChannel':6,'armChannel':5,'yawOffset':0,'pitchOffset':0,'rollOffset':0,'minThrottle':-32252,'maxThrottle':32252,'minYaw':-32252,'maxYaw':32252,'minPitch':-32252,'maxPitch':32252,'minRoll':-32252,'maxRoll':32252,'minReset':0,'maxReset':32768,'minArm':0,'maxArm':32768,'armSetpoint':0.25,'resetSetpoint':0.25,'dedicatedThrottleStick':True}
         defaultProfile['graphicsSettings'] = {"shaders":True}
 

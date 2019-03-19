@@ -18,7 +18,7 @@ def soloGameAction():
         if(scene!=currentScene):
             scene.end()
     currentScene.replace("main regional finals")
-    
+
 def graphicsAction():
     pass
 
@@ -34,19 +34,25 @@ def setWeightAction():
     profiles = logic.globalDict['profiles']
     logic.globalDict['profiles'][profileIndex]['droneSettings']['weight'] = int(weightInput.value)
     bge.logic.sendMessage("loadNewSettings")
-    
+
 def setCameraTiltAction():
     profileIndex = logic.globalDict['currentProfile']
     profiles = logic.globalDict['profiles']
     logic.globalDict['profiles'][profileIndex]['droneSettings']['cameraTilt'] = int(camTiltInput.value)
     bge.logic.sendMessage("loadNewSettings")
-    
-def setRPMAction():
+
+def setMotorKVAction():
     profileIndex = logic.globalDict['currentProfile']
     profiles = logic.globalDict['profiles']
-    logic.globalDict['profiles'][profileIndex]['droneSettings']['rpm'] = int(rpmInput.value)
+    logic.globalDict['profiles'][profileIndex]['droneSettings']['motorKV'] = int(motorKVmInput.value)
     bge.logic.sendMessage("loadNewSettings")
-    
+
+def setCellCountAction():
+    profileIndex = logic.globalDict['currentProfile']
+    profiles = logic.globalDict['profiles']
+    logic.globalDict['profiles'][profileIndex]['droneSettings']['batteryCellCount'] = int(cellCountInput.value)
+    bge.logic.sendMessage("loadNewSettings")
+
 def applySettings():
     scenes = logic.getSceneList()
     currentScene = logic.getCurrentScene()
@@ -57,10 +63,10 @@ def applySettings():
                 logic.utils.resetGameState()
                 logic.utils.gameState["selectedMap"] = currentMap
                 scene.restart()
-    
+
     logic.saveGlobalDict()
     backAction()
-    
+
 def backAction():
     currentScene = logic.getCurrentScene()
     sceneHistory = logic.globalDict['sceneHistory']
@@ -70,19 +76,19 @@ def backAction():
     removedScene = sceneHistory.pop(-1)
     print("removing scene "+str(removedScene))
     currentScene.replace(backScene)
-    
+
 def spawnSetting(label,height,key,action,min,max,increment):
     itemRow = UI.BoxElement(window,[50,height],11,0.5, blockColor, 5)
     itemText = UI.TextElement(window, [itemRow.position[0]-30,itemRow.position[1]], textColor, 4, label)
-    
+
     itemUpBox = UI.BoxElement(window,[60,height],0.5,0.5, blockColor, 1)
     itemUpText = UI.TextElement(window,itemUpBox.position, textColor, 0, "+")
     itemUpButton = UI.UIButton(itemUpText,itemUpBox,action)
-    
+
     itemDownBox = UI.BoxElement(window,[45,height],0.5,0.5, blockColor, 1)
     itemDownText = UI.TextElement(window,itemDownBox.position, textColor, 0, "-")
     itemDownButton = UI.UIButton(itemDownText,itemDownBox,action)
-    
+
     currentItemText = UI.TextElement(window,[50,height], textColor, 0, "")
     return UI.UINumberInput(itemUpButton,itemDownButton,currentItemText,int(droneSettings[key]),min, max, increment)
 
@@ -102,13 +108,14 @@ if(owner['init']!=True):
     camTiltInput = spawnSetting("CAMERA TILT (DEGREES)",70,"cameraTilt",setCameraTiltAction,0,90,1)
     thrustInput = spawnSetting("STATIC THRUST (GRAMS)",60,"thrust",setThrustAction,0,10000,50)
     weightInput = spawnSetting("ALL UP WEIGHT (GRAMS)",50,"weight",setWeightAction,1,2000,10)
-    rpmInput = spawnSetting("RPM",40,"rpm",setRPMAction,0,50400,200)
-    
+    motorKVmInput = spawnSetting("MOTOR KV",40,"motorKV",setMotorKVAction,1000,3000,50)
+    cellCountInput = spawnSetting("BATTERY CELLL COUNT",30,"batteryCellCount",setCellCountAction,3,6,1)
+
     #back button
     backBlockElement = UI.BoxElement(window,[10,10],1,.5, blockColor, 1)
     backText = UI.TextElement(window,backBlockElement.position, textColor, 0, "BACK")
     backButton = UI.UIButton(backText,backBlockElement,backAction)
-    
+
     #apply button
     applyBox = UI.BoxElement(window,[90,10],1,.5, blockColor, 1)
     applyText = UI.TextElement(window,applyBox.position, textColor, 0, "APPLY")

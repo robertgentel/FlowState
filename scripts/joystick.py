@@ -332,7 +332,7 @@ def main():
             if(utils.getMode()!=utils.MODE_MULTIPLAYER):
                 #WAYS YOU CAN KILL YOUR QUAD
                 if(cont.sensors['PropStrike'].positive):
-                    
+
                     print("PROP STRIKE!")
                     own['damage'] += own['acc']*0.1*throttlePercent
                     print(own['damage'])
@@ -346,12 +346,12 @@ def main():
                     own['vtxOporational'] = False
                     #pass
                     print("Rotational acceleration limit reached")
-                #if (own['acc'] > 35):
-                #    if(own['propContact']):
-                #        own['damage'] += own['acc']*0.005
-                #if (abs(own['angularAcc']) > 25):
-                #    if(own['propContact']):
-                #        own['damage'] += own['angularAcc']*0.01
+                if (own['acc'] > 35):
+                    if(own['propContact']):
+                        own['damage'] += own['acc']*0.005
+                if (abs(own['angularAcc']) > 25):
+                    if(own['propContact']):
+                        own['damage'] += own['angularAcc']*0.01
                 if (own['damage'] > 2.5):
                     own['oporational'] = False
                     #pass
@@ -404,10 +404,14 @@ def main():
                     #if av [2] <0:
                         #own.setAngularVelocity([av[0],av[1],0],False)
                 #thrust = thrust/((propwash*0.89)+1)
-                maxRPM = g['rpm']#29.7230769
+                #maxRPM = g['rpm']#29.7230769
+                motorKV = g['motorKV']
+                cellCount = g['batteryCellCount']
+                cellVoltage = 4.2
+                maxRPM = motorKV*cellCount*cellVoltage
                 maxThrust = g['thrust']/10
                 propLoad = ((((lvl[0]*.1)+(lvl[1]*.1)+(lvl[2]*.8))*3500)/(maxRPM))
-                propThrottleCurve = 1.2
+                propThrottleCurve = 1.4
                 #thrust = ((throttlePercent**propThrottleCurve)*.85)*(maxThrust-((propLoad**propThrottleCurve)/((maxSpeed**propThrottleCurve)/maxThrust)))
                 staticThrust = (throttlePercent**propThrottleCurve)*maxThrust*.55#*100)-(currentSpeed/maxSpeed)
                 #y = (((1**1.25)*4800)*.75)-x
@@ -416,7 +420,7 @@ def main():
                 propSize = 5
                 newtonToKg = 0.101971621
                 motorNumber = 4
-                currentRPM = throttlePercent*g['rpm']
+                currentRPM = throttlePercent*maxRPM
                 #thrust = 100*((4.392399*(10**-8))*currentRPM*((propSize**3.5)/math.sqrt(propPitch))*((4.23333*(10**-4))*currentRPM*propPitch-(currentSpeed/10)))*newtonToKg*motorNumber
 
                 if(thrust<0):
@@ -446,7 +450,7 @@ def main():
             utils.getNetworkClient().sendEvent(resetEvent)
             print("sending reset message")
             own['canReset'] = False
-        
+
     own['lastAv'] = own.getAngularVelocity(True)
     #if(logic.getAverageFrameRate()>60):
     #    logic.setTimeScale(1)
