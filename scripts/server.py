@@ -46,16 +46,16 @@ if(mapFileName==""):
     mapFileName = "2019 MultiGP Qualifier.fmp"
 mapContents = FSFileHandler.FileHandler().getMapContents(mapFileName)
 runEvent = threading.Event()
-runEvent.set()  
+runEvent.set()
 
 def clientThread(conn, addr,runEvent):
     connectionOpen = True
     # sends a message to the client whose user object is conn
     #conn.send("Welcome to this chatroom!")
-    lastRecv = time.time()
+    lastRecv = time.perf_counter()
     buffer = b''
     while runEvent.is_set():
-        if(time.time()-lastRecv > 10.0):
+        if(time.perf_counter()-lastRecv > 10.0):
             print("client became unresponseive")
             break
         try:
@@ -64,7 +64,7 @@ def clientThread(conn, addr,runEvent):
                 delimIndex = buffer.find(delim)
                 frame = buffer[:delimIndex]
                 frame = ast.literal_eval(frame.decode("utf-8"))
-                lastRecv = time.time()
+                lastRecv = time.perf_counter()
                 #print("FOUND THE END OF THE MESSAGE!!!!")
                 #print("frame: "+str(frame))
                 messageType = frame[FSNObjects.MESSAGE_TYPE_KEY]
@@ -74,7 +74,7 @@ def clientThread(conn, addr,runEvent):
                 #a player is sending an event
                 if messageType == FSNObjects.PLAYER_EVENT:
                     message = FSNObjects.PlayerEvent.getMessage(frame)
-                    
+
                     #a new player is joining the game
                     if(message.eventType==FSNObjects.PlayerEvent.PLAYER_JOINED):
                         print("player joined")
@@ -82,10 +82,10 @@ def clientThread(conn, addr,runEvent):
                         clientStates[message.senderID] = {}
                         clientConnections[message.senderID] = {"socket":conn}
 
-                        
+
                         mapSetEvent = FSNObjects.ServerEvent(FSNObjects.ServerEvent.MAP_SET,mapContents)
                         send(mapSetEvent,conn)
-                        
+
                         #let's let him know the state of the game
                         serverState = FSNObjects.ServerState(clientStates)
                         send(serverState,conn)
@@ -96,7 +96,7 @@ def clientThread(conn, addr,runEvent):
                             if(clientSocket == conn):
                                 clientStates[key]['senderID'] = message.senderID
                         #let's let the new player know the state of the game
-                        
+
                     #A player has just quit the game
                     if(message.eventType==FSNObjects.PlayerEvent.PLAYER_QUIT):
                         print("player quit: "+str(message.senderID))
@@ -235,7 +235,7 @@ def main():
                 if(clientThread!=None):
                     clientThread.join()
             print("successfully joined client threads")
-            
+
             break
         except:
             print(traceback.format_exc())

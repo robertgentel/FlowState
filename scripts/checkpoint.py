@@ -3,7 +3,7 @@ import bge
 logic = bge.logic
 utils = logic.utils
 #try:
-#    currentTime = time.time()
+#    currentTime = time.perf_counter()
 #    print(logic.lastTime-currentTime)
 #    logic.lastTime = currentTime
 #except:

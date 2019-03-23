@@ -16,7 +16,7 @@ class FSNClient:
         self.networkReady = False
         self.delim = b'\x1E'
         self.buffer = b''
-        
+
     def connect(self):
         server.connect((self.serverIP, self.serverPort))
 
@@ -38,7 +38,7 @@ class FSNClient:
                     print("message too long! Disregarding")
                     buffer = b''
                     break
-                
+
         return frame
 
     def sendFrame(self,data):
@@ -47,13 +47,9 @@ class FSNClient:
         server.send(data)
 
     def run(self):
-        t = time.time()    
+        t = time.perf_counter()
         out = {"subject":"positionUpdate","time":t}
         messageOut = str(out).encode("utf-8")
         sendFrame(messageOut)
         frame = recvFrame()
         #peerTime = frame['time']
-
-    
-    
-    

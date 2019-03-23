@@ -23,12 +23,14 @@ camera = scene.objects['cameraMain']
 try:
     logic.lastLogicTic
 except:
-    logic.lastLogicTic = float(time.time())
+    logic.lastLogicTic = float(time.perf_counter())
     print("creating time")
-eTime = float(time.time())-logic.lastLogicTic
-logic.lastLogicTic = float(time.time())
+eTime = float(time.perf_counter())-logic.lastLogicTic
+logic.lastLogicTic = float(time.perf_counter())
 if(logic.getAverageFrameRate()!=0):
-    dm = (60/logic.getAverageFrameRate())
+    dm = eTime*60
+    #dm = (60/logic.getAverageFrameRate())
+    print(dm)
 else:
     dm = 1
 if(dm>1):
@@ -66,7 +68,8 @@ def initAllThings():
     own['lastAngularVel'] = av
     own['angularAcc'] = 0
     own['settled'] = False
-    own['settleStartTime'] = time.time()
+    own['settleStartTime'] = time.perf_counter()
+    print("SETTLE TIME IS "+str(own['settleStartTime']))
     own['settleDuration'] = 0
     own['settleFrameRates'] = []
     launchPos = copy.deepcopy(logic.utils.gameState['launchPads'][0].position)
@@ -455,31 +458,38 @@ def main():
     #if(logic.getAverageFrameRate()>60):
     #    logic.setTimeScale(1)
 own.applyForce([0,0,-98*own.mass],False)
+def settle():
+    logic.setTimeScale(1)
+    own['settled'] = True
+    logic.isSettled = True
+    utils.log("SETTLING!!!!!!!")
 def isSettled():
     if not own['settled']:
-        logic.isSettled = False
-        fps = logic.getAverageFrameRate()
-        avgFPSList = own['settleFrameRates']
-        avgFPSList.append(fps)
-        deviation = 100
-        if(len(avgFPSList)>1):
-            deviation = statistics.stdev(avgFPSList)
-        if len(avgFPSList)>100:
-            if deviation < 300:
-                logic.setTimeScale(1)
-                own['settled'] = True
-                logic.isSettled = True
-        else:
-            logic.setTimeScale(0.01)
-            own.setLinearVelocity([0,0,0],True)
-            own.position = own['launchPosition']
-        if len(avgFPSList)>1000:
-            del avgFPSList[0]
-            own['settled'] = True
-            logic.isSettled = True
-            logic.setTimeScale(1)
-            utils.log("WARNING!!!: FPS did not become stable after 2000 frames. Expect physics instability...")
-            utils.log("standard deviation: "+str(deviation))
+        logic.setTimeScale(0.001)
+        if(utils.getMode()!=utils.MODE_MULTIPLAYER):
+            logic.isSettled = False
+            fps = logic.getAverageFrameRate()
+            avgFPSList = own['settleFrameRates']
+            avgFPSList.append(fps)
+            deviation = 100
+            if(len(avgFPSList)>1):
+                deviation = statistics.stdev(avgFPSList)
+            if len(avgFPSList)>100:
+                if deviation < 300:
+                    settle()
+            else:
+                
+                own.setLinearVelocity([0,0,0],True)
+                own.position = own['launchPosition']
+            if len(avgFPSList)>1000:
+                del avgFPSList[0]
+                settle()
+                utils.log("WARNING!!!: FPS did not become stable after 2000 frames. Expect physics instability...")
+                utils.log("standard deviation: "+str(deviation))
+        else: #we are in multiplayer and should wait a fixed time
+            if ((time.perf_counter()-own['settleStartTime'])>3):
+                settle()
+                utils.log("settling due to time expiration in multiplayer")
     else:
         if(logic.finishedLastLap):
             logic.setTimeScale(0.001)

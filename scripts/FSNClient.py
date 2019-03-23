@@ -25,7 +25,7 @@ class FSNClient:
         self.messageHandler = None
         self.serverReady = True
         self.readyToQuit = False
-        self.clientID = str(time.time())+str(get_mac())
+        self.clientID = str(time.perf_counter())+str(get_mac())
 
     def connect(self):
         if(not self.serverConnected):

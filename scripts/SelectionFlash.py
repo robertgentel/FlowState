@@ -12,18 +12,18 @@ def setColor(color):
 def init():
     owner['colors'] = []
     owner['init'] = True
-    
+
 def run():
     if owner['selected']:
         speed = 3
-        value = (math.sin(time.time()*speed)+1)/2
+        value = (math.sin(time.perf_counter()*speed)+1)/2
         color = [0,0,0]
         color[1] = value+.1
         color[2] = value
         setColor(value)
     else:
         setColor(0)
-    
+
 def main():
     if 'init' not in owner:
         init()

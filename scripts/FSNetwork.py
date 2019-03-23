@@ -25,7 +25,7 @@ def quitGame():
     utils.resetGameState()
     utils.setMode(utils.MODE_MENU)
     currentScene.replace("Menu Background")
-    
+
 def addNewPlayer(playerID):
     print("addNewPlayer("+str(playerID)+")")
     newObj = scene.addObject("playerQuad",logic.player,0)
@@ -38,17 +38,17 @@ def removePlayer(playerID):
         del logic.peers[playerID]
     except:
         print("failed to remove player: "+str(playerID))
-    
+
 def sendMessage(subject,body,to,messageFrom):
     print("sending game message from server")
     logic.sendMessage(subject)
-        
+
 def clientMessageHandler(message):
     messageType = message[FSNObjects.MESSAGE_TYPE_KEY]
     #   ("message handler called! "+str(messageType))
-    
+
     #server event
-    if messageType == FSNObjects.SERVER_EVENT_TYPE_KEY: 
+    if messageType == FSNObjects.SERVER_EVENT_TYPE_KEY:
         #print("handling server event")
         #print("message = "+str(message))
         message = FSNObjects.ServerEvent.getMessage(message)
@@ -62,9 +62,9 @@ def clientMessageHandler(message):
             mapData = message.extra
             mapLoad.spawnMapElements(mapData)
             print("map load complete!")
-            
+
     #player state
-    if messageType == FSNObjects.PLAYER_STATE: 
+    if messageType == FSNObjects.PLAYER_STATE:
         #print("handling player state")
         #print("message = "+str(message))
         message = FSNObjects.PlayerState.getMessage(message)
@@ -72,9 +72,9 @@ def clientMessageHandler(message):
             peerObject = logic.peers[message.senderID]
             peerObject.position = message.position
             peerObject.orientation = message.orientation
-            
-    #player event       
-    if messageType == FSNObjects.PLAYER_EVENT: 
+
+    #player event
+    if messageType == FSNObjects.PLAYER_EVENT:
         print("handling player event")
         print("message = "+str(message))
         message = FSNObjects.PlayerEvent.getMessage(message)
@@ -88,8 +88,8 @@ def clientMessageHandler(message):
             MessageTo = None
             MessageFrom = None
             sendMessage(message.extra,messageBody,MessageTo,MessageFrom)
-            
-    #server state        
+
+    #server state
     if messageType == FSNObjects.SERVER_STATE:
         print("handling server state")
         print("message = "+str(message))
@@ -126,7 +126,7 @@ def run():
     orientation = [o[0],o[1],o[2]]
     color = [0,0,1]
     myState = FSNObjects.PlayerState(utils.getNetworkClient().clientID,None,position,orientation,color)
-        
+
     utils.getNetworkClient().updateState(myState)
     utils.getNetworkClient().run()
 
@@ -139,7 +139,7 @@ def main():
     try:
         logic.lastLogicTic
     except:
-        logic.lastLogicTic = float(time.time())
+        logic.lastLogicTic = float(time.perf_counter())
     if utils.getNetworkClient()!=None:
         #if(logic.lastNetworkTick>=0.1):
         #if(logic.lastNetworkTick>=0.01):
@@ -148,12 +148,12 @@ def main():
             logic.lastNetworkTick = 0
         else:
             quitGame()
-            
+
     else:
         setup()
         logic.lastNetworkTick = 0
-    lastFrameExecution = float(time.time())-logic.lastLogicTic
+    lastFrameExecution = float(time.perf_counter())-logic.lastLogicTic
     logic.lastNetworkTick+=lastFrameExecution
-    
-if(utils.getMode()==utils.MODE_MULTIPLAYER):        
+
+if(utils.getMode()==utils.MODE_MULTIPLAYER):
     main()
