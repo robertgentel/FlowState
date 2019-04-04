@@ -29,8 +29,6 @@ eTime = float(time.perf_counter())-logic.lastLogicTic
 logic.lastLogicTic = float(time.perf_counter())
 if(logic.getAverageFrameRate()!=0):
     dm = eTime*60
-    #dm = (60/logic.getAverageFrameRate())
-    print(dm)
 else:
     dm = 1
 if(dm>1):
@@ -397,7 +395,7 @@ def main():
                 qd = [0.013014*dm,0.0111121*dm*fdm,0.0071081*dm*fdm] #air drag
                 own.setLinearVelocity([lv[0]/(1+qd[0]),lv[1]/(1+qd[1]),lv[2]/(1+qd[2])],True)
 
-                st = 0.78*dm #how quick can the motor/pid orient the quad
+                st = 0.75*dm #how quick can the motor/pid orient the quad
                 lav = own.getAngularVelocity(True)
 
                 own.setAngularVelocity([((pitchForce+pwrx)*st)+(lav[0]*(1-st)),((roleForce+pwry)*st)+(lav[1]*(1-st)),yawForce+pwrz], True)
@@ -413,7 +411,8 @@ def main():
                 cellVoltage = 4.2
                 maxRPM = motorKV*cellCount*cellVoltage
                 maxThrust = g['thrust']/10
-                propLoad = ((((lvl[0]*.1)+(lvl[1]*.1)+(lvl[2]*.8))*3500)/(maxRPM))
+                #propLoad = ((((lvl[0]*.1)+(lvl[1]*.1)+(lvl[2]*.8))*3500)/(maxRPM))
+                propLoad = ((lvl[2]**2)*20)/(maxRPM)
                 propThrottleCurve = 1.4
                 #thrust = ((throttlePercent**propThrottleCurve)*.85)*(maxThrust-((propLoad**propThrottleCurve)/((maxSpeed**propThrottleCurve)/maxThrust)))
                 staticThrust = (throttlePercent**propThrottleCurve)*maxThrust*.55#*100)-(currentSpeed/maxSpeed)
