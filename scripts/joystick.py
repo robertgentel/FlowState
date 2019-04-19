@@ -412,10 +412,11 @@ def main():
                 maxRPM = motorKV*cellCount*cellVoltage
                 maxThrust = g['thrust']/10
                 #propLoad = ((((lvl[0]*.1)+(lvl[1]*.1)+(lvl[2]*.8))*3500)/(maxRPM))
-                propLoad = ((lvl[2]**2)*20)/(maxRPM)
+                propAgressiveness = 2.25
+                propLoad = ((abs(((lvl[0]*.1)+(lvl[1]*.1)+(lvl[2]*.8))/1)**propAgressiveness)/maxRPM)
                 propThrottleCurve = 1.4
                 #thrust = ((throttlePercent**propThrottleCurve)*.85)*(maxThrust-((propLoad**propThrottleCurve)/((maxSpeed**propThrottleCurve)/maxThrust)))
-                staticThrust = (throttlePercent**propThrottleCurve)*maxThrust*.55#*100)-(currentSpeed/maxSpeed)
+                staticThrust = ((throttlePercent*.6)**propThrottleCurve)*maxThrust#*100)-(currentSpeed/maxSpeed)
                 #y = (((1**1.25)*4800)*.75)-x
                 thrust = staticThrust-(propLoad)-(propwash*100)
                 propPitch = 4.6

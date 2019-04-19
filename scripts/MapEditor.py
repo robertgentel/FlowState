@@ -254,7 +254,7 @@ class MapEditor:
         print("selectAsset")
         print(self.editing)
         ray = self.getCameraRay()
-        print(ray)
+        print("ray: "+str(ray))
         if(self.selectedAsset==None):
             if ray[0] != None:
                 asset = ray[0]
@@ -286,9 +286,10 @@ class MapEditor:
 
 
     def editAsset(self):
-        print("selectAsset")
+        print("editAsset")
         print(self.editing)
         ray = self.getCameraRay()
+        print("ray: "+str(ray))
         if ray[0] != None:
             asset = ray[0]
             if 'asset' in asset:
