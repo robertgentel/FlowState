@@ -391,11 +391,14 @@ def main():
                 #AIR DAMPENING
                 #FD = .99978 #use for X
                 #FD = .99996 #use for true Z
-                fdm = 0.9 #frontalDampeningMultiplier
-                qd = [0.013014*dm,0.0111121*dm*fdm,0.0071081*dm*fdm] #air drag
+                tdm = 0.8 #totalDragMultiplier
+                sdm = 0.92 #sideDragMultiplier
+                fdm = 0.9 #frontalDragMultiplier
+                tdm = 1.3 #topDragMultiplier
+                qd = [0.013014*dm*tdm*sdm,0.0111121*dm*fdm*tdm,0.0071081*dm*tdm] #air drag
                 own.setLinearVelocity([lv[0]/(1+qd[0]),lv[1]/(1+qd[1]),lv[2]/(1+qd[2])],True)
 
-                st = 0.75*dm #how quick can the motor/pid orient the quad
+                st = 0.7*dm #how quick can the motor/pid orient the quad
                 lav = own.getAngularVelocity(True)
 
                 own.setAngularVelocity([((pitchForce+pwrx)*st)+(lav[0]*(1-st)),((roleForce+pwry)*st)+(lav[1]*(1-st)),yawForce+pwrz], True)
@@ -412,13 +415,19 @@ def main():
                 maxRPM = motorKV*cellCount*cellVoltage
                 maxThrust = g['thrust']/10
                 #propLoad = ((((lvl[0]*.1)+(lvl[1]*.1)+(lvl[2]*.8))*3500)/(maxRPM))
-                propAgressiveness = 2.25
-                propLoad = ((abs(((lvl[0]*.1)+(lvl[1]*.1)+(lvl[2]*.8))/1)**propAgressiveness)/maxRPM)
-                propThrottleCurve = 1.4
+                propAgressiveness = 1.4
+                propThrottleCurve = 1.3
+                propLoad = (((((lvl[0]*.1)+(lvl[1]*.1)+(lvl[2]*.8))*1000))/maxRPM)
+                
                 #thrust = ((throttlePercent**propThrottleCurve)*.85)*(maxThrust-((propLoad**propThrottleCurve)/((maxSpeed**propThrottleCurve)/maxThrust)))
-                staticThrust = ((throttlePercent*.6)**propThrottleCurve)*maxThrust#*100)-(currentSpeed/maxSpeed)
+                staticThrust = ((throttlePercent*.55)**propThrottleCurve)*maxThrust#*100)-(currentSpeed/maxSpeed)
+                print(throttlePercent)
                 #y = (((1**1.25)*4800)*.75)-x
                 thrust = staticThrust-(propLoad)-(propwash*100)
+                try:
+                    thrust = thrust.real
+                except:
+                    pass
                 propPitch = 4.6
                 propSize = 5
                 newtonToKg = 0.101971621
@@ -426,8 +435,8 @@ def main():
                 currentRPM = throttlePercent*maxRPM
                 #thrust = 100*((4.392399*(10**-8))*currentRPM*((propSize**3.5)/math.sqrt(propPitch))*((4.23333*(10**-4))*currentRPM*propPitch-(currentSpeed/10)))*newtonToKg*motorNumber
 
-                if(thrust<0):
-                    thrust = 0
+                #if(thrust<0):
+                #    thrust = 0
                 if 'lastThrust' in own:
                     thrust = (thrust*st)+(own['lastThrust']*(1-st))
                 own['lastThrust'] = thrust
