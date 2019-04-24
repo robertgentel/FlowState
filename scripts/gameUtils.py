@@ -137,7 +137,7 @@ class utils:
         defaultData['profiles'].append(defaultProfile)
 
         #logic.maps = {"
-        logic.defaultGameState = {"selectedMap":"2018 Regional Final.fmp", "notification":{"Text":""}, "mode":self.MODE_MENU, "track":{"countdownTime":1,"checkpoints":[],"nextCheckpoint":1,"lastCheckpoint":1}, "playerData":{"lap":0,"checkpoint":0},"mapEditor":None,"serverIP":"localhost","networkClient":None}
+        logic.defaultGameState = {"selectedMap":"2018 Regional Final.fmp", "notification":{"Text":""}, "mode":self.MODE_MENU, "track":{"countdownTime":5,"checkpoints":[],"nextCheckpoint":1,"lastCheckpoint":1}, "playerData":{"lap":0,"checkpoint":0},"mapEditor":None,"serverIP":"localhost","networkClient":None}
         logic.loadGlobalDict()
         #self.log(logic.globalDict)
         if('version' in logic.globalDict):
