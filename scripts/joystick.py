@@ -19,6 +19,7 @@ scene = logic.getCurrentScene()
 mass = own.mass
 gravity = 98*mass
 camera = scene.objects['cameraMain']
+game = scene.objects['Game']
 
 try:
     logic.lastLogicTic
@@ -42,8 +43,8 @@ def getAngularAcceleration():
         own['lastAngularVel'] = own.getAngularVelocity(True)
 
 def initAllThings():
-
     logic.player = own
+    logic.player['camera'] = scene.objects['cameraMain']
     print(logic.utils.gameState['track']['checkpoints'])
     logic.utils.gameState['track']['nextCheckpoint'] = 1
     for checkpoint in logic.utils.gameState['track']['checkpoints']:
@@ -87,6 +88,7 @@ def initAllThings():
     logic.finishedLastLap = False
     logic.utils.gameState['notification']['Text'] = ""
     #own['rxPosition'] = [-2279.73,-30.8,90]
+    del game['shaderInit']
 
     print("init")
 def getArrayProduct(array):
@@ -138,6 +140,7 @@ def resetGame():
     #own.position = logic.utils.gameState['spawnPoints'][0]#own['startPosition']
     #print("SPAWNING!!!"+str(logic.utils.gameState['spawnPoints'][0]))
     #own.orientation = own['startOrientation']
+    scene.active_camera = camera
     own.setLinearVelocity([0,0,0],True)
     own.setAngularVelocity([0,0,0],True)
 
@@ -148,7 +151,9 @@ def resetGame():
     lapTimer['lap'] = -1
     lapTimer['race time'] = 0.0
     for ghost in logic.ghosts:
-      ghost['obj'].endObject()
+        ghost['obj']['fpvCamera'].endObject()
+        ghost['obj']['spectatorCamera'].endObject()
+        ghost['obj'].endObject()
     logic.ghosts = []
     own['canReset'] = False
     initAllThings()
@@ -167,7 +172,7 @@ def applyVideoStatic():
 
     lastHitPos = own.position
     for interference in range(1,100):
-        hit = own.rayCast(own['rxPosition'], lastHitPos, 0.0, "", 0, 0, 0)
+        hit = scene.active_camera.rayCast(own['rxPosition'], lastHitPos, 0.0, "", 0, 0, 0)
         hitPos = hit[1]
         if(hitPos == None):
             hitList.append(own['rxPosition'])
@@ -198,10 +203,11 @@ def applyVideoStatic():
     if(interference<1):
       interference = 1
 
-    camera['rfNoise'] = own.getDistanceTo(own['rxPosition'])*.01*groundBreakup*interference+camera['eNoise']
+    game['rfNoise'] = scene.active_camera.getDistanceTo(own['rxPosition'])*.01*groundBreakup*interference+game['eNoise']
 
 def killVideo():
-    camera['rfNoise'] = 100
+    pass
+    #game['rfNoise'] = 100
 
 def stickInputToDPS(rcData, superRate=70, rcRate=90, rcExpo=0.0, superExpoActive=True):
     #0.27
@@ -363,7 +369,7 @@ def main():
             try:
                 if own['airSpeedDiff'] < 0:
                     own['airSpeedDiff'] = 0
-                propwash = math.pow((((own['airSpeedDiff']*.3)+(((own['damage']-1)*.5))*2)*.1145),1.5)*((throttlePercent*10)+.4)
+                propwash = math.pow((((own['airSpeedDiff']*.3)+(((own['damage']-0.1)*.5))*2)*.1145),1.5)*((throttlePercent*10)+.4)
                 if propwash > 0.08:
                   propwash = 0.08
             except:
@@ -398,7 +404,7 @@ def main():
                 qd = [0.013014*dm*tdm*sdm,0.0111121*dm*fdm*tdm,0.0071081*dm*tdm] #air drag
                 own.setLinearVelocity([lv[0]/(1+qd[0]),lv[1]/(1+qd[1]),lv[2]/(1+qd[2])],True)
 
-                st = 0.7*dm #how quick can the motor/pid orient the quad
+                st = 0.9*dm #how quick can the motor/pid orient the quad
                 lav = own.getAngularVelocity(True)
 
                 own.setAngularVelocity([((pitchForce+pwrx)*st)+(lav[0]*(1-st)),((roleForce+pwry)*st)+(lav[1]*(1-st)),yawForce+pwrz], True)
@@ -421,7 +427,6 @@ def main():
                 
                 #thrust = ((throttlePercent**propThrottleCurve)*.85)*(maxThrust-((propLoad**propThrottleCurve)/((maxSpeed**propThrottleCurve)/maxThrust)))
                 staticThrust = ((throttlePercent*.55)**propThrottleCurve)*maxThrust#*100)-(currentSpeed/maxSpeed)
-                print(throttlePercent)
                 #y = (((1**1.25)*4800)*.75)-x
                 thrust = staticThrust-(propLoad)-(propwash*100)
                 try:

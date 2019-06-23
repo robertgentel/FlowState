@@ -67,5 +67,8 @@ if colSensor.positive and colSensor.triggered:
                 setCheckpointVisibilities()
                 soundActuator = cont.actuators['Sound']
                 soundActuator.volume = 1
-                soundActuator.startSound()
-                print("CHECKPOINT!")
+                startTime = time.perf_counter()
+                #soundActuator.startSound()
+                owner['playSound'] = True
+                endTime = time.perf_counter()
+                print("CHECKPOINT! "+str(endTime-startTime))

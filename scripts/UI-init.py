@@ -8,8 +8,9 @@ cont = logic.getCurrentController()
 owner = cont.owner
 #utils = logic.utils
 UI = bge.UI
-render.setFullScreen(True)
-
+#render.setFullScreen(True)
+#bge.render.setWindowSize(1920,1080)
+print("SET SCREEN RES")
 textColor = [1,1,1,1]
 blockColor = [0,0,1,0.75]
 

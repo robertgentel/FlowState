@@ -5,8 +5,19 @@ owner = logic.getCurrentController().owner
 utils = logic.utils
 profileIndex = logic.globalDict['currentProfile']
 profiles = logic.globalDict['profiles']
-owner['shaders'] = profiles[profileIndex]['graphicsSettings']['shaders']
-if owner['shaders']:
-    owner.lens= 5.823523998260498
-else:
-    owner.lens = 10
+shaders = profiles[profileIndex]['graphicsSettings']['shaders']
+if not "shaderInit" in owner:
+    print("PLAYER FOUND!")
+    if hasattr(logic,"player"):
+        owner['shaderInit'] = True
+
+        playerCamera = logic.player['camera']
+
+        if shaders:
+            playerCamera.lens= 5.823523998260498
+            logic.sendMessage("enable shaders")
+            print("enabling shaders")
+        else:
+            playerCamera.lens = 10
+            logic.sendMessage("disable shaders")
+            print("disabling shaders")

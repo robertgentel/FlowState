@@ -49,6 +49,6 @@ except:
 timesText = "TIME: "+str(logic.raceTimer)
 for i in range(0,len(logic.lapTimes)):
     timesText+='\n'
-    timesText+="LAP "+str(i)+": "+str(logic.lapTimes[i])
+    timesText+="LAP "+str(i+1)+": "+str(logic.lapTimes[i])
 
 times['Text'] = timesText
