@@ -46,7 +46,7 @@ def initAllThings():
     logic.player = own
     logic.player['camera'] = scene.objects['cameraMain']
     print(logic.utils.gameState['track']['checkpoints'])
-    logic.utils.gameState['track']['nextCheckpoint'] = 1
+    logic.utils.gameState['track']['nextCheckpoint'] = logic.defaultGameState['track']['nextCheckpoint']
     for checkpoint in logic.utils.gameState['track']['checkpoints']:
         if checkpoint['metadata']['checkpoint order'] !=1:
             checkpoint.visible = False
@@ -424,7 +424,7 @@ def main():
                 propAgressiveness = 1.4
                 propThrottleCurve = 1.3
                 propLoad = (((((lvl[0]*.1)+(lvl[1]*.1)+(lvl[2]*.8))*1000))/maxRPM)
-                
+
                 #thrust = ((throttlePercent**propThrottleCurve)*.85)*(maxThrust-((propLoad**propThrottleCurve)/((maxSpeed**propThrottleCurve)/maxThrust)))
                 staticThrust = ((throttlePercent*.55)**propThrottleCurve)*maxThrust#*100)-(currentSpeed/maxSpeed)
                 #y = (((1**1.25)*4800)*.75)-x
@@ -492,7 +492,7 @@ def isSettled():
                 if deviation < 300:
                     settle()
             else:
-                
+
                 own.setLinearVelocity([0,0,0],True)
                 own.position = own['launchPosition']
             if len(avgFPSList)>1000:

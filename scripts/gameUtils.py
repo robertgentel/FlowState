@@ -3,6 +3,7 @@ import copy
 import os
 logic = bge.logic
 class utils:
+    #asset keys
     ASSET_MGP_GATE = "asset MGP gate"
     ASSET_MGP_GATE_DOUBLE = "asset MGP gate double"
     ASSET_MGP_GATE_LARGE = "asset MGP gate large"
@@ -25,19 +26,29 @@ class utils:
     ASSET_CONCRETE_BLOCK = "asset concrete block"
     ASSET_PINE_TREE_TALL = "asset pine tree 12m"
     ASSETS = [ASSET_MGP_GATE,ASSET_MGP_GATE_DOUBLE,ASSET_MGP_GATE_LARGE,ASSET_MGP_GATE_HANGING_LARGE,ASSET_MGP_GATE_HIGH_LARGE,ASSET_MGP_GATE_DOUBLE_LARGE,ASSET_MGP_LADDER_LARGE,ASSET_MGP_GATE_ANGLED_DIVE_LARGE,ASSET_MGP_GATE_DIVE_LARGE,ASSET_MGP_HURDLE,ASSET_MGP_HURDLE_LARGE,ASSET_MGP_FLAG,ASSET_MGP_POLE,ASSET_LUMENIER_GATE_LARGE,ASSET_TABLE,ASSET_LAUNCH_PAD,ASSET_CONE,ASSET_CONCRETE_BLOCK,ASSET_PINE_TREE_TALL,ASSET_START_FINISH,ASSET_CHECKPOINT]
-    #METADATA_GATE = {"color":None,"skin":None,"foobar":None}
+
+    #asset metadata types
     METADATA_GATE = {"id":-1}
     STATIC_METADATA = ["id"]
     METADATA_CHECKPOINT = {"id":-1,"checkpoint order":1}
 
+    #game state keys
+    STATE_SELECTED_MAP_KEY = "selectedMap"
+    STATE_SERVER_IP_KEY = "serverIP"
+    STATE_MAP_EDITOR_KEY = "mapEditor"
+    STATE_MODE_KEY = "mode"
+    STATE_NETWORK_CLIENT_KEY = "networkClient"
+    STATE_LAP_KEY = "lap"
+    STATE_PLAYER_DATA_KEY = "playerData"
+    STATE_PLAYER_OBJECT_KEY = "playerObject"
+
+    #game mode keys
     MODE_MENU = 0
     MODE_EDITOR = 1
     MODE_SINGLE_PLAYER = 2
     MODE_MULTIPLAYER = 3
 
-
     def __init__(self):
-        self.setDefaults()
         self.log("INIT!")
         self.setDefaults()
         self.gameState = self.getDefaultGameState()
@@ -77,38 +88,44 @@ class utils:
     def getGameState(self):
         return self.gameState
 
+    def getPlayerObject(self):
+        return self.gameState[utils.STATE_PLAYER_DATA_KEY][utils.STATE_PLAYER_OBJECT_KEY]
+
+    def setPlayerObject(self,value):
+        self.gameState[utils.STATE_PLAYER_DATA_KEY][utils.STATE_PLAYER_OBJECT_KEY] = value
+
     def resetGameState(self):
         self.log("resetting game state!!!")
         self.gameState = copy.deepcopy(logic.defaultGameState)
 
     def selectMap(self,selectedMap):
-        self.gameState["selectedMap"] = selectedMap
+        self.gameState[utils.STATE_SELECTED_MAP_KEY] = selectedMap
 
     def setServerIP(self,serverIP):
-        self.gameState['serverIP'] = serverIP
+        self.gameState[utils.STATE_SERVER_IP_KEY] = serverIP
 
     def getServerIP(self):
-        print("server ip is "+repr(str(self.gameState['serverIP'])))
-        return self.gameState['serverIP']
+        print("server ip is "+repr(str(self.gameState[utils.STATE_SERVER_IP_KEY])))
+        return self.gameState[utils.STATE_SERVER_IP_KEY]
 
     def getSelectedMap(self):
-        return self.gameState["selectedMap"]
+        return self.gameState[utils.STATE_SELECTED_MAP_KEY]
 
     def getMapEditor(self):
-        return self.gameState['mapEditor']
+        return self.gameState[utils.STATE_MAP_EDITOR_KEY]
 
     def setMode(self,newMode):
         print("set mode!!!!")
-        self.gameState['mode'] = newMode
+        self.gameState[utils.STATE_MODE_KEY] = newMode
 
     def getMode(self):
-        return self.gameState['mode']
+        return self.gameState[utils.STATE_MODE_KEY]
 
     def getNetworkClient(self):
-        return self.gameState['networkClient']
+        return self.gameState[utils.STATE_NETWORK_CLIENT_KEY]
 
     def setNetworkClient(self,client):
-        self.gameState['networkClient'] = client
+        self.gameState[utils.STATE_NETWORK_CLIENT_KEY] = client
 
     def forceDefaults(self,defaultData):
         self.log("Profile versions do not match! You will need to reconfigure your settings ("+logic.globalDict['version']+": "+defaultData['version']+")")
@@ -137,7 +154,7 @@ class utils:
         defaultData['profiles'].append(defaultProfile)
 
         #logic.maps = {"
-        logic.defaultGameState = {"selectedMap":"2018 Regional Final.fmp", "notification":{"Text":""}, "mode":self.MODE_MENU, "track":{"countdownTime":5,"checkpoints":[],"nextCheckpoint":1,"lastCheckpoint":1}, "playerData":{"lap":0,"checkpoint":0},"mapEditor":None,"serverIP":"localhost","networkClient":None}
+        logic.defaultGameState = {utils.STATE_SELECTED_MAP_KEY:"2018 Regional Final.fmp", "notification":{"Text":""}, utils.STATE_MODE_KEY:self.MODE_MENU, "track":{"countdownTime":3,"checkpoints":[],"nextCheckpoint":0,"lastCheckpoint":0}, utils.STATE_PLAYER_DATA_KEY:{utils.STATE_PLAYER_OBJECT_KEY:None,utils.STATE_LAP_KEY:0,"checkpoint":0},utils.STATE_MAP_EDITOR_KEY:None,utils.STATE_SERVER_IP_KEY:"localhost",utils.STATE_NETWORK_CLIENT_KEY:None,}
         logic.loadGlobalDict()
         #self.log(logic.globalDict)
         if('version' in logic.globalDict):

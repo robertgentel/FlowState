@@ -47,11 +47,24 @@ def addLastLap():
         logic.holeshotTime = str(format((own['current_lap']), '.2f'))
         #print("got holeshot! "+logic.holeshotTime)
     own['current_lap'] = 0.00
+def setCheckpointVisibilities():
+    for checkpoint in logic.utils.gameState['track']['checkpoints']:
+        if(checkpoint['metadata']['checkpoint order'] == logic.utils.gameState['track']['nextCheckpoint']):
+            checkpoint.visible = True
+        else:
+            checkpoint.visible = False
 def main():
     collision = cont.sensors['Collision'].triggered and cont.sensors['Collision'].positive
     if(collision):
-        if(logic.utils.gameState['track']['nextCheckpoint'] == 1):
+        if(logic.utils.gameState['track']['nextCheckpoint'] == 0):
             addLastLap()
+            logic.utils.gameState['track']['nextCheckpoint'] = 1
+            setCheckpointVisibilities()
+            own.visible = False
+    else:
+        if(logic.utils.gameState['track']['nextCheckpoint'] == 0):
+            if own.visible!=True:
+                own.visible = True
 
     if(own['last_lap']<own['best_lap']):
         own['best_lap'] = copy.deepcopy(own['last_lap'])
