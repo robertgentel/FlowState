@@ -340,9 +340,9 @@ def main():
                 #WAYS YOU CAN KILL YOUR QUAD
                 if(cont.sensors['PropStrike'].positive):
 
-                    print("PROP STRIKE!")
+                    #print("PROP STRIKE!")
                     own['damage'] += own['acc']*0.1*throttlePercent
-                    print(own['damage'])
+                    #print(own['damage'])
                 if (own['acc'] > 65*2):
                     own['oporational'] = False
                     own['vtxOporational'] = False
@@ -403,11 +403,31 @@ def main():
                 tdm = 1.3 #topDragMultiplier
                 qd = [0.013014*dm*tdm*sdm,0.0111121*dm*fdm*tdm,0.0071081*dm*tdm] #air drag
                 own.setLinearVelocity([lv[0]/(1+qd[0]),lv[1]/(1+qd[1]),lv[2]/(1+qd[2])],True)
-
+                
                 st = 0.9*dm #how quick can the motor/pid orient the quad
                 lav = own.getAngularVelocity(True)
-
-                own.setAngularVelocity([((pitchForce+pwrx)*st)+(lav[0]*(1-st)),((roleForce+pwry)*st)+(lav[1]*(1-st)),yawForce+pwrz], True)
+                xav = ((pitchForce+pwrx)*st)+(lav[0]*(1-st))
+                yav = ((roleForce+pwry)*st)+(lav[1]*(1-st))
+                zav = yawForce+pwrz
+                maxAngularAcceleration = 6
+                maxAngularAccelerationYaw = 6
+                xavDiff = pitchForce-lav[0]
+                yavDiff = roleForce-lav[1]
+                zavDiff = yawForce-lav[2]
+                #print(str(xavDiff)+":"+str(yavDiff))
+                if abs(xavDiff) > maxAngularAcceleration:
+                    sign = ((1 if xavDiff < 0 else 0)-.5)*2
+                    xav = ((pitchForce+pwrx)*(0.5*dm))+(lav[0]*(1-(0.5*dm)))
+                    #print("x "+str(xavDiff))
+                if abs(yavDiff) > maxAngularAcceleration:
+                    sign = ((1 if yavDiff < 0 else 0)-.5)*2
+                    yav = ((roleForce+pwry)*(0.5*dm))+(lav[1]*(1-(0.5*dm)))
+                    #print("y "+str(yavDiff))
+                if abs(zavDiff) > maxAngularAccelerationYaw:
+                    sign = ((1 if zavDiff < 0 else 0)-.5)*2
+                    zav = ((yawForce+pwrz)*(0.5*dm))+(lav[2]*(1-(0.5*dm)))
+                    #print("z "+str(zavDiff))
+                own.setAngularVelocity([xav,yav,zav], True)
                 if own.position[2] <0:
                     p = own.position
                     own.position = [p[0],p[1],0]
