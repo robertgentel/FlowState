@@ -35,7 +35,6 @@ def setCheckpointVisibilities():
             checkpoint.visible = False
 
 def playSound():
-    print("using new method")
     sound = aud.Factory.file(bge.logic.expandPath('//sounds/checkpoint.wav'))
     scene = bge.logic.getCurrentScene()
 
@@ -50,7 +49,7 @@ def playSound():
     sound_handle.velocity = owner.getLinearVelocity()
     sound_handle.distance_maximum = 100
     sound_handle.distance_reference = 1
-            
+
 def getNormalVect(vect):
     max = 0
     for i in vect:

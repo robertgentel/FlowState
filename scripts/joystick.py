@@ -388,9 +388,9 @@ def main():
                 rx = (random.randrange(0,200)-100)/300
                 ry = (random.randrange(0,200)-100)/300
                 rz = (random.randrange(0,200)-100)/300
-                pwrx = (rx*propwash/(1+propwash*1.00005))*88
-                pwry = (ry*propwash/(1+propwash*1.00005))*88
-                pwrz = (rz*propwash/(1+propwash*1.00005))*88
+                pwrx = (rx*propwash/(1+propwash*1.00005))*35
+                pwry = (ry*propwash/(1+propwash*1.00005))*35
+                pwrz = (rz*propwash/(1+propwash*1.00005))*35
 
                 angularAcc = own['angularAcc']
 
@@ -406,8 +406,8 @@ def main():
                 
                 st = 0.9*dm #how quick can the motor/pid orient the quad
                 lav = own.getAngularVelocity(True)
-                xav = ((pitchForce+pwrx)*st)+(lav[0]*(1-st))
-                yav = ((roleForce+pwry)*st)+(lav[1]*(1-st))
+                xav = (((pitchForce)*st)+(lav[0]*(1-st)))+pwrx
+                yav = ((roleForce)*st)+(lav[1]*(1-st))+pwry
                 zav = yawForce+pwrz
                 #maxAngularAcceleration = 6
                 #maxAngularAccelerationYaw = 6
