@@ -51,8 +51,19 @@ def setCheckpointVisibilities():
     for checkpoint in logic.utils.gameState['track']['checkpoints']:
         if(checkpoint['metadata']['checkpoint order'] == logic.utils.gameState['track']['nextCheckpoint']):
             checkpoint.visible = True
+            enableCollision(checkpoint)
         else:
             checkpoint.visible = False
+            disableCollision(checkpoint)
+            
+def disableCollision(obj):
+    mask = 4
+    obj.collisionGroup = mask
+
+def enableCollision(obj):
+    mask = 2#bytearray(mask)
+    obj.collisionGroup = mask
+        
 def main():
     collision = cont.sensors['Collision'].triggered and cont.sensors['Collision'].positive
     if(collision):

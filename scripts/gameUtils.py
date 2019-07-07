@@ -154,7 +154,7 @@ class utils:
         defaultData['profiles'].append(defaultProfile)
 
         #logic.maps = {"
-        logic.defaultGameState = {utils.STATE_SELECTED_MAP_KEY:"2018 Regional Final.fmp", "notification":{"Text":""}, utils.STATE_MODE_KEY:self.MODE_MENU, "track":{"countdownTime":3,"checkpoints":[],"nextCheckpoint":0,"lastCheckpoint":0}, utils.STATE_PLAYER_DATA_KEY:{utils.STATE_PLAYER_OBJECT_KEY:None,utils.STATE_LAP_KEY:0,"checkpoint":0},utils.STATE_MAP_EDITOR_KEY:None,utils.STATE_SERVER_IP_KEY:"localhost",utils.STATE_NETWORK_CLIENT_KEY:None,}
+        logic.defaultGameState = {utils.STATE_SELECTED_MAP_KEY:"2018 Regional Final.fmp", "notification":{"Text":""}, utils.STATE_MODE_KEY:self.MODE_MENU, "track":{"countdownTime":5,"checkpoints":[],"nextCheckpoint":0,"lastCheckpoint":0}, utils.STATE_PLAYER_DATA_KEY:{utils.STATE_PLAYER_OBJECT_KEY:None,utils.STATE_LAP_KEY:0,"checkpoint":0},utils.STATE_MAP_EDITOR_KEY:None,utils.STATE_SERVER_IP_KEY:"localhost",utils.STATE_NETWORK_CLIENT_KEY:None,}
         logic.loadGlobalDict()
         #self.log(logic.globalDict)
         if('version' in logic.globalDict):

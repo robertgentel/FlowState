@@ -409,24 +409,24 @@ def main():
                 xav = ((pitchForce+pwrx)*st)+(lav[0]*(1-st))
                 yav = ((roleForce+pwry)*st)+(lav[1]*(1-st))
                 zav = yawForce+pwrz
-                maxAngularAcceleration = 6
-                maxAngularAccelerationYaw = 6
-                xavDiff = pitchForce-lav[0]
-                yavDiff = roleForce-lav[1]
-                zavDiff = yawForce-lav[2]
+                #maxAngularAcceleration = 6
+                #maxAngularAccelerationYaw = 6
+                #xavDiff = pitchForce-lav[0]
+                #yavDiff = roleForce-lav[1]
+                #zavDiff = yawForce-lav[2]
                 #print(str(xavDiff)+":"+str(yavDiff))
-                if abs(xavDiff) > maxAngularAcceleration:
-                    sign = ((1 if xavDiff < 0 else 0)-.5)*2
-                    xav = ((pitchForce+pwrx)*(0.5*dm))+(lav[0]*(1-(0.5*dm)))
-                    #print("x "+str(xavDiff))
-                if abs(yavDiff) > maxAngularAcceleration:
-                    sign = ((1 if yavDiff < 0 else 0)-.5)*2
-                    yav = ((roleForce+pwry)*(0.5*dm))+(lav[1]*(1-(0.5*dm)))
-                    #print("y "+str(yavDiff))
-                if abs(zavDiff) > maxAngularAccelerationYaw:
-                    sign = ((1 if zavDiff < 0 else 0)-.5)*2
-                    zav = ((yawForce+pwrz)*(0.5*dm))+(lav[2]*(1-(0.5*dm)))
-                    #print("z "+str(zavDiff))
+                #if abs(xavDiff) > maxAngularAcceleration:
+                #    sign = ((1 if xavDiff < 0 else 0)-.5)*2
+                #    xav = ((pitchForce+pwrx)*(0.5*dm))+(lav[0]*(1-(0.5*dm)))
+                #    #print("x "+str(xavDiff))
+                #if abs(yavDiff) > maxAngularAcceleration:
+                #    sign = ((1 if yavDiff < 0 else 0)-.5)*2
+                #    yav = ((roleForce+pwry)*(0.5*dm))+(lav[1]*(1-(0.5*dm)))
+                #    #print("y "+str(yavDiff))
+                #if abs(zavDiff) > maxAngularAccelerationYaw:
+                #    sign = ((1 if zavDiff < 0 else 0)-.5)*2
+                #    zav = ((yawForce+pwrz)*(0.5*dm))+(lav[2]*(1-(0.5*dm)))
+                #    #print("z "+str(zavDiff))
                 own.setAngularVelocity([xav,yav,zav], True)
                 if own.position[2] <0:
                     p = own.position

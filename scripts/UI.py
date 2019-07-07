@@ -32,7 +32,6 @@ class UI:
         for key in window.elements:
             element = window.elements[key]
             if(element.disabled==False):
-                #if element.primative:
                 if(hitObject == element.owner):
                     if(element.type == BUTTON):
                         if (hitObject!=None):
@@ -49,6 +48,7 @@ class UI:
                         element.deHighlight()
 
                 if(element.type == LIST):
+                    element.handleInputs()
                     if(wheelDown.positive):
                         element.scrollUp()
                         print("scroll up")
@@ -137,7 +137,7 @@ class UI:
                     for v in range(0,vertArray):
                         vert = mesh.getVertex(mat,v)
                         vert.color = newColor
-
+        
         def spawnElement(self):
             self.owner = scene.addObject(self.type)
             self.updateElementPosition()
@@ -154,7 +154,6 @@ class UI:
             self.disabled = False
 
         def updateElementPosition(self):
-
             self.owner.position = self.getRealTranslatedPosition()
 
         def getRealTranslatedPosition(self):
@@ -359,7 +358,39 @@ class UI:
             self.maxScrollPosition = 10
             self.minScrollPosition = 0
             self.owner = None
-
+            try:
+                self.keyboard = cont.sensors['Keyboard']
+                
+            except:
+                self.keyboard = None
+            print("KEYBOARD "+str(self.keyboard))
+        
+        def handleInputs(self):
+            keyInfo = self.getKeyStates(self.keyboard)
+            (pressedKeys,activeKeys,inactiveKeys,releasedKeys) = keyInfo
+            upArrow = bge.events.UPARROWKEY in pressedKeys
+            downArrow = bge.events.DOWNARROWKEY in pressedKeys
+            if downArrow:
+                self.scrollUp()
+            if upArrow:
+                    self.scrollDown()
+        def getKeyStates(self,keyboard):
+            pressedKeys = []
+            activeKeys = []
+            inactiveKeys = []
+            releasedKeys = []
+            if(keyboard!=None):
+                for event in keyboard.events:
+                    if(event[1] == bge.logic.KX_SENSOR_JUST_ACTIVATED):
+                        pressedKeys.append(event[0])
+                    if(event[1] == bge.logic.KX_SENSOR_ACTIVE):
+                        activeKeys.append(event[0])
+                    if(event[1] == bge.logic.KX_SENSOR_INACTIVE ):
+                        inactiveKeys.append(event[0])
+                    if(event[1] == bge.logic.KX_SENSOR_JUST_DEACTIVATED ):
+                        releasedKeys.append(event[0])
+            return (pressedKeys,activeKeys,inactiveKeys,releasedKeys)
+        
         def scrollUp(self):
             if(self.scrollPosition<self.maxScrollPosition):
                 self.scrollPosition += 1

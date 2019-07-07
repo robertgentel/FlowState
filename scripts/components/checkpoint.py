@@ -28,10 +28,22 @@ class Checkpoint(bge.types.KX_PythonComponent):
 
     def setCheckpointVisibilities(self):
         for checkpoint in logic.utils.gameState['track']['checkpoints']:
+
             if(checkpoint['metadata']['checkpoint order'] == logic.utils.gameState['track']['nextCheckpoint']):
                 checkpoint.visible = True
+                self.enableCollision(checkpoint)
             else:
                 checkpoint.visible = False
+                self.disableCollision(checkpoint)
+            #print("setting checkpoint "+str(checkpoint['metadata']['checkpoint order'])+" to collision group "+str(checkpoint.collisionGroup))
+
+    def disableCollision(self,obj):
+        mask = 4
+        obj.collisionGroup = mask
+
+    def enableCollision(self,obj):
+        mask = 2#bytearray(mask)
+        obj.collisionGroup = mask
 
     def playSound(self):
         sound = aud.Factory.file(bge.logic.expandPath('//sounds/checkpoint.wav'))
@@ -68,7 +80,8 @@ class Checkpoint(bge.types.KX_PythonComponent):
                 if self.lastPlayerPos!=None:
                     pa = self.lastPlayerPos
                     pb = utils.getPlayerObject().position
-                    ray = utils.getPlayerObject().rayCast(objto=pb, objfrom=pa, dist=0, prop="checkpoint", face=False, xray=True, poly=0)
+                    cm = 2
+                    ray = utils.getPlayerObject().rayCast(objto=pb, objfrom=pa, dist=0, prop="checkpoint", face=False, xray=True, poly=0,mask=cm)
                     hitObject, hitPoint, hitNormal = ray
                     #render.drawLine(pa,pb,[0,0,0,1])
                     self.object['checked'] = True
