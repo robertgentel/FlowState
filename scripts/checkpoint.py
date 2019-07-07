@@ -1,5 +1,6 @@
 import time
 import bge
+import aud
 logic = bge.logic
 utils = logic.utils
 #try:
@@ -32,6 +33,24 @@ def setCheckpointVisibilities():
             checkpoint.visible = True
         else:
             checkpoint.visible = False
+
+def playSound():
+    print("using new method")
+    sound = aud.Factory.file(bge.logic.expandPath('//sounds/checkpoint.wav'))
+    scene = bge.logic.getCurrentScene()
+
+    sound_device = aud.device()
+    sound_device.distance_model = aud.AUD_DISTANCE_MODEL_LINEAR
+    sound_device.listener_location = owner.worldPosition
+    sound_device.listener_velocity = [0,0,0]
+
+    sound_handle = sound_device.play(sound)
+    sound_handle.relative = False
+    sound_handle.location = owner.worldPosition
+    sound_handle.velocity = owner.getLinearVelocity()
+    sound_handle.distance_maximum = 100
+    sound_handle.distance_reference = 1
+            
 def getNormalVect(vect):
     max = 0
     for i in vect:
@@ -67,5 +86,9 @@ if colSensor.positive and colSensor.triggered:
                 setCheckpointVisibilities()
                 soundActuator = cont.actuators['Sound']
                 soundActuator.volume = 1
-                soundActuator.startSound()
-                print("CHECKPOINT!")
+                startTime = time.perf_counter()
+                #soundActuator.startSound()
+                #owner['playSound'] = True
+                playSound()
+                endTime = time.perf_counter()
+                print("CHECKPOINT! "+str(endTime-startTime))

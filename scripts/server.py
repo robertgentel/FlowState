@@ -41,7 +41,7 @@ clientStates = {}
 clientConnections = {}
 outboundMessages = []
 clientThreads = []
-mapFileName = raw_input("Map file name: ")
+mapFileName = input("Map file name: ")
 if(mapFileName==""):
     mapFileName = "2019 MultiGP Qualifier.fmp"
 mapContents = FSFileHandler.FileHandler().getMapContents(mapFileName)

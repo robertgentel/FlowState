@@ -21,7 +21,7 @@ def main():
         selectedMap = logic.utils.gameState['selectedMap']
         mapData = readFile(selectedMap)
         spawnMapElements(mapData)
-        
+
 def spawnMapElements(mapData):
     scene = logic.getCurrentScene()
     utils.log("getting assets...")
@@ -41,7 +41,7 @@ def spawnMapElements(mapData):
         if('s' in asset):
             s = asset['s']
             if asset['n']=="asset checkpoint square":
-                owner.localScale = [s[0],0.75,s[2]] #checkpoints should always be fixed depth
+                owner.localScale = [s[0],0.1,s[2]] #checkpoints should always be fixed depth
             else:
                 owner.localScale = s
         o = asset['o']
@@ -82,4 +82,3 @@ def spawnMapElements(mapData):
             else:
                 logic.utils.gameState['launchPads'] = [newSpawnPoint]
             #utils.log("setting spawn point "+str(logic.utils.gameState))
-

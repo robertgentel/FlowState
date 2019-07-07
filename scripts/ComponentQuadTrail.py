@@ -6,7 +6,7 @@ from collections import OrderedDict
 if not hasattr(bge, "__component__"):
     global render
     render = bge.render
-
+    
 class QuadTrail(bge.types.KX_PythonComponent):
     args = OrderedDict([
         ("Segment Count", 20),
@@ -16,28 +16,28 @@ class QuadTrail(bge.types.KX_PythonComponent):
 
     def start(self, args):
         self.trail = []
-        self.lastUpdateTime = time.perf_counter()
+        self.lastUpdateTime = time.time()
         self.color = list(args['Color (RGBA)'])
         self.segments = args['Segment Count']
         self.nodeLifetime = args['Node Lifetime (ms)']
         for i in range(0,self.segments):
             self.trail.append(list(self.object.position))
-
+        
 
     def update(self):
-
-        if time.perf_counter()-self.lastUpdateTime>self.nodeLifetime/1000:
-            self.lastUpdateTime = time.perf_counter()
-
+        
+        if time.time()-self.lastUpdateTime>self.nodeLifetime/1000:
+            self.lastUpdateTime = time.time()
+                
             #make the first value the quad's current position
             self.trail.insert(0, list(self.object.position))
-
+            
             #delete the last node in the trail to keep it finite
             del self.trail[-1]
-
+        
         self.drawTrail()
-
-
+            
+            
     def drawTrail(self):
         #draw trail
         for i in range(0,self.segments-1):
