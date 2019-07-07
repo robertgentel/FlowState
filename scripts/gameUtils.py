@@ -3,7 +3,9 @@ import copy
 import os
 logic = bge.logic
 class utils:
+    #asset keys
     ASSET_MGP_GATE = "asset MGP gate"
+    ASSET_MGP_GATE_DOUBLE = "asset MGP gate double"
     ASSET_MGP_GATE_LARGE = "asset MGP gate large"
     ASSET_MGP_GATE_HANGING_LARGE = "asset MGP gate hanging large"
     ASSET_MGP_GATE_HIGH_LARGE = "asset MGP gate high large"
@@ -21,21 +23,35 @@ class utils:
     ASSET_CONE = "asset cone"
     ASSET_START_FINISH = "asset start finish"
     ASSET_CHECKPOINT = "asset checkpoint square"
-    ASSETS = [ASSET_MGP_GATE,ASSET_MGP_GATE_LARGE,ASSET_MGP_GATE_HANGING_LARGE,ASSET_MGP_GATE_HIGH_LARGE,ASSET_MGP_GATE_DOUBLE_LARGE,ASSET_MGP_LADDER_LARGE,ASSET_MGP_GATE_ANGLED_DIVE_LARGE,ASSET_MGP_GATE_DIVE_LARGE,ASSET_MGP_HURDLE,ASSET_MGP_HURDLE_LARGE,ASSET_MGP_FLAG,ASSET_MGP_POLE,ASSET_LUMENIER_GATE_LARGE,ASSET_TABLE,ASSET_LAUNCH_PAD,ASSET_CONE,ASSET_START_FINISH,ASSET_CHECKPOINT]
-    #METADATA_GATE = {"color":None,"skin":None,"foobar":None}
+    ASSET_CONCRETE_BLOCK = "asset concrete block"
+    ASSET_PINE_TREE_TALL = "asset pine tree 12m"
+    ASSETS = [ASSET_MGP_GATE,ASSET_MGP_GATE_DOUBLE,ASSET_MGP_GATE_LARGE,ASSET_MGP_GATE_HANGING_LARGE,ASSET_MGP_GATE_HIGH_LARGE,ASSET_MGP_GATE_DOUBLE_LARGE,ASSET_MGP_LADDER_LARGE,ASSET_MGP_GATE_ANGLED_DIVE_LARGE,ASSET_MGP_GATE_DIVE_LARGE,ASSET_MGP_HURDLE,ASSET_MGP_HURDLE_LARGE,ASSET_MGP_FLAG,ASSET_MGP_POLE,ASSET_LUMENIER_GATE_LARGE,ASSET_TABLE,ASSET_LAUNCH_PAD,ASSET_CONE,ASSET_CONCRETE_BLOCK,ASSET_PINE_TREE_TALL,ASSET_START_FINISH,ASSET_CHECKPOINT]
+
+    #asset metadata types
     METADATA_GATE = {"id":-1}
     STATIC_METADATA = ["id"]
     METADATA_CHECKPOINT = {"id":-1,"checkpoint order":1}
 
+    #game state keys
+    STATE_SELECTED_MAP_KEY = "selectedMap"
+    STATE_SERVER_IP_KEY = "serverIP"
+    STATE_MAP_EDITOR_KEY = "mapEditor"
+    STATE_MODE_KEY = "mode"
+    STATE_NETWORK_CLIENT_KEY = "networkClient"
+    STATE_LAP_KEY = "lap"
+    STATE_PLAYER_DATA_KEY = "playerData"
+    STATE_PLAYER_OBJECT_KEY = "playerObject"
+
+    #game mode keys
     MODE_MENU = 0
     MODE_EDITOR = 1
     MODE_SINGLE_PLAYER = 2
     MODE_MULTIPLAYER = 3
 
-
     def __init__(self):
-        self.setDefaults()
         self.log("INIT!")
+        self.setDefaults()
+        self.gameState = self.getDefaultGameState()
         self.id = 0
 
     def log(self,error):
@@ -64,20 +80,52 @@ class utils:
 
     def setDefaultState(self):
         self.log("setting default game state")
-        logic.gameState = copy.deepcopy(logic.defaultGameState)
+        self.gameState = copy.deepcopy(logic.defaultGameState)
+
+    def getDefaultGameState(self):
+        return copy.deepcopy(logic.defaultGameState)
+
+    def getGameState(self):
+        return self.gameState
+
+    def getPlayerObject(self):
+        return self.gameState[utils.STATE_PLAYER_DATA_KEY][utils.STATE_PLAYER_OBJECT_KEY]
+
+    def setPlayerObject(self,value):
+        self.gameState[utils.STATE_PLAYER_DATA_KEY][utils.STATE_PLAYER_OBJECT_KEY] = value
 
     def resetGameState(self):
         self.log("resetting game state!!!")
-        logic.gameState = copy.deepcopy(logic.defaultGameState)
+        self.gameState = copy.deepcopy(logic.defaultGameState)
 
     def selectMap(self,selectedMap):
-        logic.gameState["selectedMap"] = selectedMap
+        self.gameState[utils.STATE_SELECTED_MAP_KEY] = selectedMap
+
+    def setServerIP(self,serverIP):
+        self.gameState[utils.STATE_SERVER_IP_KEY] = serverIP
+
+    def getServerIP(self):
+        print("server ip is "+repr(str(self.gameState[utils.STATE_SERVER_IP_KEY])))
+        return self.gameState[utils.STATE_SERVER_IP_KEY]
+
+    def getSelectedMap(self):
+        return self.gameState[utils.STATE_SELECTED_MAP_KEY]
+
+    def getMapEditor(self):
+        return self.gameState[utils.STATE_MAP_EDITOR_KEY]
 
     def setMode(self,newMode):
-        logic.gameState['mode'] = newMode
+        print("set mode!!!!")
+        self.gameState[utils.STATE_MODE_KEY] = newMode
 
     def getMode(self):
-        return logic.gameState['mode']
+        return self.gameState[utils.STATE_MODE_KEY]
+
+    def getNetworkClient(self):
+        return self.gameState[utils.STATE_NETWORK_CLIENT_KEY]
+
+    def setNetworkClient(self,client):
+        self.gameState[utils.STATE_NETWORK_CLIENT_KEY] = client
 
     def forceDefaults(self,defaultData):
         self.log("Profile versions do not match! You will need to reconfigure your settings ("+logic.globalDict['version']+": "+defaultData['version']+")")
@@ -99,16 +147,16 @@ class utils:
         defaultProfile = {}
         defaultProfile['username'] = "Unkown Pilot"
         defaultProfile['color'] = [255,255,255]
-        defaultProfile["droneSettings"] = {'cameraTilt':35,'thrust':4800,'rpm':38600,'weight':500,'yawExpo':0.0,'pitchExpo':0.0,'rollExpo':0.0,'pitchRate':100,'rollRate':100,'yawRate':100,'pitchSuperRate':70,'rollSuperRate':70,'yawSuperRate':70}
+        defaultProfile["droneSettings"] = {'cameraTilt':35,'thrust':4800,'motorKV':2300,'batteryCellCount':4,'weight':500,'yawExpo':0.0,'pitchExpo':0.0,'rollExpo':0.0,'pitchRate':100,'rollRate':100,'yawRate':100,'pitchSuperRate':70,'rollSuperRate':70,'yawSuperRate':70}
         defaultProfile['radioSettings'] = {'throttleInverted':False,'yawInverted':False,'pitchInverted':False,'rollInverted':False,'armInverted':False,'resetInverted':False,'yawChannel':1,'pitchChannel':4,'throttleChannel':2,'rollChannel':3,'resetChannel':6,'armChannel':5,'yawOffset':0,'pitchOffset':0,'rollOffset':0,'minThrottle':-32252,'maxThrottle':32252,'minYaw':-32252,'maxYaw':32252,'minPitch':-32252,'maxPitch':32252,'minRoll':-32252,'maxRoll':32252,'minReset':0,'maxReset':32768,'minArm':0,'maxArm':32768,'armSetpoint':0.25,'resetSetpoint':0.25,'dedicatedThrottleStick':True}
         defaultProfile['graphicsSettings'] = {"shaders":True}
 
         defaultData['profiles'].append(defaultProfile)
 
         #logic.maps = {"
-        logic.defaultGameState = {"selectedMap":"2018 Regional Final.fmp", "notification":{"Text":""}, "mode":self.MODE_MENU, "track":{"countdownTime":5,"checkpoints":[],"nextCheckpoint":1,"lastCheckpoint":1}, "playerData":{"lap":0,"checkpoint":0},"mapEditor":None}
+        logic.defaultGameState = {utils.STATE_SELECTED_MAP_KEY:"2018 Regional Final.fmp", "notification":{"Text":""}, utils.STATE_MODE_KEY:self.MODE_MENU, "track":{"countdownTime":5,"checkpoints":[],"nextCheckpoint":0,"lastCheckpoint":0}, utils.STATE_PLAYER_DATA_KEY:{utils.STATE_PLAYER_OBJECT_KEY:None,utils.STATE_LAP_KEY:0,"checkpoint":0},utils.STATE_MAP_EDITOR_KEY:None,utils.STATE_SERVER_IP_KEY:"localhost",utils.STATE_NETWORK_CLIENT_KEY:None,}
         logic.loadGlobalDict()
-        self.log(logic.globalDict)
+        #self.log(logic.globalDict)
         if('version' in logic.globalDict):
             if(logic.globalDict['version']!=defaultData['version']):
                 self.forceDefaults(defaultData)
