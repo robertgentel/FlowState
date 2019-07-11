@@ -26,10 +26,11 @@ try:
 except:
     logic.lastLogicTic = float(time.perf_counter())
     print("creating time")
-eTime = float(time.perf_counter())-logic.lastLogicTic
+frameTime = float(time.perf_counter())-logic.lastLogicTic
 logic.lastLogicTic = float(time.perf_counter())
+
 if(logic.getAverageFrameRate()!=0):
-    dm = eTime*60
+    dm = frameTime*60
 else:
     dm = 1
 if(dm>1):
@@ -234,6 +235,9 @@ def rcCommand(rcData, rcRate, rcExpo):
 
 
 def main():
+    #print("perf: "+str(1.0/frameTime))
+    #print("afps: "+str(logic.getAverageFrameRate()))
+    
     #Do the things and the stuff
     setup(camera,g['cameraTilt'])
     joy = cont.sensors["Joystick"]
@@ -403,7 +407,7 @@ def main():
                 tdm = 1.3 #topDragMultiplier
                 qd = [0.013014*dm*tdm*sdm,0.0111121*dm*fdm*tdm,0.0071081*dm*tdm] #air drag
                 own.setLinearVelocity([lv[0]/(1+qd[0]),lv[1]/(1+qd[1]),lv[2]/(1+qd[2])],True)
-                
+                #print(dm)
                 st = 0.9*dm #how quick can the motor/pid orient the quad
                 lav = own.getAngularVelocity(True)
                 xav = (((pitchForce)*st)+(lav[0]*(1-st)))+pwrx
