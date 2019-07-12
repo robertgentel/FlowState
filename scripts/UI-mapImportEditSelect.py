@@ -2,6 +2,8 @@ import bge
 import traceback
 import os
 from os.path import isfile, join
+import ast
+import json
 logic = bge.logic
 utils = logic.utils
 render = bge.render
@@ -20,16 +22,81 @@ if "window" not in owner:
     
 window = owner['window']
 
-def mapSelectAction(key,mapName):
-    scenes = logic.getSceneList()
-    currentScene = logic.getCurrentScene()
-    for scene in scenes:
-        if(scene!=currentScene):
-            scene.end()
-    render.showMouse(0)
-    utils.selectMap(mapName)
-    utils.setMode(utils.MODE_SINGLE_PLAYER)
-    currentScene.replace("Map Editor")
+def saveMapToFile(map,fileName):
+    fileName = blendPath+"maps"+os.sep+fileName
+    logic.utils.log("saving map: "+fileName)
+    print("saving map to: "+fileName)
+    try:
+        with open(fileName, 'w+') as saveFile:
+            saveFile.write(str(map))
+            saveFile.close()
+    except Exception as e:
+        logic.utils.log("map save error: "+str(e))
+    logic.utils.log("map save complete: "+fileName)
+    
+def readJSONFile(filePath):
+    
+    saveDataString = ""
+    with open(filePath) as data:
+        for line in data:
+            saveDataString+=str(line)
+    logic.utils.log("loading map: "+filePath)
+    json_file = open(filePath)
+    json_str = json_file.read()
+    logic.utils.log("map load complete...")
+    json_data = json.loads(json_str)
+    return json_data
+
+def convertAsset(gate,assetID):
+    unknownAsset = utils.ASSET_CONCRETE_BLOCK
+    idMap = {357:utils.ASSET_CONE,279:utils.ASSET_MGP_GATE,286:utils.ASSET_MGP_GATE,88:utils.ASSET_CHECKPOINT}
+    
+    prefab = gate['prefab']
+    vdPos = gate['trans']['pos']
+    vdOri = gate['trans']['rot']
+    vdScale = gate['trans']['scale']
+    pos = [vdPos[0]/10,vdPos[2]/10,vdPos[1]/10]
+    ori = [0,0,0]#[vdOri[0],vdOri[2],vdOri[1]]
+    scale = [vdScale[0]/100,vdScale[1]/100,vdScale[2]/100]
+    asset = {}
+    if prefab in idMap:
+        asset["n"] = idMap[prefab]
+    else:
+        asset["n"] = unknownAsset
+    asset["p"] = pos
+    asset["o"] = ori
+    asset["s"] = scale
+    return asset
+
+def convertVDMap(path):
+    newMap = {"assets":[]}
+    importedMap = readJSONFile(path)
+    assetID = 0
+    for gate in importedMap['gates']:
+        print(gate)
+        asset = convertAsset(gate,assetID)
+        newMap['assets'].append(asset)
+        assetID+=1
+        
+    for gate in importedMap['barriers']:
+        print(gate)
+        asset = convertAsset(gate,assetID)
+        newMap['assets'].append(asset)
+        assetID+=1
+        
+    saveMapToFile(newMap,"importedMap.fmp")
+
+def mapSelectAction(key,mapPath):
+    convertVDMap(mapPath)
+    #scenes = logic.getSceneList()
+    #currentScene = logic.getCurrentScene()
+    #for scene in scenes:
+    #    if(scene!=currentScene):
+    #        scene.end()
+    #render.showMouse(0)
+    #utils.selectMap(mapName)
+    #utils.setMode(utils.MODE_SINGLE_PLAYER)
+    #currentScene.replace("Map Editor")
  
 def multiplayerAction():
     pass
@@ -52,13 +119,13 @@ def backAction():
 def passAction():
     pass
 
-def addMapButton(name,spacing):
+def addMapButton(path,name,spacing):
     buttonIndex = len(mapButtons)
     height = 70-(buttonIndex*spacing)
     print(height)
     mapButtonBlock = UI.BoxElement(window,[50,height],5,0.5, blockColor, 1)
     mapButtonText = UI.TextElement(window,mapButtonBlock.position, textColor, 0,name)
-    mapButton = UI.UIButton(mapButtonText,mapButtonBlock,mapSelectAction,"map",name)
+    mapButton = UI.UIButton(mapButtonText,mapButtonBlock,mapSelectAction,"map",path)
     mapButtons.append(mapButton)
     
     owner['window'].add("mapButtonBlock"+name,mapButtonBlock)
@@ -85,7 +152,7 @@ if(owner['init']!=True):
     
     for m in range(0,len(maps)-1):
         map = maps[m]
-        addMapButton(map,spacing)
+        addMapButton(mapsPath+map,map,spacing)
     
     itemNumber = len(mapButtons)
     mapListBox = UI.BoxElement(window,[50,50],5,((itemNumber)*spacing)/10, blockColor, 15)
