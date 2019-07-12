@@ -15,11 +15,27 @@ class Checkpoint(bge.types.KX_PythonComponent):
     args = OrderedDict([
         ("checkpoint number", 1)
     ])
+    
+    def oncollision(self, obj, point, normal, points):
+        print("Hit by", obj)
+        if(obj==logic.utils.getPlayerObject()):
+            self.collision = (obj, point, normal, points)
+        for point in points:
+            print(point.localPointA)
+            print(point.localPointB)
+            print(point.worldPoint)
+            print(point.normal)
+            print(point.combinedFriction)
+            print(point.combinedRestitution)
+            print(point.appliedImpulse)
 
     def start(self, args):
         self.lastPlayerPos = None
         self.entrance = None
         self.object["checkpoint"] = True
+        self.collision = None
+        self.object.collisionCallbacks = [self.oncollision]
+        print(self.object.collisionCallbacks)
         print("start "+str(self.object.name))
 
     def getEntryAngle(self, v1, v2, acute):
@@ -83,10 +99,13 @@ class Checkpoint(bge.types.KX_PythonComponent):
                     cm = 2
                     ray = utils.getPlayerObject().rayCast(objto=pb, objfrom=pa, dist=0, prop="checkpoint", face=False, xray=True, poly=0,mask=cm)
                     hitObject, hitPoint, hitNormal = ray
+                    #colHitObject, colPoint, colNormal, colPoints = self.collision
                     #render.drawLine(pa,pb,[0,0,0,1])
                     self.object['checked'] = True
-                    if(hitObject==self.object):
+                    if(hitObject==self.object) or (self.collision!=None):
+                        self.collision = None
                         o = self.object.getVectTo(self.entrance.position)[1]
+                        print(o)
                         v = utils.getPlayerObject().getLinearVelocity(False)
 
                         difAngle = m.degrees(self.getEntryAngle(v,o,True))
@@ -99,9 +118,9 @@ class Checkpoint(bge.types.KX_PythonComponent):
                             startTime = time.perf_counter()
                             self.playSound()
                             endTime = time.perf_counter()
-                            print("CHECKPOINT! "+str(endTime-startTime))
+                            print("CHECKPOINT! "+str(hitCheckpointNumber))
                         else:
-                            print("angle exceeds 90 "+str(difAngle))
+                            print("angle ("+str(difAngle)+") exceeds 90 "+str(hitCheckpointNumber))
                             print(difAngle)
 
             self.lastPlayerPos = copy.deepcopy(utils.getPlayerObject().position)
