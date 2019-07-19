@@ -4,6 +4,8 @@ import os
 from os.path import isfile, join
 import ast
 import json
+import mathutils
+import math
 logic = bge.logic
 utils = logic.utils
 render = bge.render
@@ -48,16 +50,29 @@ def readJSONFile(filePath):
     return json_data
 
 def convertAsset(gate,assetID):
-    unknownAsset = utils.ASSET_CONCRETE_BLOCK
-    idMap = {357:utils.ASSET_CONE,279:utils.ASSET_MGP_GATE,286:utils.ASSET_MGP_GATE,88:utils.ASSET_CHECKPOINT}
+    unknownAsset = utils.ASSET_CONE
+    asdf = utils.ASSET_TABLE
+    #50=shipping container
+    #52=shipping container
+    #155=car
+    #590=car
+    #311=shipping container
+    #274=street light
+    #248=Tents
+    #292=Tent top
+    #561=shacks
+    #249=goal posts
+    #344=total unkown
+    idMap = {275:utils.ASSET_MGP_HURDLE,247:utils.ASSET_CONCRETE_BLOCK,344:utils.ASSET_CONCRETE_BLOCK,326:utils.ASSET_MGP_FLAG,303:utils.ASSET_CONE,319:utils.ASSET_MGP_FLAG,249:utils.ASSET_MGP_POLE,590:utils.ASSET_CONCRETE_BLOCK,561:utils.ASSET_CONCRETE_BLOCK,399:utils.ASSET_CONCRETE_BLOCK,246:utils.ASSET_MGP_POLE,292:utils.ASSET_CONCRETE_BLOCK,248:utils.ASSET_MGP_POLE,394:utils.ASSET_CONCRETE_BLOCK,30:utils.ASSET_PINE_TREE_TALL,18:utils.ASSET_PINE_TREE_TALL,274:utils.ASSET_MGP_POLE,311:utils.ASSET_CONCRETE_BLOCK,261:utils.ASSET_PINE_TREE_TALL,260:utils.ASSET_PINE_TREE_TALL,401:utils.ASSET_CONCRETE_BLOCK,155:utils.ASSET_CONCRETE_BLOCK,48:utils.ASSET_CONCRETE_BLOCK,52:utils.ASSET_CONCRETE_BLOCK,20:utils.ASSET_PINE_TREE_TALL,70:utils.ASSET_PINE_TREE_TALL,50:utils.ASSET_CONCRETE_BLOCK,100:utils.ASSET_PINE_TREE_TALL,28:utils.ASSET_PINE_TREE_TALL,108:utils.ASSET_CHECKPOINT,151:utils.ASSET_MGP_GATE_HANGING_LARGE,282:utils.ASSET_MGP_GATE_HIGH_LARGE,279:utils.ASSET_CONCRETE_BLOCK,285:utils.ASSET_MGP_GATE_LARGE,357:utils.ASSET_CONE,279:utils.ASSET_MGP_GATE,286:utils.ASSET_MGP_GATE_HANGING_LARGE,88:utils.ASSET_CHECKPOINT}
     
     prefab = gate['prefab']
     vdPos = gate['trans']['pos']
     vdOri = gate['trans']['rot']
     vdScale = gate['trans']['scale']
     pos = [vdPos[0]/10,vdPos[2]/10,vdPos[1]/10]
-    ori = [0,0,0]#[vdOri[0],vdOri[2],vdOri[1]]
-    scale = [vdScale[0]/100,vdScale[1]/100,vdScale[2]/100]
+    ori = list(mathutils.Quaternion((math.radians(vdOri[0]),math.radians(vdOri[1]), math.radians(vdOri[2]), math.radians(vdOri[3]))).to_euler())
+    ori = [math.degrees(-ori[0]),math.degrees(-ori[2]),math.degrees(-ori[1])]
+    scale = [vdScale[0]/100,vdScale[2]/100,vdScale[1]/100]
     asset = {}
     if prefab in idMap:
         asset["n"] = idMap[prefab]
@@ -65,10 +80,14 @@ def convertAsset(gate,assetID):
         asset["n"] = unknownAsset
     asset["p"] = pos
     asset["o"] = ori
+    #if prefab == 247:
+    #    asset['s'] = [2,2,2]
+    #else:
     asset["s"] = scale
+    print(asset)
     return asset
 
-def convertVDMap(path):
+def convertVDMap(path,name):
     newMap = {"assets":[]}
     importedMap = readJSONFile(path)
     assetID = 0
@@ -84,20 +103,21 @@ def convertVDMap(path):
         newMap['assets'].append(asset)
         assetID+=1
         
-    saveMapToFile(newMap,"importedMap.fmp")
+    saveMapToFile(newMap,name)
 
-def mapSelectAction(key,mapPath):
-    convertVDMap(mapPath)
-    #scenes = logic.getSceneList()
-    #currentScene = logic.getCurrentScene()
-    #for scene in scenes:
-    #    if(scene!=currentScene):
-    #        scene.end()
-    #render.showMouse(0)
-    #utils.selectMap(mapName)
-    #utils.setMode(utils.MODE_SINGLE_PLAYER)
-    #currentScene.replace("Map Editor")
- 
+def mapSelectAction(key,mapInfo):
+    mapPath = mapInfo[0]
+    mapName = mapInfo[1]
+    convertVDMap(mapPath,mapName)
+    scenes = logic.getSceneList()
+    currentScene = logic.getCurrentScene()
+    for scene in scenes:
+        if(scene!=currentScene):
+            scene.end()
+    render.showMouse(0)
+    utils.selectMap(mapName)
+    utils.setMode(utils.MODE_SINGLE_PLAYER)
+    currentScene.replace("Map Editor")
 def multiplayerAction():
     pass
     
@@ -125,7 +145,7 @@ def addMapButton(path,name,spacing):
     print(height)
     mapButtonBlock = UI.BoxElement(window,[50,height],5,0.5, blockColor, 1)
     mapButtonText = UI.TextElement(window,mapButtonBlock.position, textColor, 0,name)
-    mapButton = UI.UIButton(mapButtonText,mapButtonBlock,mapSelectAction,"map",path)
+    mapButton = UI.UIButton(mapButtonText,mapButtonBlock,mapSelectAction,"map",[path,name])
     mapButtons.append(mapButton)
     
     owner['window'].add("mapButtonBlock"+name,mapButtonBlock)
