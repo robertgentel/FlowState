@@ -28,3 +28,6 @@ This project uses UPBGE as its game engine. If you would like to contribute, ple
 2. Install UPBGE from https://github.com/UPBGE/blender
 3. In order for you radio to work in the internal player, place a copy of gamecontrollerdb.txt in ```YOUR_UPBGE_FOLDER/2.79/datafiles/gamecontroller```
 4. Open game.blend
+
+## My Controller Doesn't work!!!
+If under settings>controller you don't see stick movement from the radio you've connected, please follow this tutorial. Then create a github issue stating the controller or dongle you are trying to use, and the controller mapping text you got from AntiMicro. Please remember that if all else fails, you can connect your BetaFlight flight controller and reciever to the computer and use it as the joystick input as seen here https://www.youtube.com/watch?v=wuobzowLfj0
