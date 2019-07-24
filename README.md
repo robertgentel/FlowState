@@ -30,4 +30,4 @@ This project uses UPBGE as its game engine. If you would like to contribute, ple
 4. Open game.blend
 
 ## My Controller Doesn't work!!!
-If under settings>controller you don't see stick movement from the radio you've connected, please follow this tutorial. Then create a github issue stating the controller or dongle you are trying to use, and the controller mapping text you got from AntiMicro. Please remember that if all else fails, you can connect your BetaFlight flight controller and reciever to the computer and use it as the joystick input as seen here https://www.youtube.com/watch?v=wuobzowLfj0
+If under settings>controller you don't see stick movement from the radio you've connected, please follow this tutorial (https://www.youtube.com/watch?v=FDRx-TblE64&feature=youtu.be). Then create a github issue stating the controller or dongle you are trying to use, and the controller mapping text you got from AntiMicro. Please remember that if all else fails, you can connect your BetaFlight flight controller and reciever to the computer and use it as the joystick input as seen here (https://www.youtube.com/watch?v=wuobzowLfj0).
