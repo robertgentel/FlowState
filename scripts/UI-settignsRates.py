@@ -24,6 +24,7 @@ def soloGameAction():
             scene.end()
     currentScene.replace("main regional finals")
 
+#rate actions 
 def setYawRateAction():
     profileIndex = logic.globalDict['currentProfile']
     profiles = logic.globalDict['profiles']
@@ -39,6 +40,23 @@ def setPitchRateAction():
     profiles = logic.globalDict['profiles']
     logic.globalDict['profiles'][profileIndex]['droneSettings']['pitchRate'] = pitchRateInput.value
 
+#expo actions
+def setYawExpoAction():
+    profileIndex = logic.globalDict['currentProfile']
+    profiles = logic.globalDict['profiles']
+    logic.globalDict['profiles'][profileIndex]['droneSettings']['yawExpo'] = yawExpoInput.value
+
+def setRollExpoAction():
+    profileIndex = logic.globalDict['currentProfile']
+    profiles = logic.globalDict['profiles']
+    logic.globalDict['profiles'][profileIndex]['droneSettings']['rollExpo'] = rollExpoInput.value
+
+def setPitchExpoAction():
+    profileIndex = logic.globalDict['currentProfile']
+    profiles = logic.globalDict['profiles']
+    logic.globalDict['profiles'][profileIndex]['droneSettings']['pitchExpo'] = pitchExpoInput.value
+
+#super rate actions
 def setYawSuperRateAction():
     profileIndex = logic.globalDict['currentProfile']
     profiles = logic.globalDict['profiles']
@@ -94,6 +112,7 @@ def spawnRateInput(label,height,channelKey,action,min,max,increment):
     decreaseButton = UI.UIButton(decreaseText,decreaseBox,action)
 
     indicatorText = UI.TextElement(window,[50,height], textColor, 0, "0")
+    print("spawning "+str(channelKey)+" "+str(droneSettings[channelKey]))
     channelInput = UI.UINumberInput(increaseButton,decreaseButton,indicatorText,int(droneSettings[channelKey]),min,max,increment)
 
     return channelInput
@@ -112,14 +131,26 @@ if(owner['init']!=True):
 
     pageHeaderBlock = UI.BoxElement(window,[50,95],11,1, blockColor, 5)
     pageHeaderText = UI.TextElement(window,pageHeaderBlock.position, textColor, 4, "GAME SETTINGS MENU")
+    bHeight = 80
+    yawRateInput = spawnRateInput("YAW RATE",bHeight,"yawRate",setYawRateAction,0,200,1)
+    bHeight -= 7
+    pitchRateInput = spawnRateInput("PITCH RATE",bHeight,"pitchRate",setPitchRateAction,0,200,1)
+    bHeight -= 7
+    rollRateInput = spawnRateInput("ROLL RATE",bHeight,"rollRate",setRollRateAction,0,200,1)
+    bHeight -= 7
 
-    yawRateInput = spawnRateInput("YAW RATE",80,"yawRate",setYawRateAction,0,200,1)
-    pitchRateInput = spawnRateInput("PITCH RATE",70,"pitchRate",setPitchRateAction,0,200,1)
-    rollRateInput = spawnRateInput("ROLL RATE",60,"rollRate",setRollRateAction,0,200,1)
-
-    yawSuperRateInput = spawnRateInput("YAW SUPER RATE",50,"yawSuperRate",setYawSuperRateAction,0,200,1)
-    pitchSuperRateInput = spawnRateInput("PITCH SUPER RATE",40,"pitchSuperRate",setPitchSuperRateAction,0,200,1)
-    rollSuperRateInput = spawnRateInput("ROLL SUPER RATE",30,"rollSuperRate",setRollSuperRateAction,0,200,1)
+    yawSuperRateInput = spawnRateInput("YAW SUPER RATE",bHeight,"yawSuperRate",setYawSuperRateAction,0,100,1)
+    bHeight -= 7
+    pitchSuperRateInput = spawnRateInput("PITCH SUPER RATE",bHeight,"pitchSuperRate",setPitchSuperRateAction,0,100,1)
+    bHeight -= 7
+    rollSuperRateInput = spawnRateInput("ROLL SUPER RATE",bHeight,"rollSuperRate",setRollSuperRateAction,0,100,1)
+    bHeight -= 7
+    
+    yawExpoInput = spawnRateInput("YAW EXPO",bHeight,"yawExpo",setYawExpoAction,0,100,1)
+    bHeight -= 7
+    pitchExpoInput = spawnRateInput("PITCH EXPO",bHeight,"pitchExpo",setPitchExpoAction,0,100,1)
+    bHeight -= 7
+    rollExpoInput = spawnRateInput("ROLL EXPO",bHeight,"rollExpo",setRollExpoAction,0,100,1)
 
     #back button
     backBlockElement = UI.BoxElement(window,[10,10],1,.5, blockColor, 1)

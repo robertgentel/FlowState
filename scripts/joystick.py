@@ -408,7 +408,7 @@ def main():
                 qd = [0.013014*dm*tdm*sdm,0.0111121*dm*fdm*tdm,0.0071081*dm*tdm] #air drag
                 own.setLinearVelocity([lv[0]/(1+qd[0]),lv[1]/(1+qd[1]),lv[2]/(1+qd[2])],True)
                 #print(dm)
-                st = 0.95*dm #how quick can the motor/pid orient the quad
+                st = 0.97*dm #how quick can the motor/pid orient the quad
                 lav = own.getAngularVelocity(True)
                 xav = (((pitchForce)*st)+(lav[0]*(1-st)))+pwrx
                 yav = ((roleForce)*st)+(lav[1]*(1-st))+pwry
