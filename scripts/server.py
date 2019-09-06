@@ -15,7 +15,7 @@ server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 delim = b'\x1E'
 # takes the first argument from command prompt as IP address
-IP_address = "0.0.0.0"#socket.gethostname()
+IP_address = "192.168.0.19"#"192.168.0.19"#socket.gethostname()
 
 # takes second argument from command prompt as port number
 port = 50001

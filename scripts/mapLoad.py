@@ -35,7 +35,8 @@ def spawnMapElements(mapData):
 
     for asset in mapData['assets']:
         spawn = object
-        owner.position = asset['p']
+        
+        
         #owner.orientation = asset['o']
 
         if('s' in asset):
@@ -45,7 +46,13 @@ def spawnMapElements(mapData):
             else:
                 owner.localScale = s
         o = asset['o']
-        owner.orientation = [math.radians(o[0]),math.radians(o[1]),math.radians(o[2])]
+        mirror = False
+        if mirror:
+            owner.position = [-asset['p'][0],asset['p'][1],asset['p'][2]]
+            owner.orientation = [math.radians(o[0]),math.radians(o[1]),-math.radians(o[2])]
+        else:
+            owner.position = [asset['p'][0],asset['p'][1],asset['p'][2]]
+            owner.orientation = [math.radians(o[0]),math.radians(o[1]),math.radians(o[2])]
         #cont.actuators['spawner']
         newObj = scene.addObject(asset['n'],owner,0)
         newObj['solid'] = True
