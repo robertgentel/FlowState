@@ -15,19 +15,19 @@ class Checkpoint(bge.types.KX_PythonComponent):
     args = OrderedDict([
         ("checkpoint number", 1)
     ])
-    
+
     def oncollision(self, obj, point, normal, points):
-        print("Hit by", obj)
+        #print("Hit by", obj)
         if(obj==logic.utils.getPlayerObject()):
             self.collision = (obj, point, normal, points)
-        for point in points:
-            print(point.localPointA)
-            print(point.localPointB)
-            print(point.worldPoint)
-            print(point.normal)
-            print(point.combinedFriction)
-            print(point.combinedRestitution)
-            print(point.appliedImpulse)
+        #for point in points:
+        #    print(point.localPointA)
+        #    print(point.localPointB)
+        #    print(point.worldPoint)
+        #    print(point.normal)
+        #    print(point.combinedFriction)
+        #    print(point.combinedRestitution)
+        #    print(point.appliedImpulse)
 
     def start(self, args):
         self.lastPlayerPos = None
@@ -35,8 +35,8 @@ class Checkpoint(bge.types.KX_PythonComponent):
         self.object["checkpoint"] = True
         self.collision = None
         self.object.collisionCallbacks = [self.oncollision]
-        print(self.object.collisionCallbacks)
-        print("start "+str(self.object.name))
+        #print(self.object.collisionCallbacks)
+        #print("start "+str(self.object.name))
 
     def getEntryAngle(self, v1, v2, acute):
         angle = np.arccos(np.dot(v1, v2) / (np.linalg.norm(v1) * np.linalg.norm(v2)))
@@ -105,7 +105,7 @@ class Checkpoint(bge.types.KX_PythonComponent):
                     if(hitObject==self.object) or (self.collision!=None):
                         self.collision = None
                         o = self.object.getVectTo(self.entrance.position)[1]
-                        print(o)
+                        #print(o)
                         v = utils.getPlayerObject().getLinearVelocity(False)
 
                         difAngle = m.degrees(self.getEntryAngle(v,o,True))
@@ -121,6 +121,6 @@ class Checkpoint(bge.types.KX_PythonComponent):
                             print("CHECKPOINT! "+str(hitCheckpointNumber))
                         else:
                             print("angle ("+str(difAngle)+") exceeds 90 "+str(hitCheckpointNumber))
-                            print(difAngle)
+                            #print(difAngle)
 
             self.lastPlayerPos = copy.deepcopy(utils.getPlayerObject().position)

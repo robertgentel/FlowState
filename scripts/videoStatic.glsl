@@ -36,12 +36,20 @@ void main()
     vec4 colorShift = vec4(redShift*rf, greenShift*rf, blueShift*rf, 1);
     image = clamp(pow(cb*colorBurstNoise,3)+(colorShift*2),0.0,1.0)+texture2D(bgl_RenderedTexture, texcoord + vec2(pow(cb*frameShifting,3), pow(vc*frameScrolling,3))); 
     
+    float lum = image[0]*0.3+image[1]*0.3+image[2]*0.4;
+    
+    
+    
+    vec3 diff = vec3(image) - vec3(lum);
+    image = vec4((diff*1.3)+lum,1);
+    
     float cm = 0.5;
     float lm = 0.7;
     vec4 asdf = vec4((d*lm)+(a*cm), (d*lm)+(b*cm), (d*lm)+(c*cm), 1);
     //vec4 asdf = dot(bgl_RenderedTexture.rgba,vec4(a, a, a,1));
     //vec4 asdf = bgl_RenderedTexture;
     float rssi = clamp(pow(rf,1.2),0.0,1.0);
+    //gl_FragColor = (asdf*rssi)+((image)*(1-rssi));
     gl_FragColor = (asdf*rssi)+((image)*(1-rssi));
     //gl_FragColor = rf*((texture2D(bgl_RenderedTexture, texcoord)));
 }
