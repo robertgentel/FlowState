@@ -51,7 +51,8 @@ def spawnMapElements(mapData):
             owner.position = [-asset['p'][0],asset['p'][1],asset['p'][2]]
             owner.orientation = [math.radians(o[0]),math.radians(o[1]),-math.radians(o[2])]
         else:
-            owner.position = [asset['p'][0],asset['p'][1],asset['p'][2]]
+            es = 1
+            owner.position = [asset['p'][0]*es,asset['p'][1]*es,asset['p'][2]]
             owner.orientation = [math.radians(o[0]),math.radians(o[1]),math.radians(o[2])]
         #cont.actuators['spawner']
         newObj = scene.addObject(asset['n'],owner,0)

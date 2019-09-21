@@ -86,6 +86,7 @@ def initAllThings():
     print(own.mass)
     logic.countingDown = True
     logic.countdown = -1
+    logic.maxGForce = 0
     logic.finishedLastLap = False
     logic.utils.gameState['notification']['Text'] = ""
     #own['rxPosition'] = [-2279.73,-30.8,90]
@@ -202,19 +203,9 @@ def applyVideoStatic():
                 break
             vScale = 2
             rxVect = getRXVector(vScale,own['rxPosition'])
-
-            #print(lastHitPos)
             hitPos = [hitPos[0]+rxVect[0],hitPos[1]+rxVect[1],hitPos[2]+rxVect[2]]
             hitList.append(hitPos)
         lastHitPos = hitPos
-
-    #render.drawLine(own.position,list(hitList[0]),[1,1,1])
-    #for i in range(0,len(hitList)-1):
-    #    pos1 = list(hitList[i])
-    #    pos2 = list(hitList[i+1])
-    #    #render.drawLine(pos1,pos2,[1,1,1])
-    #    #render.drawLine(pos1,[pos1[0],pos1[1],pos1[2]+10],[1,0,0])
-    #print(interference)
     interference *= .1
     groundBreakup = (12-own.position[2])*0.3
     if(groundBreakup<1):
@@ -474,11 +465,10 @@ def main():
                 propAdvance = 5
                 
                 maxThrust = g['thrust']/10
-                propLoad = (((lvl[0]*.9)+(lvl[1]*.9)+(lvl[2]*1.2))*3000)/maxRPM
+                propLoad = (((lvl[0]*.8)+(lvl[1]*.8)+(lvl[2]*1.2))*1000)/maxRPM
                 #propLoad = (lvl[2]*10000)/maxRPM
-                #propLoad = 0
                 propAgressiveness = 1.4
-                propThrottleCurve = 1.0
+                propThrottleCurve = 1.15
                 
                 currentRPM = maxRPM*throttlePercent
                 #propLoad = lvl[2]*currentRPM/maxRPM
@@ -486,15 +476,15 @@ def main():
                 
                 
                 #thrust = ((throttlePercent**propThrottleCurve)*.85)*(maxThrust-((propLoad**propThrottleCurve)/((maxSpeed**propThrottleCurve)/maxThrust)))
-                thrustSetpoint = throttlePercent#+(abs(yawPercent-.5)*.5)
+                thrustSetpoint = throttlePercent+(abs(yawPercent-.5)*.5)
                 if(thrustSetpoint>1):
                     thrustSetpoint = 1
                 
-                staticThrust = ((throttlePercent**propThrottleCurve))*maxThrust#*1000)#-(currentSpeed/maxSpeed)
+                staticThrust = ((thrustSetpoint**propThrottleCurve))*maxThrust#*1000)#-(currentSpeed/maxSpeed)
                 
-                staticThrust = (throttlePercent**propThrottleCurve)*g['thrust']
+                staticThrust = (thrustSetpoint**propThrottleCurve)*g['thrust']
                 
-                thrust = (staticThrust/10/2.5)-(propLoad)-(propwash*100)
+                thrust = (staticThrust/10)-(propLoad)-(propwash*100)
                 #thrust = staticThrust-(propLoad)-(propwash*100)
                 if(thrust<0):
                     thrust = 0
