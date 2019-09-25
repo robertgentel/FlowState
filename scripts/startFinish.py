@@ -40,20 +40,23 @@ def addLastLap():
                 logic.finishedLastLap = True
                 logic.utils.gameState['notification']['Text'] = "RACE COMPLETE"
                 #print("race is complete")
+    print(len(scene.objects))
+    #print(scene.objects)
     if(own['lap'] == 0):
         #-logic.utils.gameState['track']['countdownTime']
         logic.holeshotTime = str(format((own['current_lap']), '.2f'))
         #print("got holeshot! "+logic.holeshotTime)
     own['current_lap'] = 0.00
 def setCheckpointVisibilities():
-    for checkpoint in logic.utils.gameState['track']['checkpoints']:
-        if(checkpoint['metadata']['checkpoint order'] == logic.utils.gameState['track']['nextCheckpoint']):
-            checkpoint.visible = True
-            enableCollision(checkpoint)
-        else:
-            checkpoint.visible = False
-            disableCollision(checkpoint)
-
+    #for checkpoint in logic.utils.gameState['track']['checkpoints']:
+    #    if(checkpoint['metadata']['checkpoint order'] == logic.utils.gameState['track']['nextCheckpoint']):
+    #        checkpoint.visible = True
+    #        enableCollision(checkpoint)
+    #    else:
+    #        checkpoint.visible = False
+    #        disableCollision(checkpoint)
+    pass
+            
 def disableCollision(obj):
     mask = 4
     obj.collisionGroup = mask
@@ -61,14 +64,14 @@ def disableCollision(obj):
 def enableCollision(obj):
     mask = 2#bytearray(mask)
     obj.collisionGroup = mask
-
+        
 def main():
     collision = cont.sensors['Collision'].triggered and cont.sensors['Collision'].positive
     if(collision):
         if(logic.utils.gameState['track']['nextCheckpoint'] == 0):
             addLastLap()
             logic.utils.gameState['track']['nextCheckpoint'] = 1
-            setCheckpointVisibilities()
+            #setCheckpointVisibilities()
             own.visible = False
     else:
         if(logic.utils.gameState['track']['nextCheckpoint'] == 0):

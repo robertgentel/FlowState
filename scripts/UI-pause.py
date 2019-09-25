@@ -32,6 +32,7 @@ def mainMenuAction():
         currentScene = logic.getCurrentScene()
         for scene in scenes:
             if(scene!=currentScene):
+                logic.player = None
                 scene.end()
         logic.utils.resetGameState()
         logic.utils.setMode(logic.utils.MODE_MENU)
