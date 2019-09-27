@@ -11,12 +11,17 @@ bestLap = logic.getCurrentScene().objects['HUDBestLap']
 times = logic.getCurrentScene().objects['HUDLapTimes']
 holeshot = logic.getCurrentScene().objects['HUDHoleshot']
 countdown = logic.getCurrentScene().objects['HUDCountdown']
+gForceCounter = logic.getCurrentScene().objects['HUDgForceCounter']
 logic.utils.gameState['notification'] = logic.getCurrentScene().objects['HUDNotification']
 laps['Text'] = "LAPS: "+logic.currentLap
 lastLap['Text'] = "LAST LAP: "+logic.lastLapTime
 bestLap['Text'] = "BEST LAP: "+logic.bestLapTime
 holeshot['Text'] = "HOLESHOT: "+str(logic.holeshotTime)
 errorLog['Text'] = "Error: "+logic.errorLog
+try:
+    gForceCounter['Text'] = str(round(logic.gForce, 1))+"G"
+except:
+    pass
 
 laps['Text'] = "LAPS: "+logic.currentLap
 lastLap['Text'] = "LAST LAP: "+logic.lastLapTime

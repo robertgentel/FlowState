@@ -69,6 +69,10 @@ def createMapAction():
     currentScene = logic.getCurrentScene()
     currentScene.replace("UI-map-name")
     
+def importMapAction():
+    currentScene = logic.getCurrentScene()
+    currentScene.replace("UI-map-name")
+    
 def createMapButton(name,spacing):
     buttonIndex = len(mapButtons)
     height = 70-(buttonIndex*spacing)
@@ -76,6 +80,19 @@ def createMapButton(name,spacing):
     mapButtonBlock = UI.BoxElement(window,[50,height],5,0.5, blockColor, 1)
     mapButtonText = UI.TextElement(window,mapButtonBlock.position, textColor, 0,name)
     mapButton = UI.UIButton(mapButtonText,mapButtonBlock,createMapAction,"map",name)
+    mapButtons.append(mapButton)
+    
+    owner['window'].add("mapButtonBlock"+name,mapButtonBlock)
+    owner['window'].add("mapButtonText"+name,mapButtonText)
+    owner['window'].add("mapButton"+name,mapButton)
+    
+def importMapButton(name,spacing):
+    buttonIndex = len(mapButtons)
+    height = 70-(buttonIndex*spacing)
+    print(height)
+    mapButtonBlock = UI.BoxElement(window,[50,height],5,0.5, blockColor, 1)
+    mapButtonText = UI.TextElement(window,mapButtonBlock.position, textColor, 0,name)
+    mapButton = UI.UIButton(mapButtonText,mapButtonBlock,importMapAction,"map",name)
     mapButtons.append(mapButton)
     
     owner['window'].add("mapButtonBlock"+name,mapButtonBlock)
@@ -104,6 +121,7 @@ if(owner['init']!=True):
         map = maps[m]
         addMapButton(map,spacing) 
         
+    importMapButton("IMPORT VD",spacing)
     createMapButton("CREATE NEW",spacing)
     
     itemNumber = len(mapButtons)

@@ -133,7 +133,7 @@ class utils:
         logic.saveGlobalDict()
 
     def setDefaults(self):
-        version = "1.0"
+        version = "1.2"
         defaultData = {}
         self.log("updating save file")
         defaultData['version'] = version
@@ -147,14 +147,15 @@ class utils:
         defaultProfile = {}
         defaultProfile['username'] = "Unkown Pilot"
         defaultProfile['color'] = [255,255,255]
-        defaultProfile["droneSettings"] = {'cameraTilt':35,'thrust':4800,'motorKV':2300,'batteryCellCount':4,'weight':500,'yawExpo':0.0,'pitchExpo':0.0,'rollExpo':0.0,'pitchRate':100,'rollRate':100,'yawRate':100,'pitchSuperRate':70,'rollSuperRate':70,'yawSuperRate':70}
+        defaultProfile["droneSettings"] = {'cameraTilt':40,'thrust':3100,'motorKV':1700,"pDrag":50,"iDrag":50,'batteryCellCount':6,'weight':500,'yawExpo':0.0,'pitchExpo':0.0,'rollExpo':0.0,'pitchRate':100,'rollRate':100,'yawRate':100,'pitchSuperRate':70,'rollSuperRate':70,'yawSuperRate':70}
         defaultProfile['radioSettings'] = {'throttleInverted':False,'yawInverted':False,'pitchInverted':False,'rollInverted':False,'armInverted':False,'resetInverted':False,'yawChannel':1,'pitchChannel':4,'throttleChannel':2,'rollChannel':3,'resetChannel':6,'armChannel':5,'yawOffset':0,'pitchOffset':0,'rollOffset':0,'minThrottle':-32252,'maxThrottle':32252,'minYaw':-32252,'maxYaw':32252,'minPitch':-32252,'maxPitch':32252,'minRoll':-32252,'maxRoll':32252,'minReset':0,'maxReset':32768,'minArm':0,'maxArm':32768,'armSetpoint':0.25,'resetSetpoint':0.25,'dedicatedThrottleStick':True}
-        defaultProfile['graphicsSettings'] = {"shaders":True}
+        defaultProfile['graphicsSettings'] = {"frameRate":False,"shaders":True,"specularity":True,"shadows":True,"shading":True, "raceLine":False}
+        
 
         defaultData['profiles'].append(defaultProfile)
 
         #logic.maps = {"
-        logic.defaultGameState = {utils.STATE_SELECTED_MAP_KEY:"2018 Regional Final.fmp", "notification":{"Text":""}, utils.STATE_MODE_KEY:self.MODE_MENU, "track":{"countdownTime":5,"checkpoints":[],"nextCheckpoint":0,"lastCheckpoint":0}, utils.STATE_PLAYER_DATA_KEY:{utils.STATE_PLAYER_OBJECT_KEY:None,utils.STATE_LAP_KEY:0,"checkpoint":0},utils.STATE_MAP_EDITOR_KEY:None,utils.STATE_SERVER_IP_KEY:"localhost",utils.STATE_NETWORK_CLIENT_KEY:None,}
+        logic.defaultGameState = {utils.STATE_SELECTED_MAP_KEY:"2018 Regional Final.fmp", "notification":{"Text":""}, utils.STATE_MODE_KEY:self.MODE_MENU, "track":{"countdownTime":3,"checkpoints":[],"nextCheckpoint":0,"lastCheckpoint":0}, utils.STATE_PLAYER_DATA_KEY:{utils.STATE_PLAYER_OBJECT_KEY:None,utils.STATE_LAP_KEY:0,"checkpoint":0},utils.STATE_MAP_EDITOR_KEY:None,utils.STATE_SERVER_IP_KEY:"localhost",utils.STATE_NETWORK_CLIENT_KEY:None}
         logic.loadGlobalDict()
         #self.log(logic.globalDict)
         if('version' in logic.globalDict):

@@ -48,13 +48,14 @@ def addLastLap():
         #print("got holeshot! "+logic.holeshotTime)
     own['current_lap'] = 0.00
 def setCheckpointVisibilities():
-    for checkpoint in logic.utils.gameState['track']['checkpoints']:
-        if(checkpoint['metadata']['checkpoint order'] == logic.utils.gameState['track']['nextCheckpoint']):
-            checkpoint.visible = True
-            enableCollision(checkpoint)
-        else:
-            checkpoint.visible = False
-            disableCollision(checkpoint)
+    #for checkpoint in logic.utils.gameState['track']['checkpoints']:
+    #    if(checkpoint['metadata']['checkpoint order'] == logic.utils.gameState['track']['nextCheckpoint']):
+    #        checkpoint.visible = True
+    #        enableCollision(checkpoint)
+    #    else:
+    #        checkpoint.visible = False
+    #        disableCollision(checkpoint)
+    pass
             
 def disableCollision(obj):
     mask = 4
@@ -70,7 +71,7 @@ def main():
         if(logic.utils.gameState['track']['nextCheckpoint'] == 0):
             addLastLap()
             logic.utils.gameState['track']['nextCheckpoint'] = 1
-            setCheckpointVisibilities()
+            #setCheckpointVisibilities()
             own.visible = False
     else:
         if(logic.utils.gameState['track']['nextCheckpoint'] == 0):

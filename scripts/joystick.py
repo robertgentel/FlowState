@@ -26,10 +26,11 @@ try:
 except:
     logic.lastLogicTic = float(time.perf_counter())
     print("creating time")
-eTime = float(time.perf_counter())-logic.lastLogicTic
+frameTime = float(time.perf_counter())-logic.lastLogicTic
 logic.lastLogicTic = float(time.perf_counter())
+
 if(logic.getAverageFrameRate()!=0):
-    dm = eTime*60
+    dm = frameTime*60
 else:
     dm = 1
 if(dm>1):
@@ -47,11 +48,7 @@ def initAllThings():
     logic.player['camera'] = scene.objects['cameraMain']
     print(logic.utils.gameState['track']['checkpoints'])
     logic.utils.gameState['track']['nextCheckpoint'] = logic.defaultGameState['track']['nextCheckpoint']
-    for checkpoint in logic.utils.gameState['track']['checkpoints']:
-        if checkpoint['metadata']['checkpoint order'] !=1:
-            checkpoint.visible = False
-        else:
-            checkpoint.visible = True
+
     #logic.setPhysicsTicRate(120)
     #logic.setLogicTicRate(120)
     #print("max logic ticks per frame: "+str(logic.getMaxLogicFrame()))
@@ -85,6 +82,7 @@ def initAllThings():
     print(own.mass)
     logic.countingDown = True
     logic.countdown = -1
+    logic.maxGForce = 0
     logic.finishedLastLap = False
     logic.utils.gameState['notification']['Text'] = ""
     #own['rxPosition'] = [-2279.73,-30.8,90]
@@ -100,7 +98,25 @@ def getArrayProduct(array):
 def getAcc():
     lv = own.getLinearVelocity(True)
     try:
-        own['acc'] = abs(own['lastVel']-getArrayProduct(lv))
+        own['acc'] = (abs(own['lastVel']-getArrayProduct(lv)))
+        try:
+            if own['settled']:
+                elapsedTime = 1/logic.getAverageFrameRate()
+                force = ((abs(own['lastVel']-getArrayProduct(lv))/elapsedTime)/100)+1
+                #print("force: "+str(force)+"\nelapsedTimie: "+str(elapsedTime))
+                if own['armed']:
+                    if logic.maxGForce < force:
+                        logic.maxGForce = force
+                        print(str(logic.maxGForce)+"G")
+                else:
+                    logic.maxGForce = 0
+                logic.gForce = force
+        except Exception as e:
+            print(e)
+            own['armed'] = False
+            logic.gForce = 0
+            logic.maxGForce = 0
+
         own['airSpeedDiff'] = (own['lastAirSpeedDiff']-lv[2])*0.018
         own['lastVel'] = getArrayProduct(lv)
     except Exception as e:
@@ -157,7 +173,7 @@ def resetGame():
     logic.ghosts = []
     own['canReset'] = False
     initAllThings()
-
+    logic.utils.gameState['track']['nextCheckpoint'] = 0
 
 def getRXVector(scale,rxPos):
     vectTo = own.getVectTo(rxPos)
@@ -183,19 +199,9 @@ def applyVideoStatic():
                 break
             vScale = 2
             rxVect = getRXVector(vScale,own['rxPosition'])
-
-            #print(lastHitPos)
             hitPos = [hitPos[0]+rxVect[0],hitPos[1]+rxVect[1],hitPos[2]+rxVect[2]]
             hitList.append(hitPos)
         lastHitPos = hitPos
-
-    #render.drawLine(own.position,list(hitList[0]),[1,1,1])
-    #for i in range(0,len(hitList)-1):
-    #    pos1 = list(hitList[i])
-    #    pos2 = list(hitList[i+1])
-    #    #render.drawLine(pos1,pos2,[1,1,1])
-    #    #render.drawLine(pos1,[pos1[0],pos1[1],pos1[2]+10],[1,0,0])
-    #print(interference)
     interference *= .1
     groundBreakup = (12-own.position[2])*0.3
     if(groundBreakup<1):
@@ -234,6 +240,9 @@ def rcCommand(rcData, rcRate, rcExpo):
 
 
 def main():
+    #print("perf: "+str(1.0/frameTime))
+    #print("afps: "+str(logic.getAverageFrameRate()))
+
     #Do the things and the stuff
     setup(camera,g['cameraTilt'])
     joy = cont.sensors["Joystick"]
@@ -283,6 +292,7 @@ def main():
         resetPercent = getStickPercentage(g['minReset'],g['maxReset'],resetSwitch)
         armed = getSwitchValue(armPercent,g['armSetpoint'])
         reset = getSwitchValue(resetPercent,g['resetSetpoint'])
+        logic.throttlePercent = throttlePercent
 
     else: #if no radio is connected
         throttlePercent = 0
@@ -291,6 +301,8 @@ def main():
         rollPercent = 0
         armed = False
         reset = False
+
+    own['armed'] = armed
     rotationActuator = cont.actuators["movement"]
 
     #apply rotational force
@@ -331,7 +343,6 @@ def main():
     pitchForce = -stickInputToDPS((pitchPercent*1000)+1000,g['pitchSuperRate'],g['pitchRate'],g['pitchExpo'],True)
     roleForce = stickInputToDPS((rollPercent*1000)+1000,g['rollSuperRate'],g['rollRate'],g['rollExpo'],True)
     yawForce = -stickInputToDPS((yawPercent*1000)+1000,g['yawSuperRate'],g['yawRate'],g['yawExpo'],True)
-
     getAngularAcceleration()
     getAcc()
     if (own['oporational'] == True)&armed:
@@ -372,6 +383,7 @@ def main():
                 propwash = math.pow((((own['airSpeedDiff']*.3)+(((own['damage']-0.1)*.5))*2)*.1145),1.5)*((throttlePercent*10)+.4)
                 if propwash > 0.08:
                   propwash = 0.08
+
             except:
                 propwash = 0
 
@@ -388,23 +400,31 @@ def main():
                 rx = (random.randrange(0,200)-100)/300
                 ry = (random.randrange(0,200)-100)/300
                 rz = (random.randrange(0,200)-100)/300
-                pwrx = (rx*propwash/(1+propwash*1.00005))*35
-                pwry = (ry*propwash/(1+propwash*1.00005))*35
-                pwrz = (rz*propwash/(1+propwash*1.00005))*35
+                pwrx = (rx*propwash/(1+propwash*1.00005))*28
+                pwry = (ry*propwash/(1+propwash*1.00005))*28
+                pwrz = (rz*propwash/(1+propwash*1.00005))*28
 
                 angularAcc = own['angularAcc']
 
                 #AIR DAMPENING
                 #FD = .99978 #use for X
                 #FD = .99996 #use for true Z
-                tdm = 0.8 #totalDragMultiplier
+                tdm = .9 #totalDragMultiplier
                 sdm = 0.92 #sideDragMultiplier
                 fdm = 0.9 #frontalDragMultiplier
                 tdm = 1.3 #topDragMultiplier
+
+                tdm = 0.0 #totalDragMultiplier
+                sdm = 1 #sideDragMultiplier
+                fdm = 1 #frontalDragMultiplier
+                tdm = 1 #topDragMultiplier
+
                 qd = [0.013014*dm*tdm*sdm,0.0111121*dm*fdm*tdm,0.0071081*dm*tdm] #air drag
-                own.setLinearVelocity([lv[0]/(1+qd[0]),lv[1]/(1+qd[1]),lv[2]/(1+qd[2])],True)
-                
-                st = 0.9*dm #how quick can the motor/pid orient the quad
+                qd = [tdm,tdm,tdm]
+                #own.setLinearVelocity([lv[0]/(1+qd[0]),lv[1]/(1+qd[1]),lv[2]/(1+qd[2])],True)
+                #own.setLinearVelocity([lv[0]/(1+qd[0]),lv[1]/(1+qd[1]),lv[2]],True)
+                #print(dm)
+                st = 0.95*dm #how quick can the motor/pid orient the quad
                 lav = own.getAngularVelocity(True)
                 xav = (((pitchForce)*st)+(lav[0]*(1-st)))+pwrx
                 yav = ((roleForce)*st)+(lav[1]*(1-st))+pwry
@@ -439,16 +459,32 @@ def main():
                 cellCount = g['batteryCellCount']
                 cellVoltage = 4.2
                 maxRPM = motorKV*cellCount*cellVoltage
+                propAdvance = 5
+
                 maxThrust = g['thrust']/10
-                #propLoad = ((((lvl[0]*.1)+(lvl[1]*.1)+(lvl[2]*.8))*3500)/(maxRPM))
+                propLoad = (((lvl[0]*.8)+(lvl[1]*.8)+(lvl[2]*1.2))*1000)/maxRPM
+                #propLoad = (lvl[2]*10000)/maxRPM
                 propAgressiveness = 1.4
-                propThrottleCurve = 1.3
-                propLoad = (((((lvl[0]*.1)+(lvl[1]*.1)+(lvl[2]*.8))*1000))/maxRPM)
+                propThrottleCurve = 1.15
+
+                currentRPM = maxRPM*throttlePercent
+                #propLoad = lvl[2]*currentRPM/maxRPM
+
+
 
                 #thrust = ((throttlePercent**propThrottleCurve)*.85)*(maxThrust-((propLoad**propThrottleCurve)/((maxSpeed**propThrottleCurve)/maxThrust)))
-                staticThrust = ((throttlePercent*.55)**propThrottleCurve)*maxThrust#*100)-(currentSpeed/maxSpeed)
-                #y = (((1**1.25)*4800)*.75)-x
-                thrust = staticThrust-(propLoad)-(propwash*100)
+                thrustSetpoint = throttlePercent+(abs(yawPercent-.5)*.25)
+                if(thrustSetpoint>1):
+                    thrustSetpoint = 1
+
+                staticThrust = ((thrustSetpoint**propThrottleCurve))*maxThrust#*1000)#-(currentSpeed/maxSpeed)
+
+                staticThrust = (thrustSetpoint**propThrottleCurve)*g['thrust']
+
+                thrust = (staticThrust/10)-(propLoad)-(propwash*100)
+                #thrust = staticThrust-(propLoad)-(propwash*100)
+                if(thrust<0):
+                    thrust = 0
                 try:
                     thrust = thrust.real
                 except:

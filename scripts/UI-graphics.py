@@ -20,18 +20,20 @@ def settingsAction(key,value):
     graphicsSettings[key] = value
 
 def applySettings():
-    scenes = logic.getSceneList()
-    currentScene = logic.getCurrentScene()
-    for scene in scenes:
-        if(scene!=currentScene):
-            if(scene.name == "Main Game"):
-                currentMap = logic.utils.gameState["selectedMap"]
-                logic.utils.resetGameState()
-                logic.utils.gameState["selectedMap"] = currentMap
-                scene.restart()
-
+    #scenes = logic.getSceneList()
+    #currentScene = logic.getCurrentScene()
+    #for scene in scenes:
+    #    if(scene!=currentScene):
+    #        if(scene.name == "Main Game"):
+    #             pass
+    #            #currentMap = logic.utils.gameState["selectedMap"]
+    #            #logic.utils.resetGameState()
+    #            #logic.utils.gameState["selectedMap"] = currentMap
+    #            #scene.restart()
+    #
     logic.saveGlobalDict()
-    backAction()
+    logic.restartGame()
+    #backAction()
 
 def spawnBoolRow(label,height,key,action):
 
@@ -68,13 +70,14 @@ if(owner['init']!=True):
     mainMenuBlock = UI.BoxElement(window,[50,95],11,1, blockColor, 1)
     mainMenuText = UI.TextElement(window,mainMenuBlock.position, textColor, 0, "GRAPHIC")
 
-    shaders = spawnBoolRow("Shaders",50,"shaders",settingsAction)
+    frameRate = spawnBoolRow("Frame Rate",20,"frameRate",settingsAction)
+    shaders = spawnBoolRow("Filters",30,"shaders",settingsAction)
+    specularity = spawnBoolRow("Specularity",40,"specularity",settingsAction)
+    shadows = spawnBoolRow("Shadows",50,"shadows",settingsAction)
+    shading = spawnBoolRow("Shading",60,"shading",settingsAction)
+    raceLine = spawnBoolRow("Race Line",70,"raceLine",settingsAction)
 
     #back button
-    backBlockElement = UI.BoxElement(window,[10,10],1,.5, blockColor, 1)
-    backText = UI.TextElement(window,backBlockElement.position, textColor, 0, "BACK")
-    backButton = UI.UIButton(backText,backBlockElement,backAction)
-
     backBlockElement = UI.BoxElement(window,[10,10],1,.5, blockColor, 1)
     backText = UI.TextElement(window,backBlockElement.position, textColor, 0, "BACK")
     backButton = UI.UIButton(backText,backBlockElement,backAction)

@@ -44,13 +44,13 @@ def setCameraTiltAction():
 def setMotorKVAction():
     profileIndex = logic.globalDict['currentProfile']
     profiles = logic.globalDict['profiles']
-    logic.globalDict['profiles'][profileIndex]['droneSettings']['motorKV'] = int(motorKVmInput.value)
+    logic.globalDict['profiles'][profileIndex]['droneSettings']['pDrag'] = int(motorKVmInput.value)
     bge.logic.sendMessage("loadNewSettings")
 
 def setCellCountAction():
     profileIndex = logic.globalDict['currentProfile']
     profiles = logic.globalDict['profiles']
-    logic.globalDict['profiles'][profileIndex]['droneSettings']['batteryCellCount'] = int(cellCountInput.value)
+    logic.globalDict['profiles'][profileIndex]['droneSettings']['iDrag'] = int(cellCountInput.value)
     bge.logic.sendMessage("loadNewSettings")
 
 def applySettings():
@@ -108,8 +108,8 @@ if(owner['init']!=True):
     camTiltInput = spawnSetting("CAMERA TILT (DEGREES)",70,"cameraTilt",setCameraTiltAction,0,90,1)
     thrustInput = spawnSetting("STATIC THRUST (GRAMS)",60,"thrust",setThrustAction,0,10000,50)
     weightInput = spawnSetting("ALL UP WEIGHT (GRAMS)",50,"weight",setWeightAction,1,2000,10)
-    motorKVmInput = spawnSetting("MOTOR KV",40,"motorKV",setMotorKVAction,1000,3000,50)
-    cellCountInput = spawnSetting("BATTERY CELLL COUNT",30,"batteryCellCount",setCellCountAction,3,6,1)
+    motorKVmInput = spawnSetting("DRAG",40,"pDrag",setMotorKVAction,0,100,1)
+    cellCountInput = spawnSetting("LIFT / DOWNFORCE",30,"iDrag",setCellCountAction,0,100,1)
 
     #back button
     backBlockElement = UI.BoxElement(window,[10,10],1,.5, blockColor, 1)

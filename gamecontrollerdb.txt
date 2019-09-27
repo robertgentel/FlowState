@@ -4,9 +4,10 @@
 # Windows
 #FPV
 83045632000000000000504944564944,BF FC,leftx:a1,lefty:a0,rightx:a4,righty:a5,lefttrigger:a6,righttrigger:a2,platform:Windows,
-83041057000000000000504944564944,FrSky Taranis Joystick,leftx:a3,lefty:a0,rightx:a1,righty:a2,lefttrigger:a4,righttrigger:a5,leftshoulder:a7,rightshoulder:a6,platform:Windows,
+83041057000000000000504944564944,FrSky Taranis Joystick,leftx:a3,lefty:a0,rightx:a1,righty:a2,lefttrigger:a4,righttrigger:a5,leftshoulder:a7,rightshoulder:a6, lefttrigger:b0,righttrigger:b1,leftshoulder:b2,rightshoulder:b3,platform:Windows,
 4e28f97f000000000000504944564944,HK-MT6 emulator,leftshoulder:b0,leftx:a3,lefty:a2,rightx:a0,righty:a1,lefttrigger:b2,righttrigger:b4,platform:Windows,
 8117560e000000000000504944564944,InterLink Elite,leftx:a4,lefty:a2,rightx:a0,righty:a1,lefttrigger:b0,righttrigger:b1,platform:Windows,
+#83041057000000000000504944564944,FlySky NV14 Joystick,platform:Windows,leftx:a3,lefty:a2,rightx:a0,righty:a1,
 #gamecontrollers
 03000000fa2d00000100000000000000,3DRUDDER,leftx:a0,lefty:a1,rightx:a5,righty:a2,platform:Windows,
 03000000022000000090000000000000,8Bitdo NES30 Pro,a:b1,b:b0,back:b10,dpdown:h0.4,dpleft:h0.8,dpright:h0.2,dpup:h0.1,leftshoulder:b6,leftstick:b13,lefttrigger:b8,leftx:a0,lefty:a1,rightshoulder:b7,rightstick:b14,righttrigger:b9,rightx:a3,righty:a4,start:b11,x:b4,y:b3,platform:Windows,
@@ -158,6 +159,7 @@ xinput,XInput Controller,a:b0,b:b1,back:b6,dpdown:h0.4,dpleft:h0.8,dpright:h0.2,
 03000000830400005632000000020000,BF FC,leftx:a1~,lefty:a0,rightx:a3,righty:a4,lefttrigger:a5,righttrigger:a6,platform:Mac OS X,
 030000004e280000f97f000000010000,HK-MT6 emulator,leftshoulder:b0,leftx:a3,lefty:a2,rightx:a0,righty:a1,lefttrigger:a4,righttrigger:a5,platform:Mac OS X,
 03000000830400001057000000020000,FrSky Taranis Joystick,leftshoulder:a7,rightshoulder:a6,leftx:a3,lefty:a0,rightx:a1,righty:a2,lefttrigger:a4,righttrigger:a5,platform:Mac OS X,
+03000000830400002057000000020000,Deviation GamePad,platform:Mac OS X,leftx:a3,lefty:a0,rightx:a1,righty:a2,lefttrigger:a4,righttrigger:a5,leftshoulder:a7,rightshoulder:a6,platform:Windows,
 #gamecontrollers
 03000000022000000090000001000000,8Bitdo NES30 Pro,a:b1,b:b0,back:b10,dpdown:h0.4,dpleft:h0.8,dpright:h0.2,dpup:h0.1,leftshoulder:b6,leftstick:b13,lefttrigger:b8,leftx:a0,lefty:a1,rightshoulder:b7,rightstick:b14,righttrigger:b9,rightx:a2,righty:a3,start:b11,x:b4,y:b3,platform:Mac OS X,
 03000000203800000900000000010000,8Bitdo NES30 Pro,a:b1,b:b0,back:b10,dpdown:h0.4,dpleft:h0.8,dpright:h0.2,dpup:h0.1,leftshoulder:b6,leftstick:b13,lefttrigger:b8,leftx:a0,lefty:a1,rightshoulder:b7,rightstick:b14,righttrigger:b9,rightx:a2,righty:a3,start:b11,x:b4,y:b3,platform:Mac OS X,

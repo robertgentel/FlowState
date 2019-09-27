@@ -19,10 +19,10 @@ def main():
                 if lap < 0:
                     logic.ghosts = []
                 else:
-                    
+
                     if len(logic.ghosts)-1<lap:
                         ghostObject = addGhostQuad()
-                        ghostObject["lap"] = lap 
+                        ghostObject["lap"] = lap
                         logic.ghosts.append(createGhostData(owner,ghostObject))
                         #print("recording new ghost")
                     currentGhost = logic.ghosts[len(logic.ghosts)-1]
@@ -38,8 +38,7 @@ def main():
                                 lastGhost["obj"]["fpvCamera"]["cameraName"] = "ghostFPV"+str(lap)
         endTime = time.perf_counter()
         #print("main("+str(endTime-startTime))
-def createGhostData(obj,ghostObject):
-    startTime = time.perf_counter()
+def getFrameData(obj,ghostObject):
     digits = 3
     xa=round(obj.orientation[0][0],digits)
     xb=round(obj.orientation[0][1],digits)
@@ -53,28 +52,26 @@ def createGhostData(obj,ghostObject):
     px = round(obj.position[0],digits)
     py = round(obj.position[1],digits)
     pz = round(obj.position[2],digits)
-    result = {"obj":ghostObject,"currentFrame":0,"frames":[{"pos":[px,py,pz],"ori":[[xa,xb,xc],[ya,yb,yc],[za,zb,zc]]}]}
+    lvx = round(obj.localLinearVelocity[0],digits)
+    lvy = round(obj.localLinearVelocity[1],digits)
+    lvz = round(obj.localLinearVelocity[2],digits)
+    avx = round(obj.localAngularVelocity[0],digits)
+    avy = round(obj.localAngularVelocity[1],digits)
+    avz = round(obj.localAngularVelocity[2],digits)
+    result = {"time":time.perf_counter(),"pos":[px,py,pz],"ori":[[xa,xb,xc],[ya,yb,yc],[za,zb,zc]],"linVel":[lvx,lvy,lvz],"angVel":[avx,avy,avz]}
+    return result
+
+def createGhostData(obj,ghostObject):
+    startTime = time.perf_counter()
+    result =result = {"obj":ghostObject,"currentFrame":0,"frames":[getFrameData(obj,ghostObject)]}
     endTime = time.perf_counter()
-    #print("createGhostData("+str(endTime-startTime))
     return result
 
 def recordGhostData(obj, currentGhost):
     if(not logic.finishedLastLap):
         startTime = time.perf_counter()
-        digits = 3
-        xa=round(obj.orientation[0][0],digits)
-        xb=round(obj.orientation[0][1],digits)
-        xc=round(obj.orientation[0][2],digits)
-        ya=round(obj.orientation[1][0],digits)
-        yb=round(obj.orientation[1][1],digits)
-        yc=round(obj.orientation[1][2],digits)
-        za=round(obj.orientation[2][0],digits)
-        zb=round(obj.orientation[2][1],digits)
-        zc=round(obj.orientation[2][2],digits)
-        px = round(obj.position[0],digits)
-        py = round(obj.position[1],digits)
-        pz = round(obj.position[2],digits)
-        currentGhost["frames"].append({"pos":[px,py,pz],"ori":[[xa,xb,xc],[ya,yb,yc],[za,zb,zc]]})
+
+        currentGhost["frames"].append(getFrameData(obj,currentGhost))
         endTime = time.perf_counter()
         #print("recordGhostData("+str(endTime-startTime))
 
@@ -100,7 +97,7 @@ def setGhostData(ghost):
     endTime = time.perf_counter()
     #print("createGhostData("+str(endTime-startTime))
 def addGhostQuad():
-    
+
     actuator = owner.actuators["addGhost"]
     actuator.object = "ghostQuad"
     startTime = time.perf_counter()
@@ -110,7 +107,7 @@ def addGhostQuad():
     obj = actuator.objectLastCreated
     disableGhostCollision(obj)
     obj.position = [0,0,-100000]
-    
+
     return obj
 
 def disableGhostCollision(obj):
@@ -122,15 +119,15 @@ def disableGhostCollision(obj):
             childOfChild.collisionGroup = 4
     endTime = time.perf_counter()
     #print("disableGhostCollision("+str(endTime-startTime))
-        
+
 def enableGhostCollision(obj):
     startTime = time.perf_counter()
     obj.collisionGroup = 1
     for child in obj.children:
-        child.collisionGroup = 1  
+        child.collisionGroup = 1
         for childOfChild in child.children:
-            childOfChild.collisionGroup = 1   
+            childOfChild.collisionGroup = 1
     endTime = time.perf_counter()
-    #print("enableGhostCollision("+str(endTime-startTime))  
+    #print("enableGhostCollision("+str(endTime-startTime))
 
 main()

@@ -1,6 +1,7 @@
 import bge
 from collections import OrderedDict
 
+
 if not hasattr(bge, "__component__"):
     import time
     import numpy as np
@@ -9,6 +10,7 @@ if not hasattr(bge, "__component__"):
     import aud
     render = bge.render
     logic = bge.logic
+    utils = logic.utils
 
 
 class Checkpoint(bge.types.KX_PythonComponent):
@@ -16,26 +18,67 @@ class Checkpoint(bge.types.KX_PythonComponent):
         ("checkpoint number", 1)
     ])
 
+    def oncollision(self, obj, point, normal, points):
+        if(obj==logic.utils.getPlayerObject()):
+            self.collision = obj
+        #for point in points:
+        #    print(point.localPointA)
+        #    print(point.localPointB)
+        #    print(point.worldPoint)
+        #    print(point.normal)
+        #    print(point.combinedFriction)
+        #    print(point.combinedRestitution)
+        #    print(point.appliedImpulse)
+    def drawPoint(self,point):
+        render.drawLine([point[0]-1,point[1],point[2]],[point[0]+1,point[1],point[2]],[1,0,0])
+        render.drawLine([point[0],point[1]-1,point[2]],[point[0],point[1]+1,point[2]],[0,1,0])
+        render.drawLine([point[0],point[1],point[2]-1],[point[0],point[1],point[2]+1],[1,0,1])
+
+    def drawTraces(self):
+        profileIndex = logic.globalDict['currentProfile']
+        profiles = logic.globalDict['profiles']
+        raceLineEnabled = profiles[profileIndex]['graphicsSettings']['raceLine']
+        if(raceLineEnabled):
+            if len(self.flightData['position'])>=2:
+                for i in range(0,len(self.flightData['position'])-1):
+                    position = self.flightData['position'][i]
+                    a = self.flightData['position'][i]
+                    b = self.flightData['position'][i+1]
+                    value = self.flightData['throttlePercent'][i]
+                    render.drawLine(a,b,[1,1-value,1-value])
+                #self.drawPoint(a)
+            #self.drawPoint(b)
+        
+
     def start(self, args):
         self.lastPlayerPos = None
         self.entrance = None
         self.object["checkpoint"] = True
-        print("start "+str(self.object.name))
+        self.collision = None
+        self.object.collisionCallbacks = [self.oncollision]
+        self.flightData = {"position":[],"throttlePercent":[]}
+        
+        #print(self.object.collisionCallbacks)
+        #print("start "+str(self.object.name))
 
     def getEntryAngle(self, v1, v2, acute):
         angle = np.arccos(np.dot(v1, v2) / (np.linalg.norm(v1) * np.linalg.norm(v2)))
         return angle
 
-    def setCheckpointVisibilities(self):
-        for checkpoint in logic.utils.gameState['track']['checkpoints']:
-
-            if(checkpoint['metadata']['checkpoint order'] == logic.utils.gameState['track']['nextCheckpoint']):
-                checkpoint.visible = True
-                self.enableCollision(checkpoint)
+    def setCheckpointVisibility(self,enabled=False):
+        #for checkpoint in logic.utils.gameState['track']['checkpoints']:
+        
+        #if(checkpoint['metadata']['checkpoint order'] == logic.utils.gameState['track']['nextCheckpoint']):
+        if self.object.visible!=enabled:
+            self.object.visible = enabled
+            if(enabled):
+                print("checkpoint:"+str(self.object['metadata']['checkpoint order'])+" activated")
+                self.enableCollision(self.object)
+                self.flightData = {"position":[],"throttlePercent":[]}
             else:
-                checkpoint.visible = False
-                self.disableCollision(checkpoint)
-            #print("setting checkpoint "+str(checkpoint['metadata']['checkpoint order'])+" to collision group "+str(checkpoint.collisionGroup))
+                print("checkpoint:"+str(self.object['metadata']['checkpoint order'])+" deactivated")
+                self.disableCollision(self.object)
+                #print("setting checkpoint "+str(checkpoint['metadata']['checkpoint order'])+" to collision group "+str(checkpoint.collisionGroup))
 
     def disableCollision(self,obj):
         mask = 4
@@ -71,37 +114,56 @@ class Checkpoint(bge.types.KX_PythonComponent):
             normal.append(vect[i]/max)
         return normal
     def update(self):
-        utils = logic.utils
+        
         self.entrance = self.object.children[0]
         nextCheckpoint = logic.utils.gameState['track']['nextCheckpoint']
         hitCheckpointNumber = self.object['metadata']['checkpoint order']
         if(utils.getMode()!=utils.MODE_EDITOR):
+            
             if(nextCheckpoint==hitCheckpointNumber):
+                
+                self.setCheckpointVisibility(True)
                 if self.lastPlayerPos!=None:
                     pa = self.lastPlayerPos
                     pb = utils.getPlayerObject().position
                     cm = 2
                     ray = utils.getPlayerObject().rayCast(objto=pb, objfrom=pa, dist=0, prop="checkpoint", face=False, xray=True, poly=0,mask=cm)
                     hitObject, hitPoint, hitNormal = ray
+                    #colHitObject, colPoint, colNormal, colPoints = self.collision
                     #render.drawLine(pa,pb,[0,0,0,1])
                     self.object['checked'] = True
-                    if(hitObject==self.object):
+                    if(hitObject==self.object or ((self.collision!=None) and (self.collision==logic.utils.getPlayerObject()))):
+                        if(self.collision!=None):
+                            print("checkpoint:"+str(self.object['metadata']['checkpoint order'])+" collision", self.collision)
+                        else:
+                            print("checkpoint:"+str(self.object['metadata']['checkpoint order'])+" ray hit", hitObject)
+                        
                         o = self.object.getVectTo(self.entrance.position)[1]
+                        #print(o)
                         v = utils.getPlayerObject().getLinearVelocity(False)
 
                         difAngle = m.degrees(self.getEntryAngle(v,o,True))
                         if(difAngle>90):
+                            self.lastPlayerPos = copy.deepcopy(utils.getPlayerObject().position)
                             if logic.utils.gameState['track']['lastCheckpoint']==hitCheckpointNumber:
                                 logic.utils.gameState['track']['nextCheckpoint'] = 0
                             else:
                                 logic.utils.gameState['track']['nextCheckpoint']+=1
-                            self.setCheckpointVisibilities()
                             startTime = time.perf_counter()
                             self.playSound()
                             endTime = time.perf_counter()
-                            print("CHECKPOINT! "+str(endTime-startTime))
+                            print("checkpoint:"+str(hitCheckpointNumber)+" collected")
                         else:
-                            print("angle exceeds 90 "+str(difAngle))
-                            print(difAngle)
-
-            self.lastPlayerPos = copy.deepcopy(utils.getPlayerObject().position)
+                            print("checkpoint:"+str(hitCheckpointNumber)+" angle ("+str(difAngle)+") exceeds 90 "+str(hitCheckpointNumber))
+                            #print(difAngle)
+            else:
+                self.setCheckpointVisibility(False)
+                self.drawTraces()
+            if self.lastPlayerPos==None:
+                self.lastPlayerPos = copy.deepcopy(utils.getPlayerObject().position)
+            if(utils.getPlayerObject().getDistanceTo(self.lastPlayerPos) > 1):
+                self.lastPlayerPos = copy.deepcopy(utils.getPlayerObject().position)
+                if(nextCheckpoint==hitCheckpointNumber):
+                    self.flightData['position'].append(copy.deepcopy(utils.getPlayerObject().position))
+                    self.flightData['throttlePercent'].append(logic.throttlePercent)
+        self.collision = None
