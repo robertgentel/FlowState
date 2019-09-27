@@ -157,7 +157,7 @@ xinput,XInput Controller,a:b0,b:b1,back:b6,dpdown:h0.4,dpleft:h0.8,dpright:h0.2,
 # Mac OS X
 #FPV
 03000000830400005632000000020000,BF FC,leftx:a1~,lefty:a0,rightx:a3,righty:a4,lefttrigger:a5,righttrigger:a6,platform:Mac OS X,
-97f000000010000,HK-MT6 emulator,leftshoulder:b0,leftx:a3,lefty:a2,rightx:a0,righty:a1,lefttrigger:a4,righttrigger:a5,platform:Mac OS X,
+030000004e280000f97f000000010000,HK-MT6 emulator,leftshoulder:b0,leftx:a3,lefty:a2,rightx:a0,righty:a1,lefttrigger:a4,righttrigger:a5,platform:Mac OS X,
 03000000830400001057000000020000,FrSky Taranis Joystick,leftshoulder:a7,rightshoulder:a6,leftx:a3,lefty:a0,rightx:a1,righty:a2,lefttrigger:a4,righttrigger:a5,platform:Mac OS X,
 03000000830400002057000000020000,Deviation GamePad,platform:Mac OS X,leftx:a3,lefty:a0,rightx:a1,righty:a2,lefttrigger:a4,righttrigger:a5,leftshoulder:a7,rightshoulder:a6,platform:Windows,
 #gamecontrollers
