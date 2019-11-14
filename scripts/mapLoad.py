@@ -52,7 +52,9 @@ def spawnMapElements(mapData):
             owner.orientation = [math.radians(o[0]),math.radians(o[1]),-math.radians(o[2])]
         else:
             es = 1
-            owner.position = [asset['p'][0]*es,asset['p'][1]*es,asset['p'][2]]
+            esx = es*1
+            esy = es*1
+            owner.position = [asset['p'][0]*esx,asset['p'][1]*esy,asset['p'][2]]
             owner.orientation = [math.radians(o[0]),math.radians(o[1]),math.radians(o[2])]
         #cont.actuators['spawner']
         newObj = scene.addObject(asset['n'],owner,0)
@@ -71,22 +73,24 @@ def spawnMapElements(mapData):
             utils.addMetadata(newObj)
         if('id' not in asset['m']):
             utils.addMetadata(newObj)
-        print("loading metadata: "+str(newObj['metadata']))
+        #print("loading metadata: "+str(newObj['metadata']))
         if(asset['n'] == utils.ASSET_START_FINISH):
             logic.utils.gameState['startFinishPlane'] = newObj
             utils.log("added start finish gate")
         if('checkpoint order' in newObj['metadata']):
             #if utils.getMode()!=utils.MODE_EDITOR:
-
-
             logic.utils.gameState['track']['checkpoints'].append(newObj)
             if newObj['metadata']['checkpoint order'] > logic.utils.gameState['track']['lastCheckpoint']:
                 logic.utils.gameState['track']['lastCheckpoint'] = newObj['metadata']['checkpoint order']
 
         if(asset['n'] == "asset launch pad"):
             newSpawnPoint = newObj
-            if "spawnPoints" in logic.utils.gameState:
+            if "launchPads" in logic.utils.gameState:
+                print("adding launch pad "+str(newSpawnPoint.name))
                 logic.utils.gameState['launchPads'].append(newSpawnPoint)
             else:
+                print("creating launch pads "+str(newSpawnPoint.name))
                 logic.utils.gameState['launchPads'] = [newSpawnPoint]
+            
+            print(str(logic.utils.gameState['launchPads']))
             #utils.log("setting spawn point "+str(logic.utils.gameState))

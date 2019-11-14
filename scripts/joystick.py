@@ -43,10 +43,21 @@ def getAngularAcceleration():
         own['angularAcc'] = getArrayProduct([av[0]-lastAv[0],av[1]-lastAv[1],av[2]-lastAv[2]])
         own['lastAngularVel'] = own.getAngularVelocity(True)
 
+def respawn():
+    if(utils.getMode()!=utils.MODE_MULTIPLAYER):
+        launchPadNo = 0
+    else:
+        pass
+    launchPadNo = random.randint(0,len(logic.utils.gameState['launchPads'])-1)
+    launchPos = copy.deepcopy(logic.utils.gameState['launchPads'][launchPadNo].position)
+    own['launchPosition'] = [launchPos[0],launchPos[1],launchPos[2]+1]
+    own.position = own['launchPosition']
+    print(logic.utils.gameState['launchPads'])
+    print("SPAWNING!!!"+str(launchPadNo)+", "+str(launchPos))
+
 def initAllThings():
     logic.player = own
     logic.player['camera'] = scene.objects['cameraMain']
-    print(logic.utils.gameState['track']['checkpoints'])
     logic.utils.gameState['track']['nextCheckpoint'] = logic.defaultGameState['track']['nextCheckpoint']
 
     #logic.setPhysicsTicRate(120)
@@ -68,10 +79,7 @@ def initAllThings():
     print("SETTLE TIME IS "+str(own['settleStartTime']))
     own['settleDuration'] = 0
     own['settleFrameRates'] = []
-    launchPos = copy.deepcopy(logic.utils.gameState['launchPads'][0].position)
-    own['launchPosition'] = [launchPos[0],launchPos[1],launchPos[2]+1]
-    own.position = own['launchPosition']
-    #print("SPAWNING!!!"+str(logic.utils.gameState['launchPads'][0].position))
+    respawn()
     own['rxPosition'] = copy.deepcopy(logic.utils.gameState['launchPads'][0].position)
     own['rxPosition'][2]+=100
     own.orientation = logic.utils.gameState['launchPads'][0].orientation
@@ -79,7 +87,6 @@ def initAllThings():
     own['vtxOporational'] = True
     own['damage'] = 0
     own.mass = g['weight']/1000
-    print(own.mass)
     logic.countingDown = True
     logic.countdown = -1
     logic.maxGForce = 0
@@ -465,7 +472,7 @@ def main():
                 propLoad = (((lvl[0]*.8)+(lvl[1]*.8)+(lvl[2]*1.2))*1000)/maxRPM
                 #propLoad = (lvl[2]*10000)/maxRPM
                 propAgressiveness = 1.4
-                propThrottleCurve = 1.15
+                propThrottleCurve = 1
 
                 currentRPM = maxRPM*throttlePercent
                 #propLoad = lvl[2]*currentRPM/maxRPM
@@ -473,7 +480,7 @@ def main():
 
 
                 #thrust = ((throttlePercent**propThrottleCurve)*.85)*(maxThrust-((propLoad**propThrottleCurve)/((maxSpeed**propThrottleCurve)/maxThrust)))
-                thrustSetpoint = throttlePercent+(abs(yawPercent-.5)*.25)
+                thrustSetpoint = throttlePercent#+(abs(yawPercent-.5)*.25)
                 if(thrustSetpoint>1):
                     thrustSetpoint = 1
 

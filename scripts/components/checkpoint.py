@@ -35,17 +35,13 @@ class Checkpoint(bge.types.KX_PythonComponent):
         render.drawLine([point[0],point[1],point[2]-1],[point[0],point[1],point[2]+1],[1,0,1])
 
     def drawTraces(self):
-        profileIndex = logic.globalDict['currentProfile']
-        profiles = logic.globalDict['profiles']
-        raceLineEnabled = profiles[profileIndex]['graphicsSettings']['raceLine']
-        if(raceLineEnabled):
-            if len(self.flightData['position'])>=2:
-                for i in range(0,len(self.flightData['position'])-1):
-                    position = self.flightData['position'][i]
-                    a = self.flightData['position'][i]
-                    b = self.flightData['position'][i+1]
-                    value = self.flightData['throttlePercent'][i]
-                    render.drawLine(a,b,[1,1-value,1-value])
+        if len(self.flightData['position'])>=2:
+            for i in range(0,len(self.flightData['position'])-1):
+                position = self.flightData['position'][i]
+                a = self.flightData['position'][i]
+                b = self.flightData['position'][i+1]
+                value = self.flightData['throttlePercent'][i]
+                render.drawLine(a,b,[1,1-value,1-value])
                 #self.drawPoint(a)
             #self.drawPoint(b)
         
