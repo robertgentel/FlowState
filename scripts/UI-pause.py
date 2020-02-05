@@ -10,8 +10,8 @@ owner = cont.owner
 UI = bge.UI
 utils = logic.utils
 textColor = [1,1,1,1]
-blockColor = [0,0,1,0.75]
-
+blockColor = [0,0,0.05,0.75]
+    
 def restartAction():
     render.showMouse(0)
     scenes = logic.getSceneList()
@@ -32,7 +32,6 @@ def mainMenuAction():
         currentScene = logic.getCurrentScene()
         for scene in scenes:
             if(scene!=currentScene):
-                logic.player = None
                 scene.end()
         logic.utils.resetGameState()
         logic.utils.setMode(logic.utils.MODE_MENU)
@@ -49,6 +48,7 @@ def resumeAction():
     render.showMouse(0)
     currentScene = logic.getCurrentScene()
     currentScene.end()
+    logic.getSceneList()[0].resume()
 
 if(owner['init']!=True):
     render.showMouse(1)

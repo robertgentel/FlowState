@@ -38,7 +38,7 @@ def addLastLap():
             logic.lapTimes.append(str(format(own['current_lap'], '.2f')))
             if(logic.lapTimer['race time'] > 120):
                 logic.finishedLastLap = True
-                logic.utils.gameState['notification']['Text'] = "RACE COMPLETE"
+                logic.utils.gameState['notification']['Text'] = "RACE COMPLETE: "+logic.utils.gameState['selectedMap']
                 #print("race is complete")
     print(len(scene.objects))
     #print(scene.objects)

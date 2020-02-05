@@ -6,30 +6,22 @@ render.showMouse(1)
 scene = logic.getCurrentScene()
 cont = logic.getCurrentController()
 owner = cont.owner
-#utils = logic.utils
 UI = bge.UI
-#render.setFullScreen(True)
-#bge.render.setWindowSize(1920,1080)
-print("SET SCREEN RES")
 textColor = [1,1,1,1]
-blockColor = [0,0,1,0.75]
+blockColor = [0,0,0.05,0.75]
+utils = logic.utils
 
-def soloGameAction():
-    scenes = logic.getSceneList()
+def beginnerAction():
+    logic.utils.setSkillLevel(0)
+    proceedAction()
+    
+def proAction():
+    logic.utils.setSkillLevel(1)
+    proceedAction()
+    
+def proceedAction():
     currentScene = logic.getCurrentScene()
-    for scene in scenes:
-        if(scene!=currentScene):
-            scene.end()
-    currentScene.replace("main regional finals")
-
-def multiplayerAction():
-    pass
-
-def settingsAction():
-    currentScene = logic.getCurrentScene()
-    currentScene.replace("UI-settings")
-
-
+    currentScene.replace("Menu Background")
 
 def quitGameAction():
     logic.endGame()
@@ -41,8 +33,21 @@ if(owner['init']!=True):
     window = UI.Window()
 
     inset = 0.2
-
-    multiplayerGameText = UI.TextElement(window,[10+inset,10], textColor, 0, "Loading...")
+    
+    
+    if(utils.gameState[utils.STATE_FIRST_RUN]):
+        welcomeText = UI.TextElement(window,[50+inset,70], textColor, 0, "Welcome to the Flow State drone racing simulator!")
+        welcomeText = UI.TextElement(window,[50+inset,60], textColor, 0, "Have you flown a racing drone before?")
+        beginnerBlockElement = UI.BoxElement(window,[30,30],3,2.5, blockColor, 1)
+        beginnerText = UI.TextElement(window,beginnerBlockElement.position, textColor, 0, "First time")
+        beginnerButton = UI.UIButton(beginnerText,beginnerBlockElement,beginnerAction)
+        
+        beginnerBlockElement = UI.BoxElement(window,[70,30],3,2.5, blockColor, 1)
+        beginnerText = UI.TextElement(window,beginnerBlockElement.position, textColor, 0, "I've done this before")
+        beginnerButton = UI.UIButton(beginnerText,beginnerBlockElement,proAction)
+    else:
+        multiplayerGameText = UI.TextElement(window,[10+inset,10], textColor, 0, "Loading...")
+        proceedAction()
 else:
     UI.run(cont)
     try:

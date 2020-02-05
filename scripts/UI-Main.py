@@ -7,8 +7,31 @@ cont = logic.getCurrentController()
 owner = cont.owner
 UI = bge.UI
 textColor = [1,1,1,1]
-blockColor = [0,0,1,0.75]
+blockColor = [0,0,0.05,0.75]
 #utils = logic.utils
+
+def joystickMenuNav():
+    joy = cont.sensors["JoystickAxis"]
+    axis = joy.axisValues
+    profileIndex = logic.globalDict['currentProfile']
+    rs = logic.globalDict['profiles'][profileIndex]['radioSettings'] #radio settings
+    
+    pitchInverted = -(int(rs['pitchInverted'])-0.5)*2
+    rollInverted = -(int(rs['rollInverted'])-0.5)*2
+    
+    verticle = getStickPercentage(rs['minPitch'],rs['maxPitch'],axis[rs['pitchChannel']-1]*pitchInverted)
+    horizontal = getStickPercentage(rs['minRoll'],rs['maxRoll'],axis[rs['rollChannel']-1]*rollInverted)
+    aspectRatio = 3/4
+    bge.render.drawLine([(horizontal*10)-5,(verticle*aspectRatio*10)-(5*aspectRatio),-1],[0,0,0],[1,1,1,1])
+    print([(horizontal*10)-5,verticle])
+    windowSize = [bge.render.getWindowWidth(),bge.render.getWindowHeight()]
+    render.setMousePosition(int(windowSize[0]*horizontal),int(windowSize[1]*(1-verticle)))
+    
+def getStickPercentage(min,max,value):
+    resolution = abs(min)+abs(max)
+    percent = abs(((value-min)/resolution))
+    (0+(100/2))/100.0
+    return percent
 
 def soloGameAction():
     scenes = logic.getSceneList()
@@ -22,16 +45,8 @@ def multiplayerGameAction():
     render.showMouse(0)
     currentScene.replace("UI-server-ip")
 
-def deleteMe():
-    logic.utils.gameState['selectedMap'] = "custom.fmp"
-    scenes = logic.getSceneList()
-    currentScene = logic.getCurrentScene()
-    for scene in scenes:
-        if(scene!=currentScene):
-            scene.end()
-    render.showMouse(0)
-    logic.utils.setMode(logic.utils.MODE_EDITOR)
-    currentScene.replace("UI-map-edit-select")
+def doNothing():
+    pass
 
 def editorAction():
     scenes = logic.getSceneList()
@@ -68,8 +83,8 @@ if(owner['init']!=True):
     soloGameButton = UI.UIButton(soloGameText,soloGameBlockElement,soloGameAction)
 
     multiplayerGameBlockElement = UI.BoxElement(window,[30,30],2.5,1.25, blockColor, 1)
-    multiplayerGameText = UI.TextElement(window,multiplayerGameBlockElement.position, textColor, 0, "MULTIPLAYER")
-    multiplayerGameButton = UI.UIButton(multiplayerGameText,multiplayerGameBlockElement,multiplayerGameAction)
+    multiplayerGameText = UI.TextElement(window,multiplayerGameBlockElement.position, [0.5,0.5,0.5,1], 0, "MULTIPLAYER")
+    multiplayerGameButton = UI.UIButton(multiplayerGameText,multiplayerGameBlockElement,doNothing)
 
     #asdf = UI.BoxElement(window,[50,50],10,9.9, [1,0,0,.5], 1)
     editorBlockElement = UI.BoxElement(window,[70,70],2.5,1.25, blockColor, 1)
@@ -89,6 +104,7 @@ if(owner['init']!=True):
 else:
     try:
         UI.run(cont)
+        #joystickMenuNav()
     except Exception as e:
         logic.utils.log(traceback.format_exc())
         owner['init'] = -1

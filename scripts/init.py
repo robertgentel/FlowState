@@ -3,7 +3,6 @@ from scripts.gameUtils import utils
 render = bge.render
 logic = bge.logic
 logic.utils = utils()
-
 logic.loadGlobalDict()
 
 logic.globalDict['sceneHistory'] = []

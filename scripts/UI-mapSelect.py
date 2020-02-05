@@ -10,7 +10,7 @@ cont = logic.getCurrentController()
 owner = cont.owner
 UI = bge.UI
 textColor = [1,1,1,1]
-blockColor = [0,0,1,0.75]
+blockColor = [0,0,0.05,0.75]
 mapButtons = []
 render.showMouse(1)
 
@@ -79,6 +79,15 @@ if(owner['init']!=True):
     mapsPath = blendPath+"maps"+os.sep
     f = []
     maps = [f for f in os.listdir(mapsPath) if os.path.isfile(os.path.join(mapsPath, f))]
+    
+    #let's get the maps from the web server
+    import requests
+    import json
+    url = "https://boxoprops.com/flow-state/flow-control/1.0.0/maps.json"
+    response = requests.get(url, data="")
+    print(response.status_code)
+    print(response.json())
+    #maps = json.loads(response.text)
     
     #maps = ["2018 Regional Final.fmp", "2018 Regional Qualifier.fmp", "custom.fmp"]
     spacing = 8

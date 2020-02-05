@@ -14,7 +14,7 @@ cont = logic.getCurrentController()
 owner = cont.owner
 UI = bge.UI
 textColor = [1,1,1,1]
-blockColor = [0,0,1,0.75]
+blockColor = [0,0,0.05,0.75]
 mapButtons = []
 render.showMouse(1)
 
@@ -102,7 +102,16 @@ def convertVDMap(path,name):
         asset = convertAsset(gate,assetID)
         newMap['assets'].append(asset)
         assetID+=1
-        
+    depth = 0
+    
+    #let's clamp the lowest point on the map to the ground
+    for asset in newMap['assets']:
+        if(asset['p'][2] < depth):
+            depth = asset['p'][2]
+            print("new depth "+str(depth))
+    for asset in newMap['assets']:
+        asset['p'][2] = asset['p'][2]-depth
+            
     saveMapToFile(newMap,name)
 
 def mapSelectAction(key,mapInfo):

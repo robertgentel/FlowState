@@ -10,7 +10,7 @@ cont = logic.getCurrentController()
 owner = cont.owner
 UI = bge.UI
 textColor = [1,1,1,1]
-blockColor = [0,0,1,0.75]
+blockColor = [0,0,0.05,0.75]
 mapButtons = []
 render.showMouse(1)
 
@@ -71,7 +71,7 @@ def createMapAction():
     
 def importMapAction():
     currentScene = logic.getCurrentScene()
-    currentScene.replace("UI-map-name")
+    currentScene.replace("UI-map-import-edit-select")
     
 def createMapButton(name,spacing):
     buttonIndex = len(mapButtons)
