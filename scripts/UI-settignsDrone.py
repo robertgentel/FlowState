@@ -9,7 +9,7 @@ UI = bge.UI
 utils = logic.utils
 
 textColor = [1,1,1,1]
-blockColor = [0,0,1,0.75]
+blockColor = [0,0,0.05,0.75]
 
 def soloGameAction():
     scenes = logic.getSceneList()
@@ -77,6 +77,13 @@ def backAction():
     print("removing scene "+str(removedScene))
     currentScene.replace(backScene)
 
+def settingsAction(key,value):
+    print(key,value)
+    profileIndex = logic.globalDict['currentProfile']
+    profile = profiles[profileIndex]
+    
+    profile['droneSettings'][key] = value
+
 def spawnSetting(label,height,key,action,min,max,increment):
     itemRow = UI.BoxElement(window,[50,height],11,0.5, blockColor, 5)
     itemText = UI.TextElement(window, [itemRow.position[0]-30,itemRow.position[1]], textColor, 4, label)
@@ -91,6 +98,23 @@ def spawnSetting(label,height,key,action,min,max,increment):
 
     currentItemText = UI.TextElement(window,[50,height], textColor, 0, "")
     return UI.UINumberInput(itemUpButton,itemDownButton,currentItemText,int(droneSettings[key]),min, max, increment)
+
+def spawnBoolRow(label,height,key,action):
+
+    rowBox = UI.BoxElement(window,[50,height],11,0.5, blockColor, 5)
+    titleText = UI.TextElement(window,[rowBox.position[0]-30,rowBox.position[1]], textColor, 4, label)
+
+    box = UI.BoxElement(window,[47.5,height],1,0.5, blockColor, 1)
+    text = UI.TextElement(window,[box.position[0],box.position[1]], textColor, 0, "INVERTED")
+    button = UI.UIButton(text,box,settingsAction)
+
+    #indicatorText = UI.TextElement(window,[50,height], textColor, 0, "0")
+    
+    profileIndex = logic.globalDict['currentProfile']
+    profile = profiles[profileIndex]
+    
+    invertedBooleanButton = UI.UIBooleanInput(button,text,key,profile['droneSettings'][key])
+    return invertedBooleanButton
 
 if(owner['init']!=True):
     render.showMouse(1)
@@ -110,6 +134,15 @@ if(owner['init']!=True):
     weightInput = spawnSetting("ALL UP WEIGHT (GRAMS)",50,"weight",setWeightAction,1,2000,10)
     motorKVmInput = spawnSetting("DRAG",40,"pDrag",setMotorKVAction,0,100,1)
     cellCountInput = spawnSetting("LIFT / DOWNFORCE",30,"iDrag",setCellCountAction,0,100,1)
+    
+    #spawnSetting("Auto Level", False, "autoLevel", setAutoLevelAction,0,90,1)
+    
+    autoLevel = spawnBoolRow("Auto Level",20,"autoLevel",settingsAction)
+    #itemRow = UI.BoxElement(window,[50,20],11,0.5, blockColor, 5)
+    #autoLevelBox = UI.BoxElement(window,[20,20],1,0.5, blockColor, 1)
+    #autoLevelLabelText = UI.TextElement(window,[autoLevelBox.position[0],autoLevelBox.position[1]], textColor, 0, "Auto Level")
+    #autoLevelText = UI.TextElement(window,[autoLevelBox.position[0]+10,autoLevelBox.position[1]], textColor, 0, "True")
+    #autoLevelButton = UI.UIButton(autoLevelLabelText,autoLevelBox,handleButtonCallback)
 
     #back button
     backBlockElement = UI.BoxElement(window,[10,10],1,.5, blockColor, 1)

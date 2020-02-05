@@ -7,7 +7,7 @@ cont = logic.getCurrentController()
 owner = cont.owner
 UI = bge.UI
 textColor = [1,1,1,1]
-blockColor = [0,0,1,0.75]
+blockColor = [0,0,0.05,0.75]
 utils = logic.utils
 
 profileIndex = logic.globalDict['currentProfile']

@@ -11,7 +11,7 @@ owner = cont.owner
 UI = bge.UI
 
 textColor = [1,1,1,1]
-blockColor = [0,0,1,0.75]
+blockColor = [0,0,0.05,0.75]
 
 if "window" not in owner:
     owner['window'] = UI.Window()

@@ -8,6 +8,7 @@
 4e28f97f000000000000504944564944,HK-MT6 emulator,leftshoulder:b0,leftx:a3,lefty:a2,rightx:a0,righty:a1,lefttrigger:b2,righttrigger:b4,platform:Windows,
 8117560e000000000000504944564944,InterLink Elite,leftx:a4,lefty:a2,rightx:a0,righty:a1,lefttrigger:b0,righttrigger:b1,platform:Windows,
 #83041057000000000000504944564944,FlySky NV14 Joystick,platform:Windows,leftx:a3,lefty:a2,rightx:a0,righty:a1,
+83042057000000000000504944564944,FrSky Simulator,platform:Windows,leftshoulder:a7,rightshoulder:a6,leftx:a3,lefty:a2,rightx:a1,righty:a0,lefttrigger:a4,righttrigger:a5,
 #gamecontrollers
 03000000fa2d00000100000000000000,3DRUDDER,leftx:a0,lefty:a1,rightx:a5,righty:a2,platform:Windows,
 03000000022000000090000000000000,8Bitdo NES30 Pro,a:b1,b:b0,back:b10,dpdown:h0.4,dpleft:h0.8,dpright:h0.2,dpup:h0.1,leftshoulder:b6,leftstick:b13,lefttrigger:b8,leftx:a0,lefty:a1,rightshoulder:b7,rightstick:b14,righttrigger:b9,rightx:a3,righty:a4,start:b11,x:b4,y:b3,platform:Windows,

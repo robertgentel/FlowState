@@ -19,6 +19,12 @@ class UI:
         self.owner = controller.owner
         self.owner['lastHitObject'] = None
 
+    def getStickPercentage(min,max,value):
+        resolution = abs(min)+abs(max)
+        percent = abs(((value-min)/resolution))
+        (0+(100/2))/100.0
+        return percent 
+
     def runWindow(window, cont):
         owner = cont.owner
         mouseSensor = cont.sensors['Mouse']
@@ -26,9 +32,19 @@ class UI:
         wheelUp = cont.sensors['MouseWheelUp']
         wheelDown = cont.sensors['MouseWheelDown']
         hitObject = mouseSensor.hitObject
-
+        joystickReady = False
         inputs = logic.mouse.activeInputs
-
+        if('JoystickButtons' in cont.sensors):
+            joy = cont.sensors['JoystickButtons']
+            axis = joy.axisValues
+            if(axis!=[]):
+                profileIndex = logic.globalDict['currentProfile']
+                rs = logic.globalDict['profiles'][profileIndex]['radioSettings'] #radio settings
+                resetSwitch = UI.getStickPercentage(rs['minReset'],rs['maxReset'],axis[rs['resetChannel']-1])
+                joystickReady = True
+        if not joystickReady:
+            resetSwitch = 0
+            
         for key in window.elements:
             element = window.elements[key]
             if(element.disabled==False):
@@ -42,6 +58,20 @@ class UI:
                                     if(input.type == bge.events.LEFTMOUSE):
                                         #element.owner['action']()
                                         element.performAction()
+                            if joystickReady:
+                                if(0 in joy.getButtonActiveList()):
+                                    if(joy.triggered):
+                                        element.performAction()
+                                if(resetSwitch>0.5):
+                                    if('resetReleased' in cont.owner):
+                                        if cont.owner['resetReleased']:
+                                            cont.owner['resetReleased'] = False
+                                            element.performAction()
+                                            
+                                    else:
+                                        cont.owner['resetReleased'] = False
+                                else:
+                                    cont.owner['resetReleased'] = True
 
                 else:
                     if(element.type == BUTTON):
@@ -60,7 +90,19 @@ class UI:
         owner = cont.owner
         mouseSensor = cont.sensors['Mouse']
         hitObject = mouseSensor.hitObject
-
+        joystickReady = False
+        inputs = logic.mouse.activeInputs
+        if('JoystickButtons' in cont.sensors):
+            joy = cont.sensors['JoystickButtons']
+            axis = joy.axisValues
+            if(axis!=[]):
+                profileIndex = logic.globalDict['currentProfile']
+                rs = logic.globalDict['profiles'][profileIndex]['radioSettings'] #radio settings
+                resetSwitch = UI.getStickPercentage(rs['minReset'],rs['maxReset'],axis[rs['resetChannel']-1])
+                joystickReady = True
+        if not joystickReady:
+            resetSwitch = 0
+            
         if("lastHitObject" in owner):
             pass
         else:
@@ -97,6 +139,34 @@ class UI:
                                 element.performAction()
                             else:
                                 element.performAction()
+        if joystickReady:
+            joy = cont.sensors['JoystickButtons']
+            if(0 in joy.getButtonActiveList()):
+                if(joy.triggered):
+                    if(hitObject != None):
+                        element = hitObject['UIElement']
+                        if("button" in hitObject.getPropertyNames()):
+                            element = element.button
+                            if 'value' in hitObject and hitObject['value']!=None:
+                                logic.utils.log(hitObject['value'])
+
+                                element.performAction()
+                            else:
+                                element.performAction()  
+        if(resetSwitch>0.5):
+            if('resetReleased' in cont.owner):
+                if cont.owner['resetReleased']:
+                    if(hitObject != None):
+                        element = hitObject['UIElement']
+                        if("button" in hitObject.getPropertyNames()):
+                            element = element.button
+                            element.performAction()
+                            cont.owner['resetReleased'] = False
+            else:
+                cont.owner['resetReleased'] = False
+        else:
+            cont.owner['resetReleased'] = True
+            
     class Window:
         def __init__(self):
             self.height = 600#render.getWindowHeight() #A BUG NEEDS TO BE REPORTED FOR LETTERBOX
@@ -132,11 +202,12 @@ class UI:
         def setColor(self,newColor):
             self.owner.color = newColor
             for mesh in self.owner.meshes:
-                for mat in range(0,len(mesh.materials)):
-                    vertArray = mesh.getVertexArrayLength(mat)
-                    for v in range(0,vertArray):
-                        vert = mesh.getVertex(mat,v)
-                        vert.color = newColor
+                #for mat in range(0,len(mesh.materials)):
+                mat = 0
+                vertArray = mesh.getVertexArrayLength(mat)
+                for v in range(0,vertArray):
+                    vert = mesh.getVertex(mat,v)
+                    vert.color = newColor
         
         def spawnElement(self):
             self.owner = scene.addObject(self.type)
@@ -195,7 +266,7 @@ class UI:
             self.spawnElement()
 
         def getCenteredTextOffset(self,text):
-            return len(text)*0.55*self.scale
+            return len(text)*0.6*self.scale
 
         def getCenteredTextPosition(self,position):
             return [position[0]-self.centerOffset,position[1]+self.textHang]
@@ -392,7 +463,7 @@ class UI:
             return (pressedKeys,activeKeys,inactiveKeys,releasedKeys)
         
         def scrollUp(self):
-            if(self.scrollPosition<self.maxScrollPosition):
+            if(self.scrollPosition<self.maxScrollPosition*2):
                 self.scrollPosition += 1
                 for element in self.items:
                     self.moveElements(element,1)

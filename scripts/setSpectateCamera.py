@@ -27,7 +27,7 @@ if newCam != None:
             logic.sendMessage("disable shaders")
         else:
             if(shaders):
-                newCam.lens=5.823523998260498
+                newCam.lens=7#9.2376#5.823523998260498
                 logic.sendMessage("enable shaders")
             else:
                 newCam.lens=10

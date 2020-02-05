@@ -8,7 +8,7 @@ owner = cont.owner
 UI = bge.UI
 
 textColor = [1,1,1,1]
-blockColor = [0,0,1,0.75]
+blockColor = [0,0,0.05,0.75]
 
 profileIndex = logic.globalDict['currentProfile']
 profiles = logic.globalDict['profiles']
@@ -121,12 +121,13 @@ if(owner['init']!=True):
     #aux switch indicators
     resetBox = UI.BoxElement(window,[30,10],0.5,1, blockColor, 1)
     titleText = UI.TextElement(window,[resetBox.position[0]-5.5,resetBox.position[1]], textColor, 4, "reset",1)
-    owner['resetSwitch'] = UI.BoxElement(window,resetBox.position,0.5,0.5, textColor, 1)
-
+    owner['resetSwitch'] = UI.BoxElement(window,resetBox.position,0.5,0.1, textColor, 1)
+    owner['resetInverted'] = UI.BoxElement(window,resetBox.position,0.5,0.01, [1,0,0,1], 0)
 
     armBox = UI.BoxElement(window,[70,10],0.5,1, blockColor, 1)
     titleText = UI.TextElement(window,[armBox.position[0]+5,armBox.position[1]], textColor, 4, "arm")
-    owner['armSwitch'] = UI.BoxElement(window,armBox.position,0.5,0.5, textColor, 1)
+    owner['armSwitch'] = UI.BoxElement(window,armBox.position,0.5,0.1, textColor, 1)
+    owner['resetInverted'] = UI.BoxElement(window,armBox.position,0.5,0.01, [1,0,0,1], 0)
 
     #back button
     backBox = UI.BoxElement(window,[10,10],1,.5, blockColor, 1)
@@ -137,7 +138,7 @@ if(owner['init']!=True):
     applyBox = UI.BoxElement(window,[90,10],1,.5, blockColor, 1)
     applyText = UI.TextElement(window,applyBox.position, textColor, 0, "APPLY")
     applyButton = UI.UIButton(applyText,applyBox,applySettings)
-
+    
 else:
     try:
         throttleChannel = radioSettings['throttleChannel']-1
@@ -180,8 +181,9 @@ else:
             resetCenter = resetSwitch.getRealTranslatedPosition()
             leftStick.owner.position = [lsCenter[0]+((axis[yawChannel]/yawRes)*yawInverted),lsCenter[1]+((axis[throttleChannel]/throttleRes)*throttleInverted),leftStick.depth]
             rightStick.owner.position = [rsCenter[0]+((axis[rollChannel]/rollRes)*rollInverted),rsCenter[1]+((axis[pitchChannel]/pitchRes)*pitchInverted),rightStick.depth]
-            armSwitch.owner.position = [armCenter[0],armCenter[1]+((axis[armChannel]/armRes)*armInverted)-(0.25*armInverted),armSwitch.depth]
-            resetSwitch.owner.position = [resetCenter[0],resetCenter[1]+((axis[resetChannel]/resetRes)*resetInverted)-(0.25*resetInverted),resetSwitch.depth]
+            print(axis[armChannel]/armRes)
+            armSwitch.owner.position = [armCenter[0],armCenter[1]-((0.5-(axis[armChannel]/armRes))*armInverted),armSwitch.depth]
+            resetSwitch.owner.position = [resetCenter[0],resetCenter[1]-((0.5-(axis[resetChannel]/resetRes))*resetInverted),resetSwitch.depth]
     except Exception as e:
         utils.log(traceback.format_exc())
         #print(e)
