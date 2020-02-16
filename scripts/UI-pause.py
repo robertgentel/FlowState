@@ -11,7 +11,7 @@ UI = bge.UI
 utils = logic.utils
 textColor = [1,1,1,1]
 blockColor = [0,0,0.05,0.75]
-    
+
 def restartAction():
     render.showMouse(0)
     scenes = logic.getSceneList()
@@ -25,7 +25,7 @@ def restartAction():
     currentScene.replace("Main Game")
 
 def mainMenuAction():
-    if(logic.utils.getMode()==logic.utils.MODE_MULTIPLAYER):
+    if(logic.utils.getGameMode()==logic.utils.GAME_MODE_MULTIPLAYER):
         utils.getNetworkClient().quit()
     else:
         scenes = logic.getSceneList()
@@ -34,7 +34,7 @@ def mainMenuAction():
             if(scene!=currentScene):
                 scene.end()
         logic.utils.resetGameState()
-        logic.utils.setMode(logic.utils.MODE_MENU)
+        logic.utils.setViewMode(logic.utils.VIEW_MODE_MENU)
         currentScene.replace("Menu Background")
 
 def settingsAction():
@@ -48,10 +48,19 @@ def resumeAction():
     render.showMouse(0)
     currentScene = logic.getCurrentScene()
     currentScene.end()
-    logic.getSceneList()[0].resume()
+    if(utils.getGameMode()!=utils.GAME_MODE_MULTIPLAYER):
+        logic.getSceneList()[0].resume()
 
 if(owner['init']!=True):
     render.showMouse(1)
+    
+    #pause the main game if we aren't in multiplayer
+    scenes = logic.getSceneList()
+    currentScene = logic.getCurrentScene()
+    print(scenes)
+    if(utils.getGameMode()!=utils.GAME_MODE_MULTIPLAYER):
+        scenes[0].suspend()
+    
     logic.globalDict['sceneHistory'].append(logic.getCurrentScene().name)
     owner['init'] = True
     window = UI.Window()

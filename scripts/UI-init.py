@@ -37,13 +37,13 @@ if(owner['init']!=True):
     
     if(utils.gameState[utils.STATE_FIRST_RUN]):
         welcomeText = UI.TextElement(window,[50+inset,70], textColor, 0, "Welcome to the Flow State drone racing simulator!")
-        welcomeText = UI.TextElement(window,[50+inset,60], textColor, 0, "Have you flown a racing drone before?")
+        welcomeText = UI.TextElement(window,[50+inset,60], textColor, 0, "What type of controller do you have?")
         beginnerBlockElement = UI.BoxElement(window,[30,30],3,2.5, blockColor, 1)
-        beginnerText = UI.TextElement(window,beginnerBlockElement.position, textColor, 0, "First time")
+        beginnerText = UI.TextElement(window,beginnerBlockElement.position, textColor, 0, "Game Controller")
         beginnerButton = UI.UIButton(beginnerText,beginnerBlockElement,beginnerAction)
         
         beginnerBlockElement = UI.BoxElement(window,[70,30],3,2.5, blockColor, 1)
-        beginnerText = UI.TextElement(window,beginnerBlockElement.position, textColor, 0, "I've done this before")
+        beginnerText = UI.TextElement(window,beginnerBlockElement.position, textColor, 0, "RC Radio")
         beginnerButton = UI.UIButton(beginnerText,beginnerBlockElement,proAction)
     else:
         multiplayerGameText = UI.TextElement(window,[10+inset,10], textColor, 0, "Loading...")

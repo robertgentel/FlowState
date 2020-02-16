@@ -17,7 +17,7 @@ def readFile(fileName):
     return ast.literal_eval(saveDataString)
 
 def main():
-    if(utils.getMode()!=utils.MODE_MULTIPLAYER):
+    if(utils.getGameMode()!=utils.GAME_MODE_MULTIPLAYER):
         selectedMap = logic.utils.gameState['selectedMap']
         mapData = readFile(selectedMap)
         spawnMapElements(mapData)
@@ -35,8 +35,8 @@ def spawnMapElements(mapData):
 
     for asset in mapData['assets']:
         spawn = object
-        
-        
+
+
         #owner.orientation = asset['o']
 
         if('s' in asset):
@@ -78,7 +78,6 @@ def spawnMapElements(mapData):
             logic.utils.gameState['startFinishPlane'] = newObj
             utils.log("added start finish gate")
         if('checkpoint order' in newObj['metadata']):
-            #if utils.getMode()!=utils.MODE_EDITOR:
             logic.utils.gameState['track']['checkpoints'].append(newObj)
             if newObj['metadata']['checkpoint order'] > logic.utils.gameState['track']['lastCheckpoint']:
                 logic.utils.gameState['track']['lastCheckpoint'] = newObj['metadata']['checkpoint order']
@@ -91,6 +90,6 @@ def spawnMapElements(mapData):
             else:
                 print("creating launch pads "+str(newSpawnPoint.name))
                 logic.utils.gameState['launchPads'] = [newSpawnPoint]
-            
+
             print(str(logic.utils.gameState['launchPads']))
             #utils.log("setting spawn point "+str(logic.utils.gameState))

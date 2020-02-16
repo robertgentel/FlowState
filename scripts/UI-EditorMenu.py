@@ -27,7 +27,7 @@ def playAction():
             scene.end()
     render.showMouse(0)
     utils.selectMap(mapName)
-    logic.utils.MODE_SINGLE_PLAYER
+    logic.utils.GAME_MODE_SINGLE_PLAYER
     currentScene.replace("Main Game")
 
 
@@ -48,7 +48,7 @@ def mainMenuAction():
         if(scene!=currentScene):
             scene.end()
     logic.utils.resetGameState()
-    logic.utils.MODE_MENU
+    logic.utils.VIEW_MODE_MENU
     currentScene.replace("Menu Background")
 
 def helpAction():

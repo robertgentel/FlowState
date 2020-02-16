@@ -84,7 +84,7 @@ if(owner['init']!=True):
 
     multiplayerGameBlockElement = UI.BoxElement(window,[30,30],2.5,1.25, blockColor, 1)
     multiplayerGameText = UI.TextElement(window,multiplayerGameBlockElement.position, [0.5,0.5,0.5,1], 0, "MULTIPLAYER")
-    multiplayerGameButton = UI.UIButton(multiplayerGameText,multiplayerGameBlockElement,doNothing)
+    multiplayerGameButton = UI.UIButton(multiplayerGameText,multiplayerGameBlockElement,multiplayerGameAction)
 
     #asdf = UI.BoxElement(window,[50,50],10,9.9, [1,0,0,.5], 1)
     editorBlockElement = UI.BoxElement(window,[70,70],2.5,1.25, blockColor, 1)
