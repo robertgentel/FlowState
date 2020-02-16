@@ -23,7 +23,7 @@ def quitGame():
         if(scene!=currentScene):
             scene.end()
     utils.resetGameState()
-    utils.setMode(utils.MODE_MENU)
+    utils.setViewMode(utils.VIEW_MODE_MENU)
     currentScene.replace("Menu Background")
 
 def addNewPlayer(playerID):
@@ -112,6 +112,7 @@ def clientMessageHandler(message):
 
 def setup():
     print("JOINING SERVER!!!")
+    utils.setGameMode(utils.GAME_MODE_MULTIPLAYER)
     #
     utils.setNetworkClient(FSNClient.FSNClient(utils.getServerIP(),50001))
     utils.getNetworkClient().connect()
@@ -155,5 +156,5 @@ def main():
     lastFrameExecution = float(time.perf_counter())-logic.lastLogicTic
     logic.lastNetworkTick+=lastFrameExecution
 
-if(utils.getMode()==utils.MODE_MULTIPLAYER):
+if(utils.getGameMode()==utils.GAME_MODE_MULTIPLAYER):
     main()

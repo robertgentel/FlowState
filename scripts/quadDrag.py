@@ -34,7 +34,7 @@ def main():
     iDrag = 0.675 #the magic induced drag number (needs to be measured)
     iDrag += ((droneSettings['iDrag']-70)/1000) #allow the user to change induced drag by +/- 0.05
     
-    totalDragMultiplier = 1.0
+    totalDragMultiplier = 1.0*((droneSettings['weight']/500)**0.75) #we're going to assume that the drone's size scales with the weight until we have measurements from parts
     dragMultiplier = totalDragMultiplier*(pDrag) #parasitic drag (4.0 - 3.0)
     liftMultiplier = totalDragMultiplier*(iDrag) #induced drag (lift/downforce)
     

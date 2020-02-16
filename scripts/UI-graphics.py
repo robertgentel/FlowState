@@ -32,8 +32,10 @@ def applySettings():
     #            #scene.restart()
     #
     logic.saveGlobalDict()
-    logic.restartGame()
-    #backAction()
+    if(utils.getGameMode()!=utils.GAME_MODE_MULTIPLAYER):
+        logic.restartGame()
+    else:
+        backAction()
 
 def spawnBoolRow(label,height,key,action):
 

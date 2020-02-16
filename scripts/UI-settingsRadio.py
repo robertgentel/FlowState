@@ -6,6 +6,7 @@ scene = logic.getCurrentScene()
 cont = logic.getCurrentController()
 owner = cont.owner
 UI = bge.UI
+utils = logic.utils
 
 textColor = [1,1,1,1]
 blockColor = [0,0,0.05,0.75]
@@ -47,10 +48,15 @@ def applySettings():
     for scene in scenes:
         if(scene!=currentScene):
             if(scene.name == "Main Game"):
-                currentMap = logic.utils.gameState["selectedMap"]
-                logic.utils.resetGameState()
-                logic.utils.gameState["selectedMap"] = currentMap
-                scene.restart()
+                print(utils.getGameMode())
+                if(utils.getGameMode()==utils.GAME_MODE_MULTIPLAYER):
+                    print("WE ARE IN MULTIPLAYER!!!! DONT RESTART")
+                else:
+                    currentMap = logic.utils.gameState["selectedMap"]
+                    logic.utils.resetGameState()
+                    logic.utils.gameState["selectedMap"] = currentMap
+                    scene.restart()
+                    print("WE ARE IN SINGLE PLAYER!!!! COOL TO RESTART")
 
     logic.saveGlobalDict()
     backAction()
@@ -138,7 +144,7 @@ if(owner['init']!=True):
     applyBox = UI.BoxElement(window,[90,10],1,.5, blockColor, 1)
     applyText = UI.TextElement(window,applyBox.position, textColor, 0, "APPLY")
     applyButton = UI.UIButton(applyText,applyBox,applySettings)
-    
+
 else:
     try:
         throttleChannel = radioSettings['throttleChannel']-1

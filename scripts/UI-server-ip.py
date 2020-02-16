@@ -21,7 +21,7 @@ blendPath = logic.expandPath("//")
 
 if "window" not in owner:
     owner['window'] = UI.Window()
-    
+
 window = owner['window']
 
 def getKeyStates(keyboard):
@@ -47,8 +47,9 @@ def loadMultiplayerServer(serverName):
         if(scene!=currentScene):
             scene.end()
     render.showMouse(0)
-    
-    utils.setMode(utils.MODE_MULTIPLAYER)
+
+    utils.setGameMode(utils.GAME_MODE_MULTIPLAYER)
+    utils.setViewMode(utils.VIEW_MODE_PLAY)
     #utils.selectMap("multiplayer.fmp")
     currentScene.replace("Main Game")
     utils.setServerIP(serverName)
@@ -61,17 +62,17 @@ def mapSelectAction(key,mapName):
             scene.end()
     render.showMouse(0)
     utils.selectMap(mapName)
-    utils.setMode(utils.MODE_SINGLE_PLAYER)
+    utils.setGameMode(utils.MODE_SINGLE_PLAYER)
     currentScene.replace("Map Editor")
- 
+
 def multiplayerAction():
     pass
-    
+
 def settingsAction():
     bge.logic.sendMessage("cam2")
     currentScene = logic.getCurrentScene()
     currentScene.replace("UI-settings")
-    
+
 def backAction():
     currentScene = logic.getCurrentScene()
     sceneHistory = logic.globalDict['sceneHistory']
@@ -93,11 +94,11 @@ def addMapButton(name,spacing):
     mapButtonText = UI.TextElement(window,mapButtonBlock.position, textColor, 0,name)
     mapButton = UI.UIButton(mapButtonText,mapButtonBlock,mapSelectAction,"map",name)
     mapButtons.append(mapButton)
-    
+
     owner['window'].add("mapButtonBlock"+name,mapButtonBlock)
     owner['window'].add("mapButtonText"+name,mapButtonText)
     owner['window'].add("mapButton"+name,mapButton)
-    
+
 def createMapAction():
     currentScene = logic.getCurrentScene()
     sceneHistory = logic.globalDict['sceneHistory']
@@ -107,7 +108,7 @@ def createMapAction():
     removedScene = sceneHistory.pop(-1)
     print("removing scene "+str(removedScene))
     currentScene.replace(backScene)
-    
+
 def createMapButton(name,spacing):
     buttonIndex = len(mapButtons)
     height = 70-(buttonIndex*spacing)
@@ -116,11 +117,11 @@ def createMapButton(name,spacing):
     mapButtonText = UI.TextElement(window,mapButtonBlock.position, textColor, 0,name)
     #mapButton = UI.UIButton(mapButtonText,mapButtonBlock,createMapAction,"map",name)
     #mapButtons.append(mapButton)
-    
+
     owner['window'].add("mapButtonBlock"+name,mapButtonBlock)
     owner['window'].add("mapButtonText"+name,mapButtonText)
     #owner['window'].add("mapButton"+name,mapButton)
-    
+
 
 if(owner['init']!=True):
     logic.globalDict['sceneHistory'].append(logic.getCurrentScene().name)
@@ -128,10 +129,10 @@ if(owner['init']!=True):
     window = UI.Window()
 
     inset = 0.2
-    
+
     headerBox = UI.BoxElement(window,[45,95],11,1, blockColor, 1)
     headerText = UI.TextElement(window,headerBox.position, textColor, 0, "SELECT MAP")
-    
+
     #back button
     nameLabelBlockElement = UI.BoxElement(window,[40,50],10,.5, blockColor, 1)
     nameLabelText = UI.TextElement(window,nameLabelBlockElement.position, textColor, 0, "SERVER NAME:")
@@ -142,7 +143,7 @@ if(owner['init']!=True):
     backBlockElement = UI.BoxElement(window,[10,10],1,.5, blockColor, 1)
     backText = UI.TextElement(window,backBlockElement.position, textColor, 0, "BACK")
     backButton = UI.UIButton(backText,backBlockElement,backAction)
-    
+
     owner['window'].add("backBlockElement",backBlockElement)
     owner['window'].add("backText",backText)
     owner['window'].add("backButton",backButton)
@@ -154,9 +155,9 @@ if(owner['init']!=True):
 
 else:
     try:
-        #UI.run(cont) 
+        #UI.run(cont)
         UI.runWindow(window,cont)
-        
+
         #text box stuff. please move into UI TextInput
         (pressedKeys,activeKeys,inactiveKeys,releasedKeys) = getKeyStates(keyboard)
         enter = bge.events.ENTERKEY in pressedKeys
@@ -175,4 +176,3 @@ else:
     except Exception as e:
         utils.log(traceback.format_exc())
         owner['init'] = -1
-        

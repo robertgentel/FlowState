@@ -8,7 +8,7 @@ logic.loadGlobalDict()
 logic.globalDict['sceneHistory'] = []
 #logic.utils.setDefaultState()
 logic.saveGlobalDict()
-logic.utils.setMode(logic.utils.MODE_MENU)
+logic.utils.setViewMode(logic.utils.VIEW_MODE_MENU)
 
 profileIndex = logic.globalDict['currentProfile']
 profiles = logic.globalDict['profiles']

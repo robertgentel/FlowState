@@ -44,7 +44,7 @@ def getAngularAcceleration():
         own['lastAngularVel'] = own.getAngularVelocity(True)
 
 def respawn():
-    if(utils.getMode()!=utils.MODE_MULTIPLAYER):
+    if(utils.getGameMode()!=utils.GAME_MODE_MULTIPLAYER):
         launchPadNo = 0
     else:
         pass
@@ -357,7 +357,7 @@ def main():
     getAcc()
     if (own['oporational'] == True)&armed:
         if own['settled']:
-            if(utils.getMode()!=utils.MODE_MULTIPLAYER):
+            if(utils.getGameMode()!=utils.GAME_MODE_MULTIPLAYER):
                 #WAYS YOU CAN KILL YOUR QUAD
                 if(cont.sensors['PropStrike'].positive):
 
@@ -515,21 +515,19 @@ def main():
                 if(float(logic.raceTimer)!=0.0):
 
                     own.applyForce([0,0,thrust],True)
-                    
+
             if(g['autoLevel']):
-                
+                maxAngle = 100
                 #own.setAngularVelocity([0,0,0], True)
                 own.angularVelocity[0] = 0
                 own.angularVelocity[1] = 0
-                x = pitchPercent-0.5
-                y = rollPercent-0.5
-                z = 1
+                x = (pitchPercent-0.5)*250.0
+                y = (rollPercent-0.5)*250.0
+                z = (1)*maxAngle
                 levelTotal = abs(x)+abs(y)+abs(z)
                 x/=levelTotal
                 y/=levelTotal
                 z/=levelTotal
-                setOrientation = [x,-y,z]
-                print(setOrientation)
                 #own.alignAxisToVect(setOrientation, 2, 0.94)
                 own.orientation = [-x,y,own.orientation.to_euler().z]
 
@@ -542,7 +540,7 @@ def main():
         own['canReset'] = True
         print("canReset = True")
     if((reset)&own['canReset']):
-        if(utils.getMode()!=utils.MODE_MULTIPLAYER):
+        if(utils.getGameMode()!=utils.GAME_MODE_MULTIPLAYER):
             resetGame()
         else:
             resetEvent = FSNObjects.PlayerEvent(FSNObjects.PlayerEvent.PLAYER_MESSAGE,utils.getNetworkClient().clientID,"reset")
@@ -562,7 +560,7 @@ def settle():
 def isSettled():
     if not own['settled']:
         logic.setTimeScale(0.001)
-        if(utils.getMode()!=utils.MODE_MULTIPLAYER):
+        if(utils.getGameMode()!=utils.GAME_MODE_MULTIPLAYER):
             logic.isSettled = False
             fps = logic.getAverageFrameRate()
             avgFPSList = own['settleFrameRates']
