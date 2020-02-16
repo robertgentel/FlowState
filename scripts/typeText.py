@@ -47,12 +47,11 @@ if(enter):
             scene.end()
     render.showMouse(0)
     mapName = str(owner.text)+".fmp"
-    
-    
+
+
     map = {"assets":[]}
     saveMapToFile(map,mapName)
-    
+
     currentScene.replace("Map Editor")
     utils.selectMap(mapName)
-    utils.setMode(utils.MODE_SINGLE_PLAYER)
 print(pressedKeys)

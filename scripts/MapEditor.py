@@ -20,7 +20,7 @@ class MapEditor:
     def __init__(self):
         self.cont = logic.getCurrentController()
         self.owner = self.cont.owner
-        utils.setMode(utils.MODE_EDITOR)
+        utils.setGameMode(utils.GAME_MODE_EDITOR)
         self.cursor = self.findChildWithProperty("mapEditorCursor")
         self.cursorOffsetPosition = [0,50,0]
         self.camera = self.findChildWithProperty("mapEditorCamera")

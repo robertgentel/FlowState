@@ -44,7 +44,7 @@ class Checkpoint(bge.types.KX_PythonComponent):
                 render.drawLine(a,b,[1,1-value,1-value])
                 #self.drawPoint(a)
             #self.drawPoint(b)
-        
+
 
     def start(self, args):
         self.lastPlayerPos = None
@@ -53,7 +53,7 @@ class Checkpoint(bge.types.KX_PythonComponent):
         self.collision = None
         self.object.collisionCallbacks = [self.oncollision]
         self.flightData = {"position":[],"throttlePercent":[]}
-        
+
         #print(self.object.collisionCallbacks)
         #print("start "+str(self.object.name))
 
@@ -63,7 +63,7 @@ class Checkpoint(bge.types.KX_PythonComponent):
 
     def setCheckpointVisibility(self,enabled=False):
         #for checkpoint in logic.utils.gameState['track']['checkpoints']:
-        
+
         #if(checkpoint['metadata']['checkpoint order'] == logic.utils.gameState['track']['nextCheckpoint']):
         if self.object.visible!=enabled:
             self.object.visible = enabled
@@ -110,14 +110,14 @@ class Checkpoint(bge.types.KX_PythonComponent):
             normal.append(vect[i]/max)
         return normal
     def update(self):
-        
+
         self.entrance = self.object.children[0]
         nextCheckpoint = logic.utils.gameState['track']['nextCheckpoint']
         hitCheckpointNumber = self.object['metadata']['checkpoint order']
-        if(utils.getMode()!=utils.MODE_EDITOR):
-            
+        if(utils.getGameMode()!=utils.GAME_MODE_EDITOR):
+
             if(nextCheckpoint==hitCheckpointNumber):
-                
+
                 self.setCheckpointVisibility(True)
                 if self.lastPlayerPos!=None:
                     pa = self.lastPlayerPos
@@ -133,7 +133,7 @@ class Checkpoint(bge.types.KX_PythonComponent):
                             print("checkpoint:"+str(self.object['metadata']['checkpoint order'])+" collision", self.collision)
                         else:
                             print("checkpoint:"+str(self.object['metadata']['checkpoint order'])+" ray hit", hitObject)
-                        
+
                         o = self.object.getVectTo(self.entrance.position)[1]
                         #print(o)
                         v = utils.getPlayerObject().getLinearVelocity(False)

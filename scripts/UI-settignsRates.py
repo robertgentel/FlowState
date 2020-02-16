@@ -6,6 +6,7 @@ scene = logic.getCurrentScene()
 cont = logic.getCurrentController()
 owner = cont.owner
 UI = bge.UI
+utils = logic.utils
 
 textColor = [1,1,1,1]
 blockColor = [0,0,0.05,0.75]
@@ -24,7 +25,7 @@ def soloGameAction():
             scene.end()
     currentScene.replace("main regional finals")
 
-#rate actions 
+#rate actions
 def setYawRateAction():
     profileIndex = logic.globalDict['currentProfile']
     profiles = logic.globalDict['profiles']
@@ -78,10 +79,15 @@ def applySettings():
     for scene in scenes:
         if(scene!=currentScene):
             if(scene.name == "Main Game"):
-                currentMap = logic.utils.gameState["selectedMap"]
-                logic.utils.resetGameState()
-                logic.utils.gameState["selectedMap"] = currentMap
-                scene.restart()
+                print(utils.getGameMode())
+                if(utils.getGameMode()==utils.GAME_MODE_MULTIPLAYER):
+                    print("WE ARE IN MULTIPLAYER!!!! DONT RESTART")
+                else:
+                    currentMap = logic.utils.gameState["selectedMap"]
+                    logic.utils.resetGameState()
+                    logic.utils.gameState["selectedMap"] = currentMap
+                    scene.restart()
+                    print("WE ARE IN SINGLE!!!! COOL TO RESTART")
 
     logic.saveGlobalDict()
     backAction()
@@ -145,7 +151,7 @@ if(owner['init']!=True):
     bHeight -= 7
     rollSuperRateInput = spawnRateInput("ROLL SUPER RATE",bHeight,"rollSuperRate",setRollSuperRateAction,0,100,1)
     bHeight -= 7
-    
+
     yawExpoInput = spawnRateInput("YAW EXPO",bHeight,"yawExpo",setYawExpoAction,0,100,1)
     bHeight -= 7
     pitchExpoInput = spawnRateInput("PITCH EXPO",bHeight,"pitchExpo",setPitchExpoAction,0,100,1)

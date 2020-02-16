@@ -11,7 +11,7 @@ def main():
         owner["lastGhostUpdate"] = time.perf_counter()
     if abs(time.perf_counter()-owner["lastGhostUpdate"]) > (1/60.0):
         owner["lastGhostUpdate"] = time.perf_counter()
-        if(utils.getMode()!=utils.MODE_MULTIPLAYER):
+        if(utils.getGameMode()!=utils.GAME_MODE_MULTIPLAYER):
             if("startFinishPlane" in logic.utils.gameState):
                 startFinishPlane = logic.utils.gameState["startFinishPlane"]
                 lap = startFinishPlane["lap"]

@@ -36,18 +36,22 @@ class utils:
     STATE_SELECTED_MAP_KEY = "selectedMap"
     STATE_SERVER_IP_KEY = "serverIP"
     STATE_MAP_EDITOR_KEY = "mapEditor"
-    STATE_MODE_KEY = "mode"
+    STATE_GAME_MODE_KEY = "gameMode"
+    STATE_VIEW_MODE_KEY = "viewMode"
     STATE_NETWORK_CLIENT_KEY = "networkClient"
     STATE_LAP_KEY = "lap"
     STATE_PLAYER_DATA_KEY = "playerData"
     STATE_PLAYER_OBJECT_KEY = "playerObject"
     STATE_FIRST_RUN = "first run"
 
+    #view mode keys
+    VIEW_MODE_MENU=0
+    VIEW_MODE_PLAY=1
+
     #game mode keys
-    MODE_MENU = 0
-    MODE_EDITOR = 1
-    MODE_SINGLE_PLAYER = 2
-    MODE_MULTIPLAYER = 3
+    GAME_MODE_EDITOR = 0
+    GAME_MODE_SINGLE_PLAYER = 1
+    GAME_MODE_MULTIPLAYER = 2
 
     def __init__(self):
         self.log("INIT!")
@@ -67,6 +71,7 @@ class utils:
             saveFile.close()
 
     def addMetadata(self,asset):
+        self.log("gameUtils.addMetadata("+str(asset)+")")
         asset['metadata'] = {}
         if 'gate' in asset.name:
             asset['metadata'] = copy.deepcopy(utils.METADATA_GATE)
@@ -76,64 +81,88 @@ class utils:
         asset['metadata']['id'] = self.getNewID()
 
     def getNewID(self):
+        #self.log("gameUtils.getNewID()")
         self.id+=1
         return self.id
 
     def setDefaultState(self):
-        self.log("setting default game state")
+        self.log("gameUtils.setDefaultState()")
         self.gameState = copy.deepcopy(logic.defaultGameState)
 
     def getDefaultGameState(self):
+        #self.log("gameUtils.getDefaultGameState()")
         return copy.deepcopy(logic.defaultGameState)
 
     def getGameState(self):
+        #self.log("gameUtils.getGameState()")
         return self.gameState
 
     def getPlayerObject(self):
+        #self.log("gameUtils.getPlayerObject()")
         return self.gameState[utils.STATE_PLAYER_DATA_KEY][utils.STATE_PLAYER_OBJECT_KEY]
 
     def setPlayerObject(self,value):
+        self.log("gameUtils.setPlayerObject("+str(value)+")")
         self.gameState[utils.STATE_PLAYER_DATA_KEY][utils.STATE_PLAYER_OBJECT_KEY] = value
 
     def resetGameState(self):
-        self.log("resetting game state!!!")
+        self.log("gameUtils.resetGameState()")
         self.gameState = copy.deepcopy(logic.defaultGameState)
 
     def selectMap(self,selectedMap):
+        self.log("gameUtils.selectMap("+str(selectedMap)+")")
         self.gameState[utils.STATE_SELECTED_MAP_KEY] = selectedMap
 
     def setServerIP(self,serverIP):
+        self.log("gameUtils.setServerIP("+str(serverIP)+")")
         self.gameState[utils.STATE_SERVER_IP_KEY] = serverIP
 
     def getServerIP(self):
+        #self.log("gameUtils.getServerIP()")
         print("server ip is "+repr(str(self.gameState[utils.STATE_SERVER_IP_KEY])))
         return self.gameState[utils.STATE_SERVER_IP_KEY]
 
     def getSelectedMap(self):
+        #self.log("gameUtils.getSelectedMap()")
         return self.gameState[utils.STATE_SELECTED_MAP_KEY]
 
     def getMapEditor(self):
+        #self.log("gameUtils.getMapEditor()")
         return self.gameState[utils.STATE_MAP_EDITOR_KEY]
 
-    def setMode(self,newMode):
-        print("set mode!!!!")
-        self.gameState[utils.STATE_MODE_KEY] = newMode
+    def setGameMode(self,newMode):
+        self.log("gameUtils.setGameMode("+str(newMode)+")")
+        print("set game mode: "+str(newMode))
+        self.gameState[utils.STATE_GAME_MODE_KEY] = newMode
 
-    def getMode(self):
-        return self.gameState[utils.STATE_MODE_KEY]
+    def getGameMode(self):
+        #self.log("gameUtils.getGameMode()")
+        return self.gameState[utils.STATE_GAME_MODE_KEY]
+
+    def setViewMode(self,newMode):
+        self.log("gameUtils.setViewMode("+str(newMode)+")")
+        self.gameState[utils.STATE_VIEW_MODE_KEY] = newMode
+
+    def getViewMode(self):
+        #self.log("gameUtils.getViewMode()")
+        return self.gameState[utils.STATE_VIEW_MODE_KEY]
 
     def getNetworkClient(self):
+        #self.log("gameUtils.getNetworkClient()")
         return self.gameState[utils.STATE_NETWORK_CLIENT_KEY]
 
     def setNetworkClient(self,client):
+        self.log("gameUtils.setNetworkClient("+str(client)+")")
         self.gameState[utils.STATE_NETWORK_CLIENT_KEY] = client
 
     def forceDefaults(self,defaultData):
+        self.log("gameUtils.forceDefaults("+str(defaultData)+")")
         self.log("Profile versions do not match! You will need to reconfigure your settings ("+logic.globalDict['version']+": "+defaultData['version']+")")
         logic.globalDict = defaultData
         logic.saveGlobalDict()
 
     def setSkillLevel(self,skill):
+        self.log("gameUtils.setSkillLevel("+str(skill)+")")
         version = "1.2"
         defaultData = {}
         self.log("updating save file")
@@ -158,7 +187,7 @@ class utils:
         beginnerProfile["droneSettings"] = {'autoLevel':True,'cameraTilt':30,'thrust':1000,'motorKV':1700,"pDrag":50,"iDrag":50,'batteryCellCount':6,'weight':500,'yawExpo':0.0,'pitchExpo':0.0,'rollExpo':0.0,'pitchRate':50,'rollRate':50,'yawRate':50,'pitchSuperRate':70,'rollSuperRate':70,'yawSuperRate':70}
         beginnerProfile['radioSettings'] = {'throttleInverted':True,'yawInverted':False,'pitchInverted':True,'rollInverted':False,'armInverted':True,'resetInverted':False,'yawChannel':1,'pitchChannel':4,'throttleChannel':2,'rollChannel':3,'resetChannel':6,'armChannel':5,'yawOffset':0,'pitchOffset':0,'rollOffset':0,'minThrottle':-32252,'maxThrottle':32252,'minYaw':-32252,'maxYaw':32252,'minPitch':-32252,'maxPitch':32252,'minRoll':-32252,'maxRoll':32252,'minReset':0,'maxReset':32768,'minArm':0,'maxArm':32768,'armSetpoint':0.5,'resetSetpoint':0.5,'dedicatedThrottleStick':True}
         beginnerProfile['graphicsSettings'] = {"frameRate":False,"shaders":True,"specularity":True,"shadows":True,"shading":True, "raceLine":False}
-        
+
         if(skill==0):
             self.log("player is a beginner")
             defaultData['profiles'].append(beginnerProfile)
@@ -168,6 +197,7 @@ class utils:
         self.forceDefaults(defaultData)
 
     def setDefaults(self,skill=1):
+        self.log("gameUtils.setDefaults("+str(skill)+")")
         version = "1.2"
         defaultData = {}
         self.log("updating save file")
@@ -192,7 +222,7 @@ class utils:
         beginnerProfile["droneSettings"] = {'autoLevel':False,'cameraTilt':30,'thrust':1000,'motorKV':1700,"pDrag":50,"iDrag":50,'batteryCellCount':6,'weight':500,'yawExpo':0.0,'pitchExpo':0.0,'rollExpo':0.0,'pitchRate':50,'rollRate':50,'yawRate':50,'pitchSuperRate':70,'rollSuperRate':70,'yawSuperRate':70}
         beginnerProfile['radioSettings'] = {'throttleInverted':True,'yawInverted':False,'pitchInverted':True,'rollInverted':False,'armInverted':True,'resetInverted':False,'yawChannel':1,'pitchChannel':4,'throttleChannel':2,'rollChannel':3,'resetChannel':6,'armChannel':5,'yawOffset':0,'pitchOffset':0,'rollOffset':0,'minThrottle':-32252,'maxThrottle':32252,'minYaw':-32252,'maxYaw':32252,'minPitch':-32252,'maxPitch':32252,'minRoll':-32252,'maxRoll':32252,'minReset':0,'maxReset':32768,'minArm':0,'maxArm':32768,'armSetpoint':0.5,'resetSetpoint':0.5,'dedicatedThrottleStick':True}
         beginnerProfile['graphicsSettings'] = {"frameRate":False,"shaders":True,"specularity":True,"shadows":True,"shading":True, "raceLine":False}
-        
+
         if(skill==0):
             self.log("player is a beginner")
             defaultData['profiles'].append(beginnerProfile)
@@ -201,7 +231,7 @@ class utils:
             defaultData['profiles'].append(defaultProfile)
 
         #logic.maps = {"
-        logic.defaultGameState = {utils.STATE_FIRST_RUN:True, utils.STATE_SELECTED_MAP_KEY:"2018 Regional Final.fmp", "notification":{"Text":""}, utils.STATE_MODE_KEY:self.MODE_MENU, "track":{"countdownTime":3,"checkpoints":[],"nextCheckpoint":0,"lastCheckpoint":0}, utils.STATE_PLAYER_DATA_KEY:{utils.STATE_PLAYER_OBJECT_KEY:None,utils.STATE_LAP_KEY:0,"checkpoint":0},utils.STATE_MAP_EDITOR_KEY:None,utils.STATE_SERVER_IP_KEY:"localhost",utils.STATE_NETWORK_CLIENT_KEY:None}
+        logic.defaultGameState = {utils.STATE_FIRST_RUN:True, utils.STATE_SELECTED_MAP_KEY:"2018 Regional Final.fmp", "notification":{"Text":""}, utils.STATE_GAME_MODE_KEY:self.GAME_MODE_SINGLE_PLAYER, utils.STATE_VIEW_MODE_KEY:self.VIEW_MODE_MENU, "track":{"countdownTime":3,"checkpoints":[],"nextCheckpoint":0,"lastCheckpoint":0}, utils.STATE_PLAYER_DATA_KEY:{utils.STATE_PLAYER_OBJECT_KEY:None,utils.STATE_LAP_KEY:0,"checkpoint":0},utils.STATE_MAP_EDITOR_KEY:None,utils.STATE_SERVER_IP_KEY:"localhost",utils.STATE_NETWORK_CLIENT_KEY:None}
         logic.loadGlobalDict()
         if('version' in logic.globalDict):
             if(logic.globalDict['version']!=defaultData['version']):

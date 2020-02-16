@@ -59,10 +59,15 @@ def applySettings():
     for scene in scenes:
         if(scene!=currentScene):
             if(scene.name == "Main Game"):
-                currentMap = utils.getSelectedMap()
-                logic.utils.resetGameState()
-                logic.utils.gameState["selectedMap"] = currentMap
-                scene.restart()
+                if(utils.getGameMode()==utils.GAME_MODE_MULTIPLAYER):
+                    print("WE ARE IN MULTIPLAYER!!!! DONT RESTART")
+                else:
+                    currentMap = utils.getSelectedMap()
+                    logic.utils.resetGameState()
+                    logic.utils.gameState["selectedMap"] = currentMap
+                    scene.restart()
+                    print("WE ARE IN SINGLE PLAYER!!!! COOL TO RESTART")
+
 
     logic.saveGlobalDict()
     backAction()
@@ -81,7 +86,7 @@ def settingsAction(key,value):
     print(key,value)
     profileIndex = logic.globalDict['currentProfile']
     profile = profiles[profileIndex]
-    
+
     profile['droneSettings'][key] = value
 
 def spawnSetting(label,height,key,action,min,max,increment):
@@ -109,10 +114,10 @@ def spawnBoolRow(label,height,key,action):
     button = UI.UIButton(text,box,settingsAction)
 
     #indicatorText = UI.TextElement(window,[50,height], textColor, 0, "0")
-    
+
     profileIndex = logic.globalDict['currentProfile']
     profile = profiles[profileIndex]
-    
+
     invertedBooleanButton = UI.UIBooleanInput(button,text,key,profile['droneSettings'][key])
     return invertedBooleanButton
 
@@ -134,9 +139,9 @@ if(owner['init']!=True):
     weightInput = spawnSetting("ALL UP WEIGHT (GRAMS)",50,"weight",setWeightAction,1,2000,10)
     motorKVmInput = spawnSetting("DRAG",40,"pDrag",setMotorKVAction,0,100,1)
     cellCountInput = spawnSetting("LIFT / DOWNFORCE",30,"iDrag",setCellCountAction,0,100,1)
-    
+
     #spawnSetting("Auto Level", False, "autoLevel", setAutoLevelAction,0,90,1)
-    
+
     autoLevel = spawnBoolRow("Auto Level",20,"autoLevel",settingsAction)
     #itemRow = UI.BoxElement(window,[50,20],11,0.5, blockColor, 5)
     #autoLevelBox = UI.BoxElement(window,[20,20],1,0.5, blockColor, 1)
