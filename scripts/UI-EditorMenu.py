@@ -2,12 +2,13 @@ import bge
 import math
 import traceback
 logic = bge.logic
-utils = logic.utils
+flowState = logic.flowState
 render = bge.render
 
 scene = logic.getCurrentScene()
 cont = logic.getCurrentController()
 owner = cont.owner
+flowState = logic.flowState
 UI = bge.UI
 
 textColor = [1,1,1,1]
@@ -26,20 +27,20 @@ def playAction():
         if(scene!=currentScene):
             scene.end()
     render.showMouse(0)
-    utils.selectMap(mapName)
-    logic.utils.GAME_MODE_SINGLE_PLAYER
+    flowState.selectMap(mapName)
+    logic.flowState.GAME_MODE_SINGLE_PLAYER
     currentScene.replace("Main Game")
 
 
 def saveAction():
     render.showMouse(0)
     logic.sendMessage("saveMap")
-    logic.utils.gameState['mapEditor'].setMode(logic.utils.gameState['mapEditor'].MODE_3D)
+    logic.flowState.getMapEditor().setMode(logic.flowState.VIEW_MODE_PLAY)
 
 def toggleUnitsAction():
     print("toggleUnitsAction()")
-    logic.utils.getMapEditor().toggleUnits()
-    print(logic.utils.getMapEditor().unitsMetric)
+    logic.flowState.getMapEditor().toggleUnits()
+    print(logic.flowState.getMapEditor().unitsMetric)
 
 def mainMenuAction():
     scenes = logic.getSceneList()
@@ -47,8 +48,8 @@ def mainMenuAction():
     for scene in scenes:
         if(scene!=currentScene):
             scene.end()
-    logic.utils.resetGameState()
-    logic.utils.VIEW_MODE_MENU
+    logic.flowState.resetGameState()
+
     currentScene.replace("Menu Background")
 
 def helpAction():
@@ -56,22 +57,18 @@ def helpAction():
     currentScene.replace("UI-editor-help")
 
 def inputAction(key,value):
-    print("input action")
-    print(key)
-    print(value)
-    #logic.utils.gameState['mapEditor'].selectedAsset['metadata'][key] = value
-    logic.utils.gameState['mapEditor'].applyMetadata(key,value)
+    logic.flowState.getMapEditor().applyMetadata(key,value)
 
 def noAction():
     print("no action")
 
 def quitGameAction():
     render.showMouse(0)
-    logic.utils.gameState['mapEditor'].setMode(logic.utils.gameState['mapEditor'].MODE_3D)
+    logic.flowState.getMapEditor().setMode(logic.flowState.VIEW_MODE_PLAY)
 
 def resumeAction():
     render.showMouse(0)
-    logic.utils.gameState['mapEditor'].setMode(logic.utils.gameState['mapEditor'].MODE_3D)
+    logic.flowState.getMapEditor().setMode(logic.flowState.VIEW_MODE_PLAY)
 
 def spawnMetadataInput(window,label,value,position,action,min,max,increment):
     height = position[1]
@@ -109,8 +106,7 @@ def spawnMetadataInput(window,label,value,position,action,min,max,increment):
 
 if(owner['init']==0):
     render.showMouse(1)
-    logic.globalDict['sceneHistory'].append(logic.getCurrentScene().name)
-    logic.utils.gameState['lockCursor'] = False
+    flowState.sceneHistory.append(logic.getCurrentScene().name)
     owner['init'] = 1
     inset = 0.2
 
@@ -118,12 +114,12 @@ if(owner['init']==0):
 
     owner['metadataObject'] = []
     i = 0
-    asset = logic.utils.gameState['mapEditor'].selectedAsset
+    asset = logic.flowState.getMapEditor().selectedAsset
     if(asset!=None):
         if 'metadata' in asset:
             print(asset['metadata'])
         for key in asset['metadata']:
-            if(key not in utils.STATIC_METADATA):
+            if(key not in flowState.STATIC_METADATA):
                 value = asset['metadata'][key]
                 metadataInput = spawnMetadataInput(window,key,value,[30,85-(i*10)],inputAction,1,10000,1)
                 i+=1
@@ -173,14 +169,14 @@ if(owner['init']==0):
 
 if(owner['init']==1):
     try:
-        editor = logic.utils.gameState['mapEditor']
+        editor = logic.flowState.getMapEditor()
         if(editor != None):
-            if(editor.currentMode == editor.MODE_MENU):
+            if(flowState.getViewMode() == flowState.VIEW_MODE_MENU):
                 UI.runWindow(window,cont)
 
         else:
 
             UI.runWindow(window,cont)
     except Exception as e:
-        utils.log(traceback.format_exc())
+        flowState.log(traceback.format_exc())
         owner['init'] = -1

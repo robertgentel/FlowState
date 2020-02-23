@@ -7,8 +7,9 @@ render = bge.render
 scene = logic.getCurrentScene()
 cont = logic.getCurrentController()
 owner = cont.owner
+flowState = logic.flowState
 UI = bge.UI
-utils = logic.utils
+flowState = logic.flowState
 textColor = [1,1,1,1]
 blockColor = [0,0,0.05,0.75]
 
@@ -19,22 +20,22 @@ def restartAction():
     for scene in scenes:
         if(scene!=currentScene):
             scene.end()
-    currentMap = logic.utils.gameState["selectedMap"]
-    logic.utils.resetGameState()
-    logic.utils.gameState["selectedMap"] = currentMap
+    currentMap = logic.flowState.getSelectedMap()
+    logic.flowState.resetGameState()
+    logic.flowState.setSelectedMap(currentMap)
     currentScene.replace("Main Game")
 
 def mainMenuAction():
-    if(logic.utils.getGameMode()==logic.utils.GAME_MODE_MULTIPLAYER):
-        utils.getNetworkClient().quit()
+    if(logic.flowState.getGameMode()==logic.flowState.GAME_MODE_MULTIPLAYER):
+        flowState.getNetworkClient().quit()
     else:
         scenes = logic.getSceneList()
         currentScene = logic.getCurrentScene()
         for scene in scenes:
             if(scene!=currentScene):
                 scene.end()
-        logic.utils.resetGameState()
-        logic.utils.setViewMode(logic.utils.VIEW_MODE_MENU)
+        logic.flowState.resetGameState()
+        logic.flowState.setViewMode(logic.flowState.VIEW_MODE_MENU)
         currentScene.replace("Menu Background")
 
 def settingsAction():
@@ -48,20 +49,20 @@ def resumeAction():
     render.showMouse(0)
     currentScene = logic.getCurrentScene()
     currentScene.end()
-    if(utils.getGameMode()!=utils.GAME_MODE_MULTIPLAYER):
+    if(flowState.getGameMode()!=flowState.GAME_MODE_MULTIPLAYER):
         logic.getSceneList()[0].resume()
 
 if(owner['init']!=True):
     render.showMouse(1)
-    
+
     #pause the main game if we aren't in multiplayer
     scenes = logic.getSceneList()
     currentScene = logic.getCurrentScene()
     print(scenes)
-    if(utils.getGameMode()!=utils.GAME_MODE_MULTIPLAYER):
+    if(flowState.getGameMode()!=flowState.GAME_MODE_MULTIPLAYER):
         scenes[0].suspend()
-    
-    logic.globalDict['sceneHistory'].append(logic.getCurrentScene().name)
+
+    flowState.sceneHistory.append(logic.getCurrentScene().name)
     owner['init'] = True
     window = UI.Window()
 
@@ -95,5 +96,5 @@ else:
     try:
         UI.run(cont)
     except Exception as e:
-        utils.log(traceback.format_exc())
+        flowState.log(traceback.format_exc())
         owner['init'] = -1

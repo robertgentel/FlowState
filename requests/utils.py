@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """
-requests.utils
+requests.flowState
 ~~~~~~~~~~~~~~
 
 This module provides utility functions that are used within Requests
@@ -23,7 +23,7 @@ import zipfile
 from .__version__ import __version__
 from . import certs
 # to_native_string is unused here, but imported here for backwards compatibility
-from ._internal_utils import to_native_string
+from ._internal_flowState import to_native_string
 from .compat import parse_http_list as _parse_list_header
 from .compat import (
     quote, urlparse, bytes, str, OrderedDict, unquote, getproxies,

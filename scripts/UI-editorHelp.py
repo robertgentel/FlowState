@@ -1,12 +1,13 @@
 import bge
 import traceback
-from scripts.gameUtils import utils
+from scripts.gameflowState import flowState
 logic = bge.logic
 render = bge.render
 
 scene = logic.getCurrentScene()
 cont = logic.getCurrentController()
 owner = cont.owner
+flowState = logic.flowState
 UI = bge.UI
 
 textColor = [1,1,1,1]
@@ -19,9 +20,9 @@ def restartAction():
     for scene in scenes:
         if(scene!=currentScene):
             scene.end()
-    currentMap = logic.utils.gameState["selectedMap"]
-    logic.utils.resetGameState()
-    logic.utils.gameState["selectedMap"] = currentMap
+    currentMap = logic.flowState.getSelectedMap()
+    logic.flowState.resetGameState()
+    logic.flowState.setSelectedMap(currentMap)
     currentScene.replace("Map Editor")
 
 def mainMenuAction():
@@ -30,7 +31,7 @@ def mainMenuAction():
     for scene in scenes:
         if(scene!=currentScene):
             scene.end()
-    logic.utils.resetGameState()
+    logic.flowState.resetGameState()
     currentScene.replace("Menu Background")
 
 def helpAction():
@@ -39,7 +40,7 @@ def helpAction():
 
 def backAction():
     currentScene = logic.getCurrentScene()
-    sceneHistory = logic.globalDict['sceneHistory']
+    sceneHistory = flowState.sceneHistory
     print(sceneHistory)
     backScene = sceneHistory[-2]
     removedScene = sceneHistory.pop(-1)
@@ -51,12 +52,10 @@ def resumeAction():
     render.showMouse(0)
     currentScene = logic.getCurrentScene()
     currentScene.end()
-    logic.utils.gameState['lockCursor'] = True
 
 if(owner['init']!=True):
     render.showMouse(1)
-    logic.globalDict['sceneHistory'].append(logic.getCurrentScene().name)
-    logic.utils.gameState['lockCursor'] = False
+    flowState.sceneHistory.append(logic.getCurrentScene().name)
     owner['init'] = True
     window = UI.Window()
 
@@ -94,9 +93,9 @@ if(owner['init']!=True):
 
 else:
     try:
-        editor = logic.utils.gameState['mapEditor']
+        editor = logic.flowState.getMapEditor()
         if(editor != None):
-            if(editor.currentMode == editor.MODE_MENU):
+            if(flowState.getViewMode() == flowState.VIEW_MODE_MENU):
                 UI.run(cont)
                 render.showMouse(1)
             else:
@@ -104,5 +103,5 @@ else:
         else:
             UI.run(cont)
     except Exception as e:
-        utils.log(traceback.format_exc())
+        flowState.log(traceback.format_exc())
         owner['init'] = -1

@@ -5,28 +5,28 @@ render = bge.render
 scene = logic.getCurrentScene()
 cont = logic.getCurrentController()
 owner = cont.owner
+flowState = logic.flowState
 UI = bge.UI
 textColor = [1,1,1,1]
 blockColor = [0,0,0.05,0.75]
-#utils = logic.utils
+#flowState = logic.flowState
 
 def joystickMenuNav():
     joy = cont.sensors["JoystickAxis"]
     axis = joy.axisValues
-    profileIndex = logic.globalDict['currentProfile']
-    rs = logic.globalDict['profiles'][profileIndex]['radioSettings'] #radio settings
-    
-    pitchInverted = -(int(rs['pitchInverted'])-0.5)*2
-    rollInverted = -(int(rs['rollInverted'])-0.5)*2
-    
-    verticle = getStickPercentage(rs['minPitch'],rs['maxPitch'],axis[rs['pitchChannel']-1]*pitchInverted)
-    horizontal = getStickPercentage(rs['minRoll'],rs['maxRoll'],axis[rs['rollChannel']-1]*rollInverted)
+    rs = flowState.getRadioSettings() #radio settings
+
+    pitchInverted = -(int(rs.pitchInverted)-0.5)*2
+    rollInverted = -(int(rs.rollInverted)-0.5)*2
+
+    verticle = getStickPercentage(rs.minPitch,rs.maxPitch,axis[rs.pitchChannel-1]*pitchInverted)
+    horizontal = getStickPercentage(rs.minRoll,rs.maxRoll,axis[rs.rollChannel-1]*rollInverted)
     aspectRatio = 3/4
     bge.render.drawLine([(horizontal*10)-5,(verticle*aspectRatio*10)-(5*aspectRatio),-1],[0,0,0],[1,1,1,1])
     print([(horizontal*10)-5,verticle])
     windowSize = [bge.render.getWindowWidth(),bge.render.getWindowHeight()]
     render.setMousePosition(int(windowSize[0]*horizontal),int(windowSize[1]*(1-verticle)))
-    
+
 def getStickPercentage(min,max,value):
     resolution = abs(min)+abs(max)
     percent = abs(((value-min)/resolution))
@@ -68,7 +68,7 @@ def passAction():
 
 if(owner['init']!=True):
     render.showMouse(1)
-    logic.globalDict['sceneHistory'].append(logic.getCurrentScene().name)
+    flowState.sceneHistory.append(logic.getCurrentScene().name)
     owner['init'] = True
     window = UI.Window()
 
@@ -106,5 +106,5 @@ else:
         UI.run(cont)
         #joystickMenuNav()
     except Exception as e:
-        logic.utils.log(traceback.format_exc())
+        logic.flowState.log(traceback.format_exc())
         owner['init'] = -1

@@ -17,7 +17,7 @@ class Player(bge.types.KX_PythonComponent):
         self.init = False
 
     def update(self):
-        utils = logic.utils
+        flowState = logic.flowState
         if not self.init:
             self.init = True
-            utils.setPlayerObject(self.object)
+            flowState.setPlayerObject(self.object)

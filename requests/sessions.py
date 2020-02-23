@@ -18,15 +18,15 @@ from .cookies import (
     cookiejar_from_dict, extract_cookies_to_jar, RequestsCookieJar, merge_cookies)
 from .models import Request, PreparedRequest, DEFAULT_REDIRECT_LIMIT
 from .hooks import default_hooks, dispatch_hook
-from ._internal_utils import to_native_string
-from .utils import to_key_val_list, default_headers, DEFAULT_PORTS
+from ._internal_flowState import to_native_string
+from .flowState import to_key_val_list, default_headers, DEFAULT_PORTS
 from .exceptions import (
     TooManyRedirects, InvalidSchema, ChunkedEncodingError, ContentDecodingError)
 
 from .structures import CaseInsensitiveDict
 from .adapters import HTTPAdapter
 
-from .utils import (
+from .flowState import (
     requote_uri, get_environ_proxies, get_netrc_auth, should_bypass_proxies,
     get_auth_from_url, rewind_body
 )

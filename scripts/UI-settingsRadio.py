@@ -5,42 +5,40 @@ render = bge.render
 scene = logic.getCurrentScene()
 cont = logic.getCurrentController()
 owner = cont.owner
+flowState = logic.flowState
 UI = bge.UI
-utils = logic.utils
+flowState = logic.flowState
 
 textColor = [1,1,1,1]
 blockColor = [0,0,0.05,0.75]
 
-profileIndex = logic.globalDict['currentProfile']
-profiles = logic.globalDict['profiles']
-profile = profiles[profileIndex]
-radioSettings = profile['radioSettings']
+radioSettings = flowState.getDroneSettings()
 joy = cont.sensors["Joystick"]
 axis = joy.axisValues
 def setThrottleChannel(key,value):
     print("got final value "+str(int(throttleInput.value)))
-    logic.globalDict['profiles'][profileIndex]['radioSettings'][key] = int(value)
+    setattr(radioSettings,key,int(value))
 
 def setYawChannel(key,value):
     print("got final value "+str(int(yawInput.value)))
-    logic.globalDict['profiles'][profileIndex]['radioSettings'][key] = int(value)
+    setattr(radioSettings,key,int(value))
 
 def setPitchChannel(key,value):
     print("got final value "+str(int(pitchInput.value)))
-    logic.globalDict['profiles'][profileIndex]['radioSettings'][key] = int(value)
+    setattr(radioSettings,key,int(value))
 
 def setRollChannel(key,value):
     print("got final value "+str(int(rollInput.value)))
-    logic.globalDict['profiles'][profileIndex]['radioSettings'][key] = int(value)
+    setattr(radioSettings,key,int(value))
 
 def setArmChannel(key,value):
-    logic.globalDict['profiles'][profileIndex]['radioSettings'][key] = int(value)
+    setattr(radioSettings,key,int(value))
 
 def setResetChannel(key,value):
-    logic.globalDict['profiles'][profileIndex]['radioSettings'][key] = int(value)
+    setattr(radioSettings,key,int(value))
 
 def handleButtonCallback(dictKey,value):
-    logic.globalDict['profiles'][profileIndex]['radioSettings'][dictKey] = value
+    setattr(radioSettings,key,int(value))
 
 def applySettings():
     scenes = logic.getSceneList()
@@ -48,13 +46,13 @@ def applySettings():
     for scene in scenes:
         if(scene!=currentScene):
             if(scene.name == "Main Game"):
-                print(utils.getGameMode())
-                if(utils.getGameMode()==utils.GAME_MODE_MULTIPLAYER):
+                print(flowState.getGameMode())
+                if(flowState.getGameMode()==flowState.GAME_MODE_MULTIPLAYER):
                     print("WE ARE IN MULTIPLAYER!!!! DONT RESTART")
                 else:
-                    currentMap = logic.utils.gameState["selectedMap"]
-                    logic.utils.resetGameState()
-                    logic.utils.gameState["selectedMap"] = currentMap
+                    currentMap = logic.flowState.getSelectedMap()
+                    logic.flowState.resetGameState()
+                    logic.flowState.setSelectedMap(currentMap)
                     scene.restart()
                     print("WE ARE IN SINGLE PLAYER!!!! COOL TO RESTART")
 
@@ -63,7 +61,7 @@ def applySettings():
 
 def backAction():
     currentScene = logic.getCurrentScene()
-    sceneHistory = logic.globalDict['sceneHistory']
+    sceneHistory = flowState.sceneHistory
     print(sceneHistory)
     backScene = sceneHistory[-2]
     removedScene = sceneHistory.pop(-1)
@@ -96,7 +94,7 @@ def spawnRadioInput(label,height,channelKey,invertedKey,action,min,max,increment
 
 if(owner['init']!=True):
     render.showMouse(1)
-    logic.globalDict['sceneHistory'].append(logic.getCurrentScene().name)
+    flowState.sceneHistory.append(logic.getCurrentScene().name)
     owner['init'] = True
     window = UI.Window()
 
@@ -147,26 +145,26 @@ if(owner['init']!=True):
 
 else:
     try:
-        throttleChannel = radioSettings['throttleChannel']-1
-        yawChannel = radioSettings['yawChannel']-1
-        rollChannel = radioSettings['rollChannel']-1
-        pitchChannel = radioSettings['pitchChannel']-1
-        resetChannel = radioSettings['resetChannel']-1
-        armChannel = radioSettings['armChannel']-1
+        throttleChannel = radioSettings.throttleChannel-1
+        yawChannel = radioSettings.yawChannel-1
+        rollChannel = radioSettings.rollChannel-1
+        pitchChannel = radioSettings.pitchChannel-1
+        resetChannel = radioSettings.resetChannel-1
+        armChannel = radioSettings.armChannel-1
 
-        throttleRes = radioSettings['maxThrottle']-radioSettings['minThrottle']
-        yawRes = radioSettings['maxYaw']-radioSettings['minYaw']
-        pitchRes = radioSettings['maxPitch']-radioSettings['minPitch']
-        rollRes = radioSettings['maxRoll']-radioSettings['minRoll']
-        armRes = radioSettings['maxArm']-radioSettings['minArm']
-        resetRes = radioSettings['maxReset']-radioSettings['minReset']
+        throttleRes = radioSettings.maxThrottle-radioSettings.minThrottle
+        yawRes = radioSettings.maxYaw-radioSettings.minYaw
+        pitchRes = radioSettings.maxPitch-radioSettings.minPitch
+        rollRes = radioSettings.maxRoll-radioSettings.minRoll
+        armRes = radioSettings.maxArm-radioSettings.minArm
+        resetRes = radioSettings.maxReset-radioSettings.minReset
 
-        throttleInverted = -(int(radioSettings['throttleInverted'])-0.5)*2
-        yawInverted = -(int(radioSettings['yawInverted'])-0.5)*2
-        pitchInverted = -(int(radioSettings['pitchInverted'])-0.5)*2
-        rollInverted = -(int(radioSettings['rollInverted'])-0.5)*2
-        armInverted = -(int(radioSettings['armInverted'])-0.5)*2
-        resetInverted = -(int(radioSettings['resetInverted'])-0.5)*2
+        throttleInverted = -(int(radioSettings.throttleInverted)-0.5)*2
+        yawInverted = -(int(radioSettings.yawInverted)-0.5)*2
+        pitchInverted = -(int(radioSettings.pitchInverted)-0.5)*2
+        rollInverted = -(int(radioSettings.rollInverted)-0.5)*2
+        armInverted = -(int(radioSettings.armInverted)-0.5)*2
+        resetInverted = -(int(radioSettings.resetInverted)-0.5)*2
 
         if(axis == []):
             axis = None
@@ -191,7 +189,7 @@ else:
             armSwitch.owner.position = [armCenter[0],armCenter[1]-((0.5-(axis[armChannel]/armRes))*armInverted),armSwitch.depth]
             resetSwitch.owner.position = [resetCenter[0],resetCenter[1]-((0.5-(axis[resetChannel]/resetRes))*resetInverted),resetSwitch.depth]
     except Exception as e:
-        utils.log(traceback.format_exc())
+        flowState.log(traceback.format_exc())
         #print(e)
         #owner['init'] = -1
     UI.run(cont)

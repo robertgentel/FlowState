@@ -6,14 +6,14 @@ requests.cookies
 
 Compatibility code to be able to use `cookielib.CookieJar` with requests.
 
-requests.utils imports from here, so be careful with imports.
+requests.flowState imports from here, so be careful with imports.
 """
 
 import copy
 import time
 import calendar
 
-from ._internal_utils import to_native_string
+from ._internal_flowState import to_native_string
 from .compat import cookielib, urlparse, urlunparse, Morsel, MutableMapping
 
 try:

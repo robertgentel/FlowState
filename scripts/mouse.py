@@ -121,8 +121,8 @@ def mouseCap(capped, move, invert, obj):
 	# check to see if property named Cap was added
 	if 'Cap' in obj:		  
 	
-		# import mathutils
-		import Mathutils
+		# import mathflowState
+		import MathflowState
 		
 		# limit cap to 0 - 180 degrees
 		if obj['Cap'] > 180:
@@ -137,7 +137,7 @@ def mouseCap(capped, move, invert, obj):
 		camZ = [camOrient[0][2], camOrient[1][2], camOrient[2][2]]
 		
 		# create camera z axis vector 
-		vec1 = Mathutils.Vector(camZ)
+		vec1 = MathflowState.Vector(camZ)
 		
 		# get camera parent
 		camParent = obj.parent
@@ -149,10 +149,10 @@ def mouseCap(capped, move, invert, obj):
 		parentZ = [parentOrient[0][2], parentOrient[1][2], parentOrient[2][2]]
 		
 		# create parent z axis vector
-		vec2 = Mathutils.Vector(parentZ)
+		vec2 = MathflowState.Vector(parentZ)
 		
 		# find angle between two
-		angle = Mathutils.AngleBetweenVecs(vec1, vec2)
+		angle = MathflowState.AngleBetweenVecs(vec1, vec2)
 			
 		# get amount to limit mouselook
 		capAngle = obj['Cap']

@@ -3,6 +3,7 @@
 
 # Windows
 #FPV
+83042b57000000000000504944564944,SPEKTRUM RECEIVER,platform:Windows,leftx:a0,lefty:a1,rightx:a2,righty:a3,righttrigger:b0,dpup:b1,
 83045632000000000000504944564944,BF FC,leftx:a1,lefty:a0,rightx:a4,righty:a5,lefttrigger:a6,righttrigger:a2,platform:Windows,
 83041057000000000000504944564944,FrSky Taranis Joystick,leftx:a3,lefty:a0,rightx:a1,righty:a2,lefttrigger:a4,righttrigger:a5,leftshoulder:a7,rightshoulder:a6, lefttrigger:b0,righttrigger:b1,leftshoulder:b2,rightshoulder:b3,platform:Windows,
 4e28f97f000000000000504944564944,HK-MT6 emulator,leftshoulder:b0,leftx:a3,lefty:a2,rightx:a0,righty:a1,lefttrigger:b2,righttrigger:b4,platform:Windows,

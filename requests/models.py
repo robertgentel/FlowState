@@ -30,8 +30,8 @@ from .cookies import cookiejar_from_dict, get_cookie_header, _copy_cookie_jar
 from .exceptions import (
     HTTPError, MissingSchema, InvalidURL, ChunkedEncodingError,
     ContentDecodingError, ConnectionError, StreamConsumedError)
-from ._internal_utils import to_native_string, unicode_is_ascii
-from .utils import (
+from ._internal_flowState import to_native_string, unicode_is_ascii
+from .flowState import (
     guess_filename, get_auth_from_url, requote_uri,
     stream_decode_response_unicode, to_key_val_list, parse_header_links,
     iter_slices, guess_json_utf, super_len, check_header_validity)

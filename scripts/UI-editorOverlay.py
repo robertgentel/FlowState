@@ -2,7 +2,7 @@ import bge
 import math
 import traceback
 logic = bge.logic
-utils = logic.utils
+flowState = logic.flowState
 render = bge.render
 
 scene = logic.getCurrentScene()
@@ -41,18 +41,18 @@ if(owner['init']==0):
 
 if(owner['init']==1):
     try:
-        editor = logic.utils.gameState['mapEditor']
+        editor = logic.flowState.getMapEditor()
         if(editor != None):
-            if(editor.currentMode == editor.MODE_MENU):
+            if(flowState.getViewMode == flowState.VIEW_MODE_MENU):
                 UI.runWindow(window,cont)
                 render.showMouse(1)
             else:
                 render.showMouse(0)
                 digits = 1
-                cursorPos = list(logic.utils.gameState['mapEditor'].cursor.position)
-                cursorOri = list(logic.utils.gameState['mapEditor'].cursor.orientation.to_euler())
+                cursorPos = list(logic.flowState.getMapEditor().cursor.position)
+                cursorOri = list(logic.flowState.getMapEditor().cursor.orientation.to_euler())
                 cursorOri = [math.degrees(cursorOri[0]),math.degrees(cursorOri[1]),math.degrees(cursorOri[2])]
-                if(logic.utils.getMapEditor().unitsMetric):
+                if(logic.flowState.getMapEditor().unitsMetric):
                     unit = 0.1 #metric (the game is scale 10x because of bullet physics)
                     positionValue = "meters: "+str(round(cursorPos[0]*unit,digits))+","+str(round(cursorPos[1]*unit,digits))+","+str(round(cursorPos[2]*unit,digits))
                 else:
@@ -63,7 +63,7 @@ if(owner['init']==1):
                 orientationValue = "degrees: "+str(round(cursorOri[0],digits))+","+str(round(cursorOri[1],digits))+","+str(round(cursorOri[2],digits))
                 updateElementValue(window.elements['orientationText'], orientationValue)
 
-                editing = logic.utils.gameState['mapEditor'].editing
+                editing = logic.flowState.getMapEditor().editing
                 if(editing):
                     mode = "edit"
                 else:
@@ -73,5 +73,5 @@ if(owner['init']==1):
 
             UI.runWindow(window,cont)
     except Exception as e:
-        utils.log(traceback.format_exc())
+        flowState.log(traceback.format_exc())
         owner['init'] = -1

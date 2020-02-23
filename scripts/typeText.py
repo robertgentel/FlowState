@@ -1,7 +1,7 @@
 import bge
 render = bge.render
 logic = bge.logic
-utils = logic.utils
+flowState = logic.flowState
 cont = logic.getCurrentController()
 owner = cont.owner
 keyboard = cont.sensors['Keyboard']
@@ -26,15 +26,15 @@ def getKeyStates(keyboard):
 
 def saveMapToFile(map,fileName):
     fileName = blendPath+"maps"+os.sep+fileName
-    logic.utils.log("saving map: "+fileName)
+    logic.flowState.log("saving map: "+fileName)
     print("saving map to: "+fileName)
     try:
         with open(fileName, 'w+') as saveFile:
             saveFile.write(str(map))
             saveFile.close()
     except Exception as e:
-        logic.utils.log("map save error: "+str(e))
-    logic.utils.log("map save complete: "+fileName)
+        logic.flowState.log("map save error: "+str(e))
+    logic.flowState.log("map save complete: "+fileName)
 
 
 (pressedKeys,activeKeys,inactiveKeys,releasedKeys) = getKeyStates(keyboard)
@@ -53,5 +53,5 @@ if(enter):
     saveMapToFile(map,mapName)
 
     currentScene.replace("Map Editor")
-    utils.selectMap(mapName)
+    flowState.selectMap(mapName)
 print(pressedKeys)

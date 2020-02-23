@@ -4,16 +4,16 @@ import math
 scene = logic.getCurrentScene()
 owner = logic.getCurrentController().owner
 #logic.globalDict["playerQuad"] = owner
-utils = logic.utils
+flowState = logic.flowState
 def main():
     startTime = time.perf_counter()
     if "lastGhostUpdate" not in owner:
         owner["lastGhostUpdate"] = time.perf_counter()
     if abs(time.perf_counter()-owner["lastGhostUpdate"]) > (1/60.0):
         owner["lastGhostUpdate"] = time.perf_counter()
-        if(utils.getGameMode()!=utils.GAME_MODE_MULTIPLAYER):
-            if("startFinishPlane" in logic.utils.gameState):
-                startFinishPlane = logic.utils.gameState["startFinishPlane"]
+        if(flowState.getGameMode()!=flowState.GAME_MODE_MULTIPLAYER):
+            if(logic.flowState.track['startFinishPlane'] != None):
+                startFinishPlane = logic.flowState.track['startFinishPlane']
                 lap = startFinishPlane["lap"]
 
                 if lap < 0:

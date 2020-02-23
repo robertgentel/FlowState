@@ -1,10 +1,11 @@
 import bge
 from inspect import signature
 logic = bge.logic
-#utils = logic.utils
+#flowState = logic.flowState
 render = bge.render
 scene = logic.getCurrentScene()
 cont = logic.getCurrentController()
+flowState = logic.flowState
 TEXT = "UIText"
 INPUT = "UIInput"
 BOX = "UIBox"
@@ -23,7 +24,7 @@ class UI:
         resolution = abs(min)+abs(max)
         percent = abs(((value-min)/resolution))
         (0+(100/2))/100.0
-        return percent 
+        return percent
 
     def runWindow(window, cont):
         owner = cont.owner
@@ -38,13 +39,12 @@ class UI:
             joy = cont.sensors['JoystickButtons']
             axis = joy.axisValues
             if(axis!=[]):
-                profileIndex = logic.globalDict['currentProfile']
-                rs = logic.globalDict['profiles'][profileIndex]['radioSettings'] #radio settings
-                resetSwitch = UI.getStickPercentage(rs['minReset'],rs['maxReset'],axis[rs['resetChannel']-1])
+                rs = flowState.getRadioSettings() #radio settings
+                resetSwitch = UI.getStickPercentage(rs.minReset,rs.maxReset,axis[rs.resetChannel-1])
                 joystickReady = True
         if not joystickReady:
             resetSwitch = 0
-            
+
         for key in window.elements:
             element = window.elements[key]
             if(element.disabled==False):
@@ -67,7 +67,7 @@ class UI:
                                         if cont.owner['resetReleased']:
                                             cont.owner['resetReleased'] = False
                                             element.performAction()
-                                            
+
                                     else:
                                         cont.owner['resetReleased'] = False
                                 else:
@@ -96,13 +96,12 @@ class UI:
             joy = cont.sensors['JoystickButtons']
             axis = joy.axisValues
             if(axis!=[]):
-                profileIndex = logic.globalDict['currentProfile']
-                rs = logic.globalDict['profiles'][profileIndex]['radioSettings'] #radio settings
-                resetSwitch = UI.getStickPercentage(rs['minReset'],rs['maxReset'],axis[rs['resetChannel']-1])
+                rs = flowState.getRadioSettings() #radio settings
+                resetSwitch = UI.getStickPercentage(rs.minReset,rs.maxReset,axis[rs.resetChannel-1])
                 joystickReady = True
         if not joystickReady:
             resetSwitch = 0
-            
+
         if("lastHitObject" in owner):
             pass
         else:
@@ -134,7 +133,7 @@ class UI:
                         if("button" in hitObject.getPropertyNames()):
                             element = element.button
                             if 'value' in hitObject and hitObject['value']!=None:
-                                logic.utils.log(hitObject['value'])
+                                logic.flowState.log(hitObject['value'])
 
                                 element.performAction()
                             else:
@@ -148,11 +147,11 @@ class UI:
                         if("button" in hitObject.getPropertyNames()):
                             element = element.button
                             if 'value' in hitObject and hitObject['value']!=None:
-                                logic.utils.log(hitObject['value'])
+                                logic.flowState.log(hitObject['value'])
 
                                 element.performAction()
                             else:
-                                element.performAction()  
+                                element.performAction()
         if(resetSwitch>0.5):
             if('resetReleased' in cont.owner):
                 if cont.owner['resetReleased']:
@@ -166,14 +165,14 @@ class UI:
                 cont.owner['resetReleased'] = False
         else:
             cont.owner['resetReleased'] = True
-            
+
     class Window:
         def __init__(self):
             self.height = 600#render.getWindowHeight() #A BUG NEEDS TO BE REPORTED FOR LETTERBOX
             self.width = 800#render.getWindowWidth()
             self.ratio = self.width/self.height
             self.elements = {}
-            logic.utils.log(str(self.height/self.height)+":"+str(self.width/self.height))
+            logic.flowState.log(str(self.height/self.height)+":"+str(self.width/self.height))
 
         def add(self,id,element):
             self.elements[id] = element
@@ -208,7 +207,7 @@ class UI:
                 for v in range(0,vertArray):
                     vert = mesh.getVertex(mat,v)
                     vert.color = newColor
-        
+
         def spawnElement(self):
             self.owner = scene.addObject(self.type)
             self.updateElementPosition()
@@ -431,11 +430,11 @@ class UI:
             self.owner = None
             try:
                 self.keyboard = cont.sensors['Keyboard']
-                
+
             except:
                 self.keyboard = None
             print("KEYBOARD "+str(self.keyboard))
-        
+
         def handleInputs(self):
             keyInfo = self.getKeyStates(self.keyboard)
             (pressedKeys,activeKeys,inactiveKeys,releasedKeys) = keyInfo
@@ -461,7 +460,7 @@ class UI:
                     if(event[1] == bge.logic.KX_SENSOR_JUST_DEACTIVATED ):
                         releasedKeys.append(event[0])
             return (pressedKeys,activeKeys,inactiveKeys,releasedKeys)
-        
+
         def scrollUp(self):
             if(self.scrollPosition<self.maxScrollPosition*2):
                 self.scrollPosition += 1

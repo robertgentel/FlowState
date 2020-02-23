@@ -4,14 +4,15 @@ import os
 from os.path import isfile, join
 import ast
 import json
-import mathutils
+import mathflowState
 import math
 logic = bge.logic
-utils = logic.utils
+flowState = logic.flowState
 render = bge.render
 scene = logic.getCurrentScene()
 cont = logic.getCurrentController()
 owner = cont.owner
+flowState = logic.flowState
 UI = bge.UI
 textColor = [1,1,1,1]
 blockColor = [0,0,0.05,0.75]
@@ -26,15 +27,15 @@ window = owner['window']
 
 def saveMapToFile(map,fileName):
     fileName = blendPath+"maps"+os.sep+fileName
-    logic.utils.log("saving map: "+fileName)
+    logic.flowState.log("saving map: "+fileName)
     print("saving map to: "+fileName)
     try:
         with open(fileName, 'w+') as saveFile:
             saveFile.write(str(map))
             saveFile.close()
     except Exception as e:
-        logic.utils.log("map save error: "+str(e))
-    logic.utils.log("map save complete: "+fileName)
+        logic.flowState.log("map save error: "+str(e))
+    logic.flowState.log("map save complete: "+fileName)
 
 def readJSONFile(filePath):
 
@@ -42,16 +43,16 @@ def readJSONFile(filePath):
     with open(filePath) as data:
         for line in data:
             saveDataString+=str(line)
-    logic.utils.log("loading map: "+filePath)
+    logic.flowState.log("loading map: "+filePath)
     json_file = open(filePath)
     json_str = json_file.read()
-    logic.utils.log("map load complete...")
+    logic.flowState.log("map load complete...")
     json_data = json.loads(json_str)
     return json_data
 
 def convertAsset(gate,assetID):
-    unknownAsset = utils.ASSET_CONE
-    asdf = utils.ASSET_TABLE
+    unknownAsset = flowState.ASSET_CONE
+    asdf = flowState.ASSET_TABLE
     #50=shipping container
     #52=shipping container
     #155=car
@@ -63,14 +64,14 @@ def convertAsset(gate,assetID):
     #561=shacks
     #249=goal posts
     #344=total unkown
-    idMap = {275:utils.ASSET_MGP_HURDLE,247:utils.ASSET_CONCRETE_BLOCK,344:utils.ASSET_CONCRETE_BLOCK,326:utils.ASSET_MGP_FLAG,303:utils.ASSET_CONE,319:utils.ASSET_MGP_FLAG,249:utils.ASSET_MGP_POLE,590:utils.ASSET_CONCRETE_BLOCK,561:utils.ASSET_CONCRETE_BLOCK,399:utils.ASSET_CONCRETE_BLOCK,246:utils.ASSET_MGP_POLE,292:utils.ASSET_CONCRETE_BLOCK,248:utils.ASSET_MGP_POLE,394:utils.ASSET_CONCRETE_BLOCK,30:utils.ASSET_PINE_TREE_TALL,18:utils.ASSET_PINE_TREE_TALL,274:utils.ASSET_MGP_POLE,311:utils.ASSET_CONCRETE_BLOCK,261:utils.ASSET_PINE_TREE_TALL,260:utils.ASSET_PINE_TREE_TALL,401:utils.ASSET_CONCRETE_BLOCK,155:utils.ASSET_CONCRETE_BLOCK,48:utils.ASSET_CONCRETE_BLOCK,52:utils.ASSET_CONCRETE_BLOCK,20:utils.ASSET_PINE_TREE_TALL,70:utils.ASSET_PINE_TREE_TALL,50:utils.ASSET_CONCRETE_BLOCK,100:utils.ASSET_PINE_TREE_TALL,28:utils.ASSET_PINE_TREE_TALL,108:utils.ASSET_CHECKPOINT,151:utils.ASSET_MGP_GATE_HANGING_LARGE,282:utils.ASSET_MGP_GATE_HIGH_LARGE,279:utils.ASSET_CONCRETE_BLOCK,285:utils.ASSET_MGP_GATE_LARGE,357:utils.ASSET_CONE,279:utils.ASSET_MGP_GATE,286:utils.ASSET_MGP_GATE_HANGING_LARGE,88:utils.ASSET_CHECKPOINT}
+    idMap = {275:flowState.ASSET_MGP_HURDLE,247:flowState.ASSET_CONCRETE_BLOCK,344:flowState.ASSET_CONCRETE_BLOCK,326:flowState.ASSET_MGP_FLAG,303:flowState.ASSET_CONE,319:flowState.ASSET_MGP_FLAG,249:flowState.ASSET_MGP_POLE,590:flowState.ASSET_CONCRETE_BLOCK,561:flowState.ASSET_CONCRETE_BLOCK,399:flowState.ASSET_CONCRETE_BLOCK,246:flowState.ASSET_MGP_POLE,292:flowState.ASSET_CONCRETE_BLOCK,248:flowState.ASSET_MGP_POLE,394:flowState.ASSET_CONCRETE_BLOCK,30:flowState.ASSET_PINE_TREE_TALL,18:flowState.ASSET_PINE_TREE_TALL,274:flowState.ASSET_MGP_POLE,311:flowState.ASSET_CONCRETE_BLOCK,261:flowState.ASSET_PINE_TREE_TALL,260:flowState.ASSET_PINE_TREE_TALL,401:flowState.ASSET_CONCRETE_BLOCK,155:flowState.ASSET_CONCRETE_BLOCK,48:flowState.ASSET_CONCRETE_BLOCK,52:flowState.ASSET_CONCRETE_BLOCK,20:flowState.ASSET_PINE_TREE_TALL,70:flowState.ASSET_PINE_TREE_TALL,50:flowState.ASSET_CONCRETE_BLOCK,100:flowState.ASSET_PINE_TREE_TALL,28:flowState.ASSET_PINE_TREE_TALL,108:flowState.ASSET_CHECKPOINT,151:flowState.ASSET_MGP_GATE_HANGING_LARGE,282:flowState.ASSET_MGP_GATE_HIGH_LARGE,279:flowState.ASSET_CONCRETE_BLOCK,285:flowState.ASSET_MGP_GATE_LARGE,357:flowState.ASSET_CONE,279:flowState.ASSET_MGP_GATE,286:flowState.ASSET_MGP_GATE_HANGING_LARGE,88:flowState.ASSET_CHECKPOINT}
 
     prefab = gate['prefab']
     vdPos = gate['trans']['pos']
     vdOri = gate['trans']['rot']
     vdScale = gate['trans']['scale']
     pos = [vdPos[0]/10,vdPos[2]/10,vdPos[1]/10]
-    ori = list(mathutils.Quaternion((math.radians(vdOri[0]),math.radians(vdOri[1]), math.radians(vdOri[2]), math.radians(vdOri[3]))).to_euler())
+    ori = list(mathflowState.Quaternion((math.radians(vdOri[0]),math.radians(vdOri[1]), math.radians(vdOri[2]), math.radians(vdOri[3]))).to_euler())
     ori = [math.degrees(-ori[0]),math.degrees(-ori[2]),math.degrees(-ori[1])]
     scale = [vdScale[0]/100,vdScale[2]/100,vdScale[1]/100]
     asset = {}
@@ -124,9 +125,9 @@ def mapSelectAction(key,mapInfo):
         if(scene!=currentScene):
             scene.end()
     render.showMouse(0)
-    utils.selectMap(mapName)
-    utils.setGameMode(utils.GAME_MODE_SINGLE_PLAYER)
-    utils.setViewMode(utils.VIEW_MODE_PLAY)
+    flowState.selectMap(mapName)
+    flowState.setGameMode(flowState.GAME_MODE_SINGLE_PLAYER)
+    flowState.setViewMode(flowState.VIEW_MODE_PLAY)
     currentScene.replace("Map Editor")
 def multiplayerAction():
     pass
@@ -138,7 +139,7 @@ def settingsAction():
 
 def backAction():
     currentScene = logic.getCurrentScene()
-    sceneHistory = logic.globalDict['sceneHistory']
+    sceneHistory = flowState.sceneHistory
     print(sceneHistory)
     backScene = sceneHistory[-2]
     removedScene = sceneHistory.pop(-1)
@@ -164,7 +165,7 @@ def addMapButton(path,name,spacing):
 
 
 if(owner['init']!=True):
-    logic.globalDict['sceneHistory'].append(logic.getCurrentScene().name)
+    flowState.sceneHistory.append(logic.getCurrentScene().name)
     owner['init'] = True
     window = UI.Window()
 
@@ -205,5 +206,5 @@ else:
         #UI.run(cont)
         UI.runWindow(window,cont)
     except Exception as e:
-        utils.log(traceback.format_exc())
+        flowState.log(traceback.format_exc())
         owner['init'] = -1

@@ -4,7 +4,7 @@ import copy
 import time
 render = bge.render
 logic = bge.logic
-utils = logic.utils
+flowState = logic.flowState
 #print(logic.getAverageFrameRate())
 if(logic.getAverageFrameRate() != 0.0):
     frameTime = 6.0/logic.getAverageFrameRate()
@@ -15,12 +15,11 @@ def roundTo(x, base):
     return int(base * round(float(x)/base))
 
 class MapEditor:
-    MODE_3D = 0
-    MODE_MENU = 1
-    def __init__(self):
+    def __init__(self, flowState):
+        self.flowState = flowState
         self.cont = logic.getCurrentController()
         self.owner = self.cont.owner
-        utils.setGameMode(utils.GAME_MODE_EDITOR)
+        self.flowState.setGameMode(self.flowState.GAME_MODE_EDITOR)
         self.cursor = self.findChildWithProperty("mapEditorCursor")
         self.cursorOffsetPosition = [0,50,0]
         self.camera = self.findChildWithProperty("mapEditorCamera")
@@ -60,14 +59,14 @@ class MapEditor:
         self.cameraRay = self.cont.sensors['CameraRay']
 
         self.assetIndex = 0
-        self.availableAssets = utils.ASSETS#["asset MGP gate","asset MGP gate large","asset MGP gate hanging large","asset MGP gate high large","asset MGP gate double large","asset MGP ladder large","asset MGP gate angled dive large","asset MGP gate dive large","asset MGP hurdle","asset MGP hurdle large","asset MGP flag","asset pole","asset lumenier gate large","asset table","asset launch pad","asset cone","asset checkpoint square","asset start finish"]
+        self.availableAssets = self.flowState.ASSETS#["asset MGP gate","asset MGP gate large","asset MGP gate hanging large","asset MGP gate high large","asset MGP gate double large","asset MGP ladder large","asset MGP gate angled dive large","asset MGP gate dive large","asset MGP hurdle","asset MGP hurdle large","asset MGP flag","asset pole","asset lumenier gate large","asset table","asset launch pad","asset cone","asset checkpoint square","asset start finish"]
         self.nextAsset = self.availableAssets[self.assetIndex]
         self.selectedAsset = None
         self.addNextAsset()#logic.getCurrentScene().addObject(self.nextAsset,self.cursor,0)
         self.selectedAsset.setParent(self.cursor)
 
 
-        self.currentMode = self.MODE_3D
+        self.flowState.setViewMode = self.flowState.VIEW_MODE_PLAY
         self.unitsMetric = True
         render.showMouse(0)
         print("HIDE MOUSE")
@@ -143,7 +142,7 @@ class MapEditor:
         print("addNextAsset")
         print(self.editing)
         lastAdded = logic.getCurrentScene().addObject(self.nextAsset,self.cursor,0)
-        utils.addMetadata(lastAdded)
+        self.flowState.addMetadata(lastAdded)
         self.selectedAsset = lastAdded
         lastAdded.setParent(self.cursor)
         for child in lastAdded.childrenRecursive:
@@ -166,11 +165,12 @@ class MapEditor:
         #return rayHit
 
     def setMode(self,mode):
-        self.currentMode = mode
-        if mode == self.MODE_MENU:
+        self.flowState.setViewMode(mode)
+        #self.currentMode = mode
+        if mode == self.flowState.VIEW_MODE_MENU:
             render.showMouse(1)
             self.addMenuScene()
-        if mode == self.MODE_3D:
+        if mode == self.flowState.VIEW_MODE_PLAY:
             self.centerMouse()
             render.showMouse(0)
             self.removeMenuScene()
@@ -264,11 +264,11 @@ class MapEditor:
                         asset.removeParent()
                     self.makeGhost(asset)
                     if 'metadata' not in asset:
-                        utils.addMetadata(asset)
+                        self.flowState.addMetadata(asset)
                     for child in asset.childrenRecursive:
                         self.makeGhost(child)
                         if 'asset' in child:
-                            utils.addMetadata(child)
+                            self.flowState.addMetadata(child)
                         print(child.attrDict)
                     assetOri = copy.deepcopy(asset.worldOrientation)
                     print(assetOri)
@@ -293,19 +293,19 @@ class MapEditor:
         if ray[0] != None:
             asset = ray[0]
             if 'asset' in asset:
-                if asset.name in utils.ASSETS:
+                if asset.name in self.flowState.ASSETS:
                     self.selectedAsset = asset
                     self.enterMenuMode()
 
     def enter3DMode(self):
         self.centerMouse()
         self.currentSensitivity = 0
-        self.setMode(self.MODE_3D)
+        self.setMode(self.flowState.VIEW_MODE_PLAY)
         if self.editing:
             self.selectedAsset = None
 
     def enterMenuMode(self):
-        self.setMode(self.MODE_MENU)
+        self.setMode(self.flowState.VIEW_MODE_MENU)
 
     def toggleUnits(self):
         worldScale = 10
@@ -347,7 +347,7 @@ class MapEditor:
         escapeToggle = bge.events.ESCKEY in pressedKeys
 
         altMode = bge.events.LEFTCTRLKEY in activeKeys
-        if self.currentMode == self.MODE_3D:
+        if self.currentMode == self.flowState.VIEW_MODE_PLAY:
             if leftClick:
                 if self.selectedAsset == None:
                     self.editAsset()
@@ -440,7 +440,7 @@ class MapEditor:
             self.handleMouseLook()
 
         if escapeToggle:
-            if(self.currentMode == self.MODE_MENU):
+            if(self.flowState.getViewMode() == self.flowState.VIEW_MODE_MENU):
                 self.enter3DMode()
             else:
                 self.enterMenuMode()
@@ -519,41 +519,25 @@ class MapEditor:
         scenes = logic.getSceneList()
         if "UI-pause" in scenes:
             existance = True
-
         return existance
 
     def run(self):
-#                if(logic.utils.gameState['lockCursor'] == True):
         if(self.mouseMovement.triggered and self.mouseMovement.positive):
-            if(self.currentMode==self.MODE_3D):
+            if(self.flowState.getViewMode()==self.flowState.VIEW_MODE_PLAY):
                 self.updateMousePosition()
         self.updateCursor()
         self.handleInputs()
         self.drawHitCursor()
-        #self.cursor['position'] = str(self.cursor.position)
-#            else:
-#                logic.utils.gameState['lockCursor'] = True
 
-#try:
 def createMapEditor():
     print("setting up new map editor")
     newMapEditor = MapEditor()
     newMapEditor.centerMouse()
-    logic.utils.gameState['mapEditor'] = newMapEditor
-    print(logic.utils.gameState['mapEditor'])
+    logic.flowState.setMapEditor(newMapEditor)
+    print(logic.flowState.getMapEditor())
 
-if('mapEditor' in logic.utils.gameState):
-    if logic.utils.gameState['mapEditor'] != None:
-    #try:
-        logic.utils.gameState['mapEditor'].run()
-    #except Exception as e:
-    #    utils.log(e)
-        #createMapEditor()
-    else:
-        createMapEditor()
+if(logic.flowState.getMapEditor()!=None):
+    logic.flowState.getMapEditor().run()
+    createMapEditor()
 else:
     createMapEditor()
-
-#except Exception as e:
-#    if('mapEditor' in logic.utils.gameState):
-#        utils.log(e)
