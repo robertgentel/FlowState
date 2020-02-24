@@ -1,7 +1,7 @@
 import numpy as np
 import math as m
 import bge
-import mathflowState
+import mathutils
 import warnings
 warnings.filterwarnings("ignore", category=RuntimeWarning)
 logic = bge.logic
@@ -28,12 +28,12 @@ def drawStuff(position,a1,a2):
 
 def main():
     pDrag = 0.225 #the magic parasitic drag number (needs to be measured)
-    pDrag += ((droneSettings['pDrag']-70)/1000) #allow the user to change parasitic drag by +/- 0.05
+    pDrag += ((droneSettings.pDrag-70)/1000) #allow the user to change parasitic drag by +/- 0.05
 
     iDrag = 0.675 #the magic induced drag number (needs to be measured)
-    iDrag += ((droneSettings['iDrag']-70)/1000) #allow the user to change induced drag by +/- 0.05
+    iDrag += ((droneSettings.iDrag-70)/1000) #allow the user to change induced drag by +/- 0.05
 
-    totalDragMultiplier = 1.0*((droneSettings['weight']/500)**0.75) #we're going to assume that the drone's size scales with the weight until we have measurements from parts
+    totalDragMultiplier = 1.0*((droneSettings.weight/500)**0.75) #we're going to assume that the drone's size scales with the weight until we have measurements from parts
     dragMultiplier = totalDragMultiplier*(pDrag) #parasitic drag (4.0 - 3.0)
     liftMultiplier = totalDragMultiplier*(iDrag) #induced drag (lift/downforce)
 
@@ -41,7 +41,7 @@ def main():
 
     #let's get the model's Z axis as a vector
     vect = owner.orientation.to_euler()
-    topVec = mathflowState.Vector((0.0, 0.0, 1.0))
+    topVec = mathutils.Vector((0.0, 0.0, 1.0))
 
     #measure the model's angle of attack
     aoa = m.degrees(angle(velocity,topVec))

@@ -12,7 +12,7 @@ import sys
 
 # Import encoding now, to avoid implicit import later.
 # Implicit import within threads may cause LookupError when standard library is in a ZIP,
-# such as in Embedded Python. See https://github.com/requests/requests/issues/3578.
+# such as in Embedded Python. See https://github.com/psf/requests/issues/3578.
 import encodings.idna
 
 from urllib3.fields import RequestField
@@ -30,8 +30,8 @@ from .cookies import cookiejar_from_dict, get_cookie_header, _copy_cookie_jar
 from .exceptions import (
     HTTPError, MissingSchema, InvalidURL, ChunkedEncodingError,
     ContentDecodingError, ConnectionError, StreamConsumedError)
-from ._internal_flowState import to_native_string, unicode_is_ascii
-from .flowState import (
+from ._internal_utils import to_native_string, unicode_is_ascii
+from .utils import (
     guess_filename, get_auth_from_url, requote_uri,
     stream_decode_response_unicode, to_key_val_list, parse_header_links,
     iter_slices, guess_json_utf, super_len, check_header_validity)
@@ -280,6 +280,7 @@ class PreparedRequest(RequestEncodingMixin, RequestHooksMixin):
       >>> import requests
       >>> req = requests.Request('GET', 'https://httpbin.org/get')
       >>> r = req.prepare()
+      >>> r
       <PreparedRequest [GET]>
 
       >>> s = requests.Session()
@@ -358,7 +359,7 @@ class PreparedRequest(RequestEncodingMixin, RequestHooksMixin):
         #: We're unable to blindly call unicode/str functions
         #: as this will include the bytestring indicator (b'')
         #: on python 3.x.
-        #: https://github.com/requests/requests/pull/2238
+        #: https://github.com/psf/requests/pull/2238
         if isinstance(url, bytes):
             url = url.decode('utf8')
         else:
@@ -608,7 +609,7 @@ class Response(object):
 
         #: File-like object representation of response (for advanced usage).
         #: Use of ``raw`` requires that ``stream=True`` be set on the request.
-        # This requirement does not apply for use internally to Requests.
+        #: This requirement does not apply for use internally to Requests.
         self.raw = None
 
         #: Final URL location of Response.

@@ -14,6 +14,7 @@ propellerParts = {"Generic Propeller":"part generic propeller"}
 if not hasattr(bge, "__component__"):
     render = bge.render
     logic = bge.logic
+    flowState = logic.flowState
     parts = {}
     parts.update(frameParts)
     parts.update(motorParts)

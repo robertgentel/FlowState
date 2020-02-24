@@ -10,6 +10,35 @@ class FlowState:
     #the version of the save data format
     VERSION = "1.0.0"
 
+    #asset keys
+    ASSET_MGP_GATE = "asset MGP gate"
+    ASSET_MGP_GATE_DOUBLE = "asset MGP gate double"
+    ASSET_MGP_GATE_LARGE = "asset MGP gate large"
+    ASSET_MGP_GATE_HANGING_LARGE = "asset MGP gate hanging large"
+    ASSET_MGP_GATE_HIGH_LARGE = "asset MGP gate high large"
+    ASSET_MGP_GATE_DOUBLE_LARGE = "asset MGP gate double large"
+    ASSET_MGP_LADDER_LARGE = "asset MGP ladder large"
+    ASSET_MGP_GATE_ANGLED_DIVE_LARGE = "asset MGP gate angled dive large"
+    ASSET_MGP_GATE_DIVE_LARGE = "asset MGP gate dive large"
+    ASSET_MGP_HURDLE = "asset MGP hurdle"
+    ASSET_MGP_HURDLE_LARGE = "asset MGP hurdle large"
+    ASSET_MGP_FLAG = "asset MGP flag"
+    ASSET_MGP_POLE = "asset pole"
+    ASSET_LUMENIER_GATE_LARGE = "asset lumenier gate large"
+    ASSET_TABLE = "asset table"
+    ASSET_LAUNCH_PAD = "asset launch pad"
+    ASSET_CONE = "asset cone"
+    ASSET_START_FINISH = "asset start finish"
+    ASSET_CHECKPOINT = "asset checkpoint square"
+    ASSET_CONCRETE_BLOCK = "asset concrete block"
+    ASSET_PINE_TREE_TALL = "asset pine tree 12m"
+    ASSETS = [ASSET_MGP_GATE,ASSET_MGP_GATE_DOUBLE,ASSET_MGP_GATE_LARGE,ASSET_MGP_GATE_HANGING_LARGE,ASSET_MGP_GATE_HIGH_LARGE,ASSET_MGP_GATE_DOUBLE_LARGE,ASSET_MGP_LADDER_LARGE,ASSET_MGP_GATE_ANGLED_DIVE_LARGE,ASSET_MGP_GATE_DIVE_LARGE,ASSET_MGP_HURDLE,ASSET_MGP_HURDLE_LARGE,ASSET_MGP_FLAG,ASSET_MGP_POLE,ASSET_LUMENIER_GATE_LARGE,ASSET_TABLE,ASSET_LAUNCH_PAD,ASSET_CONE,ASSET_CONCRETE_BLOCK,ASSET_PINE_TREE_TALL,ASSET_START_FINISH,ASSET_CHECKPOINT]
+
+    #asset metadata types
+    METADATA_GATE = {"id":-1}
+    STATIC_METADATA = ["id"]
+    METADATA_CHECKPOINT = {"id":-1,"checkpoint order":1}
+
     #game modes
     GAME_MODE_EDITOR = 0
     GAME_MODE_SINGLE_PLAYER = 1
@@ -31,7 +60,7 @@ class FlowState:
 
         self.log("FlowState.init()")
         self._version = self.VERSION
-        self._timeLimit = 3
+        self._timeLimit = 20
         self._checkpoints = []
         self._selectedMap = "2018 Regional Final.fmp"
         self._player = None #needs to be implemented
@@ -45,10 +74,12 @@ class FlowState:
         self._isFirstRun = True
         self.sceneHistory = []
         self.track = {"launchPads":[], "startFinishPlane":None,"countdownTime":3,"checkpoints":[],"nextCheckpoint":0,"lastCheckpoint":0}
+        self._serverIP = "localhost"
 
         self._droneSettings = DroneSettings(self)
         self._radioSettings = RadioSettings(self)
         self._graphicsSettings = GraphicsSettings(self)
+        self._networkClient = None
 
     #eventually we should implement propper logging
     def debug(self,output):
@@ -146,7 +177,7 @@ class FlowState:
     def getSelectedMap(self):
         return self._selectedMap
 
-    def setSelectedMap(self,selectedMap):
+    def selectMap(self,selectedMap):
         self._selectedMap = selectedMap
 
     def getPlayer(self):
@@ -207,4 +238,16 @@ class FlowState:
         return self._radioSettings
 
     def getGraphicsSettings(self):
-        return self._radioSettings
+        return self._graphicsSettings
+
+    def getNetworkClient(self):
+        return self._networkClient
+
+    def setNetworkClient(self,client):
+        self._networkClient = client
+
+    def getServerIP(self):
+        return self._serverIP
+
+    def setServerIP(self,ip):
+        self._serverIP = ip

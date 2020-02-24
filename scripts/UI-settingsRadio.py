@@ -12,7 +12,7 @@ flowState = logic.flowState
 textColor = [1,1,1,1]
 blockColor = [0,0,0.05,0.75]
 
-radioSettings = flowState.getDroneSettings()
+radioSettings = flowState.getRadioSettings()
 joy = cont.sensors["Joystick"]
 axis = joy.axisValues
 def setThrottleChannel(key,value):
@@ -56,7 +56,7 @@ def applySettings():
                     scene.restart()
                     print("WE ARE IN SINGLE PLAYER!!!! COOL TO RESTART")
 
-    logic.saveGlobalDict()
+    flowState.saveSettings()
     backAction()
 
 def backAction():
@@ -88,8 +88,8 @@ def spawnRadioInput(label,height,channelKey,invertedKey,action,min,max,increment
     invertedButton = UI.UIButton(invertedText,invertedBox,handleButtonCallback)
 
     indicatorText = UI.TextElement(window,[50,height], textColor, 0, "0")
-    channelInput = UI.UINumberInput(increaseButton,decreaseButton,indicatorText,int(radioSettings[channelKey]),min,max,increment)
-    invertedBooleanButton = UI.UIBooleanInput(invertedButton,invertedText,invertedKey,radioSettings[invertedKey])
+    channelInput = UI.UINumberInput(increaseButton,decreaseButton,indicatorText,int(getattr(radioSettings,channelKey)),min,max,increment)
+    invertedBooleanButton = UI.UIBooleanInput(invertedButton,invertedText,invertedKey,getattr(radioSettings,invertedKey))
     return channelInput,invertedBooleanButton
 
 if(owner['init']!=True):

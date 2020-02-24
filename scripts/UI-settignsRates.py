@@ -69,7 +69,7 @@ def applySettings():
                     scene.restart()
                     print("WE ARE IN SINGLE!!!! COOL TO RESTART")
 
-    logic.saveGlobalDict()
+    flowState.saveSettings()
     backAction()
 
 def backAction():
@@ -98,8 +98,8 @@ def spawnRateInput(label,height,channelKey,action,min,max,increment):
     decreaseButton = UI.UIButton(decreaseText,decreaseBox,action)
 
     indicatorText = UI.TextElement(window,[50,height], textColor, 0, "0")
-    print("spawning "+str(channelKey)+" "+str(droneSettings[channelKey]))
-    channelInput = UI.UINumberInput(increaseButton,decreaseButton,indicatorText,int(droneSettings[channelKey]),min,max,increment)
+    print("spawning "+str(channelKey)+" "+str(getattr(droneSettings,channelKey)))
+    channelInput = UI.UINumberInput(increaseButton,decreaseButton,indicatorText,int(getattr(droneSettings,channelKey)),min,max,increment)
 
     return channelInput
 

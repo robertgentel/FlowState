@@ -19,8 +19,8 @@ lastLap['Text'] = "LAST LAP: "+logic.lastLapTime
 bestLap['Text'] = "BEST LAP: "+logic.bestLapTime
 holeshot['Text'] = "HOLESHOT: "+str(logic.holeshotTime)
 errorLog['Text'] = "Error: "+logic.errorLog
-droneSettings = logic.flowState.getSettings()
-aspectRatioIs43 = droneSettings.aspectRatioIs4x3())
+graphicsSettings = logic.flowState.getGraphicsSettings()
+aspectRatioIs43 = graphicsSettings.aspectRatioIs4x3()
 if(aspectRatioIs43):
     aspectRatioCropper.visible = True
 else:

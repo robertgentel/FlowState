@@ -30,7 +30,7 @@ from urllib3.exceptions import LocationValueError
 
 from .models import Response
 from .compat import urlparse, basestring
-from .flowState import (DEFAULT_CA_BUNDLE_PATH, extract_zipped_paths,
+from .utils import (DEFAULT_CA_BUNDLE_PATH, extract_zipped_paths,
                     get_encoding_from_headers, prepend_scheme_if_needed,
                     get_auth_from_url, urldefragauth, select_proxy)
 from .structures import CaseInsensitiveDict

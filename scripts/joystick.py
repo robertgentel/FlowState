@@ -88,7 +88,7 @@ def initAllThings():
     logic.countdown = -1
     logic.maxGForce = 0
     logic.finishedLastLap = False
-    logic.flowState.setNotification({['Text']:""})
+    logic.flowState.setNotification({'Text':""})
     #own['rxPosition'] = [-2279.73,-30.8,90]
     del game['shaderInit']
 
@@ -341,9 +341,9 @@ def main():
     #roleForce = rs*pow((abs(rp)*(g['rollRate']*200)),(abs(rp)*(RE)*a)+b)*dps
     #yawForce = -ys*pow((abs(yp)*(g['yawRate']*200)),(abs(yp)*(YE)*a)+b)*dps
 
-    pitchForce = -stickInputToDPS((pitchPercent*1000)+1000,droneSettings.pitchSuperRate'],droneSettings.pitchRate,droneSettings.pitchExpo,True)
-    roleForce = stickInputToDPS((rollPercent*1000)+1000,droneSettings.rollSuperRate'],droneSettings.rollRate,droneSettings.rollExpo,True)
-    yawForce = -stickInputToDPS((yawPercent*1000)+1000,droneSettings.yawSuperRate'],droneSettings.yawRate,droneSettings.yawExpo,True)
+    pitchForce = -stickInputToDPS((pitchPercent*1000)+1000,droneSettings.pitchSuperRate,droneSettings.pitchRate,droneSettings.pitchExpo,True)
+    roleForce = stickInputToDPS((rollPercent*1000)+1000,droneSettings.rollSuperRate,droneSettings.rollRate,droneSettings.rollExpo,True)
+    yawForce = -stickInputToDPS((yawPercent*1000)+1000,droneSettings.yawSuperRate,droneSettings.yawRate,droneSettings.yawExpo,True)
     getAngularAcceleration()
     getAcc()
     if (own['oporational'] == True)&armed:
@@ -544,7 +544,7 @@ def main():
     #    logic.setTimeScale(1)
 own.applyForce([0,0,-98*own.mass],False)
 def settle():
-    logic.setTimeScale(droneSettings['timeScale']/100.0)
+    logic.setTimeScale(droneSettings.timeScale/100.0)
     own['settled'] = True
     logic.isSettled = True
     flowState.log("SETTLING!!!!!!!")

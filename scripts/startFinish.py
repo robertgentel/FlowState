@@ -9,7 +9,7 @@ flowState = logic.flowState
 cont = logic.getCurrentController()
 own = cont.owner
 droneSettings = flowState.getDroneSettings()
-timeScale = (droneSettings['timeScale']/100.0)
+timeScale = (droneSettings.timeScale/100.0)
 def updateLaps():
     if logic.countingDown:
         own['current_lap'] = 0.00
@@ -38,7 +38,7 @@ def addLastLap():
             own['last_lap'] = copy.deepcopy(own['current_lap'])
         if(logic.finishedLastLap==False):
             logic.lapTimes.append(str(format(own['current_lap']/timeScale, '.2f')))
-            if(logic.lapTimer['race time'] > 120):
+            if(logic.lapTimer['race time'] > flowState.getTimeLimit()):
                 logic.finishedLastLap = True
                 logic.flowState.setNotification({'Text':"RACE COMPLETE: "+logic.flowState.getSelectedMap()})
 

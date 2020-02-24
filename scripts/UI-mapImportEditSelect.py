@@ -4,7 +4,7 @@ import os
 from os.path import isfile, join
 import ast
 import json
-import mathflowState
+import mathutils
 import math
 logic = bge.logic
 flowState = logic.flowState
@@ -71,7 +71,7 @@ def convertAsset(gate,assetID):
     vdOri = gate['trans']['rot']
     vdScale = gate['trans']['scale']
     pos = [vdPos[0]/10,vdPos[2]/10,vdPos[1]/10]
-    ori = list(mathflowState.Quaternion((math.radians(vdOri[0]),math.radians(vdOri[1]), math.radians(vdOri[2]), math.radians(vdOri[3]))).to_euler())
+    ori = list(mathutils.Quaternion((math.radians(vdOri[0]),math.radians(vdOri[1]), math.radians(vdOri[2]), math.radians(vdOri[3]))).to_euler())
     ori = [math.degrees(-ori[0]),math.degrees(-ori[2]),math.degrees(-ori[1])]
     scale = [vdScale[0]/100,vdScale[2]/100,vdScale[1]/100]
     asset = {}

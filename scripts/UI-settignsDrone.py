@@ -61,8 +61,7 @@ def applySettings():
                     scene.restart()
                     print("WE ARE IN SINGLE PLAYER!!!! COOL TO RESTART")
 
-    logic.flowState.saveSettings()
-    logic.saveGlobalDict()
+    flowState.saveSettings()
     backAction()
 
 def backAction():

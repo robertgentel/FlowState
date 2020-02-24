@@ -15,20 +15,9 @@ graphicsSettings = flowState.getGraphicsSettings()
 
 def settingsAction(key,value):
     print(key,value)
-    graphicsSettings[key] = value
+    setattr(graphicsSettings,key,value)
 
 def applySettings():
-    #scenes = logic.getSceneList()
-    #currentScene = logic.getCurrentScene()
-    #for scene in scenes:
-    #    if(scene!=currentScene):
-    #        if(scene.name == "Main Game"):
-    #             pass
-    #            #currentMap = logic.flowState.gameState["selectedMap"]
-    #            #logic.flowState.resetGameState()
-    #            #logic.flowState.gameState["selectedMap"] = currentMap
-    #            #scene.restart()
-    #
     flowState.saveSettings()
     if(flowState.getGameMode()!=flowState.GAME_MODE_MULTIPLAYER):
         logic.restartGame()
@@ -45,7 +34,7 @@ def spawnBoolRow(label,height,key,action):
     button = UI.UIButton(text,box,settingsAction)
 
     #indicatorText = UI.TextElement(window,[50,height], textColor, 0, "0")
-    invertedBooleanButton = UI.UIBooleanInput(button,text,key,graphicsSettings[key])
+    invertedBooleanButton = UI.UIBooleanInput(button,text,key,getattr(graphicsSettings,key))
     return invertedBooleanButton
 
 def backAction():
