@@ -1,7 +1,6 @@
 import bge
 logic = bge.logic
 render = bge.render
-render.showMouse(1)
 scene = logic.getCurrentScene()
 cont = logic.getCurrentController()
 owner = cont.owner

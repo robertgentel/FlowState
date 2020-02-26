@@ -13,7 +13,6 @@ UI = bge.UI
 textColor = [1,1,1,1]
 blockColor = [0,0,0.05,0.75]
 mapButtons = []
-render.showMouse(1)
 
 
 if "window" not in owner:
@@ -27,7 +26,6 @@ def mapSelectAction(key,mapName):
     for scene in scenes:
         if(scene!=currentScene):
             scene.end()
-    render.showMouse(0)
     flowState.selectMap(mapName)
     flowState.setGameMode(flowState.GAME_MODE_SINGLE_PLAYER)
     flowState.setViewMode(flowState.VIEW_MODE_PLAY)
@@ -103,6 +101,7 @@ def importMapButton(name,spacing):
 
 
 if(owner['init']!=True):
+    flowState.setViewMode(flowState.VIEW_MODE_MENU)
     flowState.sceneHistory.append(logic.getCurrentScene().name)
     owner['init'] = True
     window = UI.Window()

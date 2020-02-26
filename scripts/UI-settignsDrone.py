@@ -49,19 +49,19 @@ def setCellCountAction():
 def applySettings():
     scenes = logic.getSceneList()
     currentScene = logic.getCurrentScene()
+    flowState.saveSettings()
     for scene in scenes:
         if(scene!=currentScene):
             if(scene.name == "Main Game"):
+                print(flowState.getGameMode())
                 if(flowState.getGameMode()==flowState.GAME_MODE_MULTIPLAYER):
                     print("WE ARE IN MULTIPLAYER!!!! DONT RESTART")
                 else:
-                    currentMap = flowState.getSelectedMap()
+                    currentMap = logic.flowState.getSelectedMap()
                     logic.flowState.resetGameState()
-                    logic.flowState.setSelectedMap(currentMap)
+                    logic.flowState.selectMap(currentMap)
                     scene.restart()
-                    print("WE ARE IN SINGLE PLAYER!!!! COOL TO RESTART")
-
-    flowState.saveSettings()
+                    print("WE ARE IN SINGLE!!!! COOL TO RESTART")
     backAction()
 
 def backAction():
@@ -107,7 +107,7 @@ def spawnBoolRow(label,height,key,action):
     return invertedBooleanButton
 
 if(owner['init']!=True):
-    render.showMouse(1)
+    flowState.setViewMode(flowState.VIEW_MODE_MENU)
     flowState.sceneHistory.append(logic.getCurrentScene().name)
     owner['init'] = True
     window = UI.Window()

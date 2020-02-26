@@ -14,7 +14,6 @@ UI = bge.UI
 textColor = [1,1,1,1]
 blockColor = [0,0,0.05,0.75]
 #mapButtons = []
-render.showMouse(1)
 
 
 keyboard = cont.sensors['Keyboard']
@@ -125,6 +124,7 @@ def createMapButton(name,spacing):
 
 
 if(owner['init']!=True):
+    flowState.setViewMode(flowState.VIEW_MODE_MENU)
     flowState.sceneHistory.append(logic.getCurrentScene().name)
     owner['init'] = True
     window = UI.Window()

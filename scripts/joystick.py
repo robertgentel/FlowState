@@ -10,6 +10,7 @@ import FSNObjects
 flowState = logic.flowState
 cont = logic.getCurrentController()
 own = cont.owner
+logic.player = own
 droneSettings = logic.flowState.getDroneSettings()
 radioSettings = logic.flowState.getRadioSettings()
 scene = logic.getCurrentScene()
@@ -45,6 +46,8 @@ def respawn():
         launchPadNo = 0
     else:
         pass
+    print("GOT LAUNCH PADS: "+str(logic.flowState.track['launchPads']))
+    print(len(logic.flowState.track['launchPads'])-1)
     launchPadNo = random.randint(0,len(logic.flowState.track['launchPads'])-1)
     launchPos = copy.deepcopy(logic.flowState.track['launchPads'][launchPadNo].position)
     own['launchPosition'] = [launchPos[0],launchPos[1],launchPos[2]+1]
@@ -53,8 +56,8 @@ def respawn():
     print("SPAWNING!!!"+str(launchPadNo)+", "+str(launchPos))
 
 def initAllThings():
-    logic.player = own
     logic.player['camera'] = scene.objects['cameraMain']
+    camera['initOri'] = camera.localOrientation
     logic.flowState.track['nextCheckpoint'] = 0
 
     #logic.setPhysicsTicRate(120)
@@ -138,13 +141,24 @@ def getStickPercentage(min,max,value):
     return percent
 
 def setup(camera,angle):
-    if 'setup' not in own:
-        initAllThings()
-        angle = (angle/180)*math.pi
-        camera.applyRotation([angle,0,0],True)
-        own['setup'] = True
-        own['canReset'] = False
+    print("Joystick.setup")
+    if(logic.flowState.mapLoadStage == flowState.MAP_LOAD_STAGE_DONE):
+        if 'setup' not in own:
+            print("Joystick.setup: we aren't setup yet!")
+            own['setup'] = True
+            own['canReset'] = False
+            initAllThings()
+            setCameraAngle(angle)
+        else:
+            print("Joystick.setup: we are already setup!")
 
+
+def setCameraAngle(angle):
+    print("setting camera angle to "+str(angle))
+    if(hasattr(camera,"initOri")):
+        camera.localOrientation = camera['initOri']
+    angle = (angle/180)*math.pi
+    camera.applyRotation([angle,0,0],True)
 
 def getSwitchValue(switchPercent,switchSetpoint,inverted):
     #if(switchInverted):
@@ -158,6 +172,7 @@ def getSwitchValue(switchPercent,switchSetpoint,inverted):
     return switch
 def resetGame():
     scene.active_camera = camera
+    setCameraAngle(flowState.getDroneSettings().cameraTilt)
     own.setLinearVelocity([0,0,0],True)
     own.setAngularVelocity([0,0,0],True)
 
@@ -245,7 +260,6 @@ def main():
     #print("afps: "+str(logic.getAverageFrameRate()))
 
     #Do the things and the stuff
-    setup(camera,droneSettings.cameraTilt)
     joy = cont.sensors["Joystick"]
     propRay = cont.sensors["Ray"]
     axis = joy.axisValues
@@ -579,9 +593,10 @@ def isSettled():
         if(logic.finishedLastLap):
             logic.setTimeScale(0.001)
             #own.setLinearVelocity([0,0,0],True)
-
-if(own.sensors['clock'].positive):
-    main()
-isSettled()
+setup(camera,droneSettings.cameraTilt)
+if(own['setup']):
+    if(own.sensors['clock'].positive):
+        main()
+    isSettled()
 if(own.sensors['Message'].positive):
     resetGame()

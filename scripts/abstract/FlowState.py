@@ -5,6 +5,7 @@ from scripts.abstract.settings.DroneSettings import DroneSettings
 from scripts.abstract.settings.RadioSettings import RadioSettings
 from scripts.abstract.settings.GraphicsSettings import GraphicsSettings
 logic = bge.logic
+render = bge.render
 
 class FlowState:
     #the version of the save data format
@@ -53,6 +54,11 @@ class FlowState:
     LOG_LEVEL_INFO = 1
     LOG_LEVEL_ERROR = 2
 
+    #map load stages
+    MAP_LOAD_STAGE_NONE = -1
+    MAP_LOAD_STAGE_LOADING = 0
+    MAP_LOAD_STAGE_DONE = 1
+
     LOG_LEVEL = LOG_LEVEL_DEBUG
 
     def __init__(self):
@@ -60,7 +66,7 @@ class FlowState:
 
         self.log("FlowState.init()")
         self._version = self.VERSION
-        self._timeLimit = 20
+        self._timeLimit = 120
         self._checkpoints = []
         self._selectedMap = "2018 Regional Final.fmp"
         self._player = None #needs to be implemented
@@ -72,9 +78,11 @@ class FlowState:
         self._notification = {"Text":""}
         self._viewMode = self.VIEW_MODE_MENU
         self._isFirstRun = True
+        self.mapLoadStage = self.MAP_LOAD_STAGE_LOADING
         self.sceneHistory = []
         self.track = {"launchPads":[], "startFinishPlane":None,"countdownTime":3,"checkpoints":[],"nextCheckpoint":0,"lastCheckpoint":0}
         self._serverIP = "localhost"
+        self.lastId = 0
 
         self._droneSettings = DroneSettings(self)
         self._radioSettings = RadioSettings(self)
@@ -140,7 +148,7 @@ class FlowState:
             self.saveSettings()
 
     def saveSettings(self):
-
+        self.debug("FlowState.saveSettings()")
         #let's serialized versions of each of our settings
         serializedDroneSettings = self._droneSettings.getSerializedSettings()
         serializedRadioSettings = self._radioSettings.getSerializedSettings()
@@ -160,7 +168,24 @@ class FlowState:
         self._radioSettings.setEasyDefaults()
 
     def resetGameState(self):
+        history = copy.deepcopy(self.sceneHistory)
         self.__init__()
+        self.sceneHistory = history #we don't typically want the scene history to be reset
+        self.loadSaveSettings()
+
+    def addMetadata(self,asset):
+        self.log("mapEditor.addMetadata("+str(asset)+")")
+        asset['metadata'] = {}
+        if 'gate' in asset.name:
+            asset['metadata'] = copy.deepcopy(self.METADATA_GATE)
+
+        if 'checkpoint' in asset.name:
+            asset['metadata'] = copy.deepcopy(self.METADATA_CHECKPOINT)
+        asset['metadata']['id'] = self.getNewID()
+
+    def getNewID(self):
+        self.lastId+=1
+        return self.lastId
 
     def getTimeLimit(self):
         return self._timeLimit
@@ -226,6 +251,11 @@ class FlowState:
         return self._viewMode
 
     def setViewMode(self,viewMode):
+        print("FlowState.setViewMode("+str(viewMode)+")")
+        if viewMode == self.VIEW_MODE_MENU:
+            render.showMouse(1)
+        if viewMode == self.VIEW_MODE_PLAY:
+            render.showMouse(0)
         self._viewMode = viewMode
 
     def isFirstRun(self):

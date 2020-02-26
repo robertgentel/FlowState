@@ -45,9 +45,7 @@ if(owner['init']==1):
         if(editor != None):
             if(flowState.getViewMode == flowState.VIEW_MODE_MENU):
                 UI.runWindow(window,cont)
-                render.showMouse(1)
             else:
-                render.showMouse(0)
                 digits = 1
                 cursorPos = list(logic.flowState.getMapEditor().cursor.position)
                 cursorOri = list(logic.flowState.getMapEditor().cursor.orientation.to_euler())

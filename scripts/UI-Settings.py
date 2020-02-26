@@ -47,7 +47,7 @@ def backAction():
     currentScene.replace(backScene)
 
 if(owner['init']!=True):
-    render.showMouse(1)
+    flowState.setViewMode(flowState.VIEW_MODE_MENU)
     flowState.sceneHistory.append(logic.getCurrentScene().name)
     owner['init'] = True
     window = UI.Window()

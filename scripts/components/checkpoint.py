@@ -150,7 +150,8 @@ class Checkpoint(bge.types.KX_PythonComponent):
                             #print(difAngle)
             else:
                 self.setCheckpointVisibility(False)
-                self.drawTraces()
+                if(flowState.getGraphicsSettings().raceLine):
+                    self.drawTraces()
             if self.lastPlayerPos==None:
                 self.lastPlayerPos = copy.deepcopy(flowState.getPlayer().object.position)
             if(flowState.getPlayer().object.getDistanceTo(self.lastPlayerPos) > 1):

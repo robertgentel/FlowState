@@ -2,7 +2,6 @@ import bge
 import traceback
 logic = bge.logic
 render = bge.render
-render.showMouse(1)
 scene = logic.getCurrentScene()
 cont = logic.getCurrentController()
 owner = cont.owner
@@ -11,7 +10,7 @@ UI = bge.UI
 textColor = [1,1,1,1]
 blockColor = [0,0,0.05,0.75]
 flowState = logic.flowState
-
+flowState.setViewMode(flowState.VIEW_MODE_MENU)
 def beginnerAction():
     logic.flowState.setEasyDefaults()
     proceedAction()
@@ -30,6 +29,7 @@ def quitGameAction():
 
 
 if(owner['init']!=True):
+    flowState.setViewMode(flowState.VIEW_MODE_MENU)
     owner['init'] = True
     window = UI.Window()
 

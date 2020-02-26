@@ -13,7 +13,8 @@ holeshot = logic.getCurrentScene().objects['HUDHoleshot']
 countdown = logic.getCurrentScene().objects['HUDCountdown']
 gForceCounter = logic.getCurrentScene().objects['HUDgForceCounter']
 aspectRatioCropper = logic.getCurrentScene().objects['aspectRatioCropper']
-logic.flowState.setNotification(logic.getCurrentScene().objects['HUDNotification'])
+#logic.flowState.setNotification(logic.getCurrentScene().objects['HUDNotification'])
+logic.getCurrentScene().objects['HUDNotification']['Text'] = logic.flowState.getNotification()['Text']
 laps['Text'] = "LAPS: "+logic.currentLap
 lastLap['Text'] = "LAST LAP: "+logic.lastLapTime
 bestLap['Text'] = "BEST LAP: "+logic.bestLapTime

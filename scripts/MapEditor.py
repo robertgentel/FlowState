@@ -21,6 +21,7 @@ class MapEditor:
         self.owner = self.cont.owner
         self.flowState.setGameMode(self.flowState.GAME_MODE_EDITOR)
         self.cursor = self.findChildWithProperty("mapEditorCursor")
+        print("WE GOT CURSOR "+str(self.cursor))
         self.cursorOffsetPosition = [0,50,0]
         self.camera = self.findChildWithProperty("mapEditorCamera")
         self.cursorOffsetOrientation = [0,0,0]
@@ -45,7 +46,7 @@ class MapEditor:
 
         self.snapOrientation = True
         self.snapPosition = True
-
+        print("WE GOT CURSOR "+str(self.cursor))
         self.cursor.removeParent()
         self.leftClick = self.cont.sensors['MouseLeftButton']
         self.rightClick = self.cont.sensors['MouseRightButton']
@@ -65,13 +66,12 @@ class MapEditor:
         self.addNextAsset()#logic.getCurrentScene().addObject(self.nextAsset,self.cursor,0)
         self.selectedAsset.setParent(self.cursor)
 
-
-        self.flowState.setViewMode = self.flowState.VIEW_MODE_PLAY
+        self.flowState.setViewMode(self.flowState.VIEW_MODE_PLAY)
         self.unitsMetric = True
-        render.showMouse(0)
         print("HIDE MOUSE")
 
     def findChildWithProperty(self,property):
+        self.flowState.debug("MapEditor.findChildWithProperty("+str(property)+")")
         print(self.owner.children)
         foundObject = False
         for child in self.owner.children:
@@ -80,6 +80,7 @@ class MapEditor:
                 break
         if foundObject == False:
             child = None
+        self.flowState.debug("return: "+str(child))
         return child
 
     def updateCursor(self):
@@ -150,7 +151,6 @@ class MapEditor:
                 child['spawn'] = True
         self.makeGhost(self.selectedAsset)
 
-
     def deleteCurrentAsset(self):
         if self.selectedAsset != None:
             self.selectedAsset.endObject()
@@ -165,14 +165,13 @@ class MapEditor:
         #return rayHit
 
     def setMode(self,mode):
+        print("MapEditor.setMode("+str(mode)+")")
         self.flowState.setViewMode(mode)
-        #self.currentMode = mode
+        #self.flowState.getViewMode() = mode
         if mode == self.flowState.VIEW_MODE_MENU:
-            render.showMouse(1)
             self.addMenuScene()
         if mode == self.flowState.VIEW_MODE_PLAY:
             self.centerMouse()
-            render.showMouse(0)
             self.removeMenuScene()
 
     def addMenuScene(self):
@@ -264,11 +263,11 @@ class MapEditor:
                         asset.removeParent()
                     self.makeGhost(asset)
                     if 'metadata' not in asset:
-                        self.flowState.addMetadata(asset)
+                        self.addMetadata(asset)
                     for child in asset.childrenRecursive:
                         self.makeGhost(child)
                         if 'asset' in child:
-                            self.flowState.addMetadata(child)
+                            self.addMetadata(child)
                         print(child.attrDict)
                     assetOri = copy.deepcopy(asset.worldOrientation)
                     print(assetOri)
@@ -347,7 +346,7 @@ class MapEditor:
         escapeToggle = bge.events.ESCKEY in pressedKeys
 
         altMode = bge.events.LEFTCTRLKEY in activeKeys
-        if self.currentMode == self.flowState.VIEW_MODE_PLAY:
+        if self.flowState.getViewMode() == self.flowState.VIEW_MODE_PLAY:
             if leftClick:
                 if self.selectedAsset == None:
                     self.editAsset()
@@ -531,13 +530,12 @@ class MapEditor:
 
 def createMapEditor():
     print("setting up new map editor")
-    newMapEditor = MapEditor()
+    newMapEditor = MapEditor(logic.flowState)
     newMapEditor.centerMouse()
     logic.flowState.setMapEditor(newMapEditor)
     print(logic.flowState.getMapEditor())
 
 if(logic.flowState.getMapEditor()!=None):
     logic.flowState.getMapEditor().run()
-    createMapEditor()
 else:
     createMapEditor()

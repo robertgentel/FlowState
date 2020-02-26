@@ -22,7 +22,7 @@ def restartAction():
             scene.end()
     currentMap = logic.flowState.getSelectedMap()
     logic.flowState.resetGameState()
-    logic.flowState.setSelectedMap(currentMap)
+    logic.flowState.selectMap(currentMap)
     currentScene.replace("Main Game")
 
 def mainMenuAction():
@@ -53,7 +53,7 @@ def resumeAction():
         logic.getSceneList()[0].resume()
 
 if(owner['init']!=True):
-    render.showMouse(1)
+    flowState.setViewMode(flowState.VIEW_MODE_MENU)
 
     #pause the main game if we aren't in multiplayer
     scenes = logic.getSceneList()

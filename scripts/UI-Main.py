@@ -67,7 +67,8 @@ def passAction():
 
 
 if(owner['init']!=True):
-    render.showMouse(1)
+    flowState.mapLoadStage = flowState.MAP_LOAD_STAGE_NONE
+    flowState.setViewMode(flowState.VIEW_MODE_MENU)
     flowState.sceneHistory.append(logic.getCurrentScene().name)
     owner['init'] = True
     window = UI.Window()

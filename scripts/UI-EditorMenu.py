@@ -26,14 +26,12 @@ def playAction():
     for scene in scenes:
         if(scene!=currentScene):
             scene.end()
-    render.showMouse(0)
     flowState.selectMap(mapName)
     logic.flowState.GAME_MODE_SINGLE_PLAYER
     currentScene.replace("Main Game")
 
 
 def saveAction():
-    render.showMouse(0)
     logic.sendMessage("saveMap")
     logic.flowState.getMapEditor().setMode(logic.flowState.VIEW_MODE_PLAY)
 
@@ -63,11 +61,9 @@ def noAction():
     print("no action")
 
 def quitGameAction():
-    render.showMouse(0)
     logic.flowState.getMapEditor().setMode(logic.flowState.VIEW_MODE_PLAY)
 
 def resumeAction():
-    render.showMouse(0)
     logic.flowState.getMapEditor().setMode(logic.flowState.VIEW_MODE_PLAY)
 
 def spawnMetadataInput(window,label,value,position,action,min,max,increment):
@@ -105,7 +101,6 @@ def spawnMetadataInput(window,label,value,position,action,min,max,increment):
     return None
 
 if(owner['init']==0):
-    render.showMouse(1)
     flowState.sceneHistory.append(logic.getCurrentScene().name)
     owner['init'] = 1
     inset = 0.2

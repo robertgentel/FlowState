@@ -1,6 +1,5 @@
 import bge
 import traceback
-from scripts.gameflowState import flowState
 logic = bge.logic
 render = bge.render
 
@@ -14,7 +13,6 @@ textColor = [1,1,1,1]
 blockColor = [0,0,0.05,0.75]
 
 def restartAction():
-    render.showMouse(0)
     scenes = logic.getSceneList()
     currentScene = logic.getCurrentScene()
     for scene in scenes:
@@ -22,7 +20,7 @@ def restartAction():
             scene.end()
     currentMap = logic.flowState.getSelectedMap()
     logic.flowState.resetGameState()
-    logic.flowState.setSelectedMap(currentMap)
+    logic.flowState.selectMap(currentMap)
     currentScene.replace("Map Editor")
 
 def mainMenuAction():
@@ -49,12 +47,10 @@ def backAction():
     currentScene.replace(backScene)
 
 def resumeAction():
-    render.showMouse(0)
     currentScene = logic.getCurrentScene()
     currentScene.end()
 
 if(owner['init']!=True):
-    render.showMouse(1)
     flowState.sceneHistory.append(logic.getCurrentScene().name)
     owner['init'] = True
     window = UI.Window()
@@ -97,7 +93,6 @@ else:
         if(editor != None):
             if(flowState.getViewMode() == flowState.VIEW_MODE_MENU):
                 UI.run(cont)
-                render.showMouse(1)
             else:
                 backAction()
         else:

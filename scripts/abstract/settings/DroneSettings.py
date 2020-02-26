@@ -42,7 +42,7 @@ class DroneSettings:
                 self.flowState.error("DroneSettings: invalid key passed to settings: "+str(key))
 
     def getSerializedSettings(self):
-        serializedSettings = copy.deepcopy(self.__dict__) #we don't want to actually manipulate this object's fields so lets do a deep copy
+        serializedSettings = DroneSettings(**self.__dict__).__dict__ #we don't want to actually manipulate this object's fields so lets do a deep copy
         invalidKeys = [] #we're going to keep track of keys which don't need to be stored E.G. the flowState instance
 
         #let's build a list of key's which aren't serializable
