@@ -12,6 +12,7 @@ UI = bge.UI
 flowState = logic.flowState
 textColor = [1,1,1,1]
 blockColor = [0,0,0.05,0.75]
+textColorGrey = [0.5,0.5,0.5,1]
 
 def restartAction():
     render.showMouse(0)
@@ -52,6 +53,9 @@ def resumeAction():
     if(flowState.getGameMode()!=flowState.GAME_MODE_MULTIPLAYER):
         logic.getSceneList()[0].resume()
 
+def doNothingAction():
+    pass
+
 if(owner['init']!=True):
     flowState.setViewMode(flowState.VIEW_MODE_MENU)
 
@@ -75,9 +79,16 @@ if(owner['init']!=True):
     mainMenuText = UI.TextElement(window,mainMenuBlock.position, textColor, 0, "MAIN MENU")
     mainMenuButton = UI.UIButton(mainMenuText,mainMenuBlock,mainMenuAction)
 
-    restartBlock = UI.BoxElement(window,[50,50],2,1, blockColor, 1)
-    restartText = UI.TextElement(window,restartBlock.position, textColor, 0, "RESTART")
-    restartButton = UI.UIButton(restartText,restartBlock,restartAction)
+    doNothingAction
+
+    if(flowState.getGameMode()!=flowState.GAME_MODE_MULTIPLAYER):
+        restartBlock = UI.BoxElement(window,[50,50],2,1, blockColor, 1)
+        restartText = UI.TextElement(window,restartBlock.position, textColor, 0, "RESTART")
+        restartButton = UI.UIButton(restartText,restartBlock,restartAction)
+    else:
+        restartBlock = UI.BoxElement(window,[50,50],2,1, blockColor, 1)
+        restartText = UI.TextElement(window,restartBlock.position, textColorGrey, 0, "RESTART")
+        restartButton = UI.UIButton(restartText,restartBlock,doNothingAction)
 
     settingsBlockElement = UI.BoxElement(window,[90,50],2,1, blockColor, 1)
     settingsText = UI.TextElement(window,settingsBlockElement.position, textColor, 0, "SETTINGS")

@@ -143,15 +143,13 @@ def getStickPercentage(min,max,value):
     (0+(100/2))/100.0
     return percent
 
-def setup(camera,angle):
+def setup():
     if(logic.flowState.mapLoadStage == flowState.MAP_LOAD_STAGE_DONE):
         if 'setup' not in own:
             print("Joystick.setup: we aren't setup yet!")
             own['setup'] = True
             own['canReset'] = False
-
             initAllThings()
-            setCameraAngle(angle)
 
 
 def setCameraAngle(angle):
@@ -597,7 +595,8 @@ def isSettled():
         if(logic.finishedLastLap):
             logic.setTimeScale(0.001)
             #own.setLinearVelocity([0,0,0],True)
-setup(camera,droneSettings.cameraTilt)
+setup()
+setCameraAngle(droneSettings.cameraTilt)
 if(own['setup']):
     if(own.sensors['clock'].positive):
         main()

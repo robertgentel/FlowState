@@ -31,6 +31,7 @@ def setWeightAction():
     bge.logic.sendMessage("loadNewSettings")
 
 def setCameraTiltAction():
+    print("UI camera tilt action")
     flowState.getDroneSettings().cameraTilt = int(camTiltInput.value)
     bge.logic.sendMessage("loadNewSettings")
 
@@ -54,14 +55,14 @@ def applySettings():
         if(scene!=currentScene):
             if(scene.name == "Main Game"):
                 print(flowState.getGameMode())
-                if(flowState.getGameMode()==flowState.GAME_MODE_MULTIPLAYER):
-                    print("WE ARE IN MULTIPLAYER!!!! DONT RESTART")
-                else:
-                    currentMap = logic.flowState.getSelectedMap()
-                    logic.flowState.resetGameState()
-                    logic.flowState.selectMap(currentMap)
-                    scene.restart()
-                    print("WE ARE IN SINGLE!!!! COOL TO RESTART")
+                #if(flowState.getGameMode()==flowState.GAME_MODE_MULTIPLAYER):
+                #    print("WE ARE IN MULTIPLAYER!!!! DONT RESTART")
+                #else:
+                #    currentMap = logic.flowState.getSelectedMap()
+                #    logic.flowState.resetGameState()
+                #    logic.flowState.selectMap(currentMap)
+                #    #scene.restart()
+                #    print("WE ARE IN SINGLE!!!! COOL TO RESTART")
     backAction()
 
 def backAction():
