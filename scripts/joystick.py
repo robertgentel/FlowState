@@ -7,6 +7,7 @@ import time
 import statistics
 import FSNClient
 import FSNObjects
+import mathutils
 flowState = logic.flowState
 cont = logic.getCurrentController()
 own = cont.owner
@@ -57,7 +58,6 @@ def respawn():
 
 def initAllThings():
     logic.player['camera'] = scene.objects['cameraMain']
-    camera['initOri'] = camera.localOrientation
     logic.flowState.track['nextCheckpoint'] = 0
 
     #logic.setPhysicsTicRate(120)
@@ -93,7 +93,10 @@ def initAllThings():
     logic.finishedLastLap = False
     logic.flowState.setNotification({'Text':""})
     #own['rxPosition'] = [-2279.73,-30.8,90]
-    del game['shaderInit']
+    try:
+        del game['shaderInit']
+    except:
+        pass
 
     print("init")
 def getArrayProduct(array):
@@ -141,24 +144,25 @@ def getStickPercentage(min,max,value):
     return percent
 
 def setup(camera,angle):
-    print("Joystick.setup")
     if(logic.flowState.mapLoadStage == flowState.MAP_LOAD_STAGE_DONE):
         if 'setup' not in own:
             print("Joystick.setup: we aren't setup yet!")
             own['setup'] = True
             own['canReset'] = False
+
             initAllThings()
             setCameraAngle(angle)
-        else:
-            print("Joystick.setup: we are already setup!")
 
 
 def setCameraAngle(angle):
-    print("setting camera angle to "+str(angle))
-    if(hasattr(camera,"initOri")):
-        camera.localOrientation = camera['initOri']
+    if("initOri" not in camera): #let's take note of the initial camera orientation if this is our first time (0 degrees)
+        cox,coy,coz = mathutils.Matrix.to_euler(camera.localOrientation)
+        camera['initOri'] = [cox,coy,coz]
+    #let's do the fancy math to set the camera orientation
     angle = (angle/180)*math.pi
-    camera.applyRotation([angle,0,0],True)
+    initOri = camera['initOri']
+    newCameraOri = [initOri[0]+angle,initOri[1],initOri[2]]
+    camera.localOrientation = newCameraOri
 
 def getSwitchValue(switchPercent,switchSetpoint,inverted):
     #if(switchInverted):
