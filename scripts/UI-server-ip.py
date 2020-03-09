@@ -109,19 +109,8 @@ def createMapAction():
     print("removing scene "+str(removedScene))
     currentScene.replace(backScene)
 
-def createMapButton(name,spacing):
-    buttonIndex = len(mapButtons)
-    height = 70-(buttonIndex*spacing)
-    print(height)
-    mapButtonBlock = UI.BoxElement(window,[50,height],5,0.5, blockColor, 1)
-    mapButtonText = UI.TextElement(window,mapButtonBlock.position, textColor, 0,name)
-    #mapButton = UI.UIButton(mapButtonText,mapButtonBlock,createMapAction,"map",name)
-    #mapButtons.append(mapButton)
-
-    owner['window'].add("mapButtonBlock"+name,mapButtonBlock)
-    owner['window'].add("mapButtonText"+name,mapButtonText)
-    #owner['window'].add("mapButton"+name,mapButton)
-
+def clearAction():
+    textInput.setText("")
 
 if(owner['init']!=True):
     flowState.setViewMode(flowState.VIEW_MODE_MENU)
@@ -137,7 +126,7 @@ if(owner['init']!=True):
     #back button
     nameLabelBlockElement = UI.BoxElement(window,[40,50],10,.5, blockColor, 1)
     nameLabelText = UI.TextElement(window,nameLabelBlockElement.position, textColor, 0, "SERVER NAME:")
-    nameLabelButton = UI.UIButton(nameLabelText,nameLabelBlockElement,backAction)
+    nameLabelButton = UI.UIButton(nameLabelText,nameLabelBlockElement,clearAction)
     textInput = UI.TextInputElement(window,[60,50], textColor, 0, "server ip address",elementObject="UIInput.001")
 
     #back button

@@ -322,7 +322,7 @@ class UI:
 
         def setText(self,newText):
             self.text = newText
-            #self.owner.text = self.text
+            self.owner.text = self.text
             self.getCenteredTextOffset(self.text)
             self.getCenteredTextPosition(self.position)
 

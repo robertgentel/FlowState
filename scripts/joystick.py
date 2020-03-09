@@ -262,7 +262,6 @@ def applyVideoStatic():
         rxInterference = 0.1
 
     game['rfNoise'] = 100/rxInterference
-    print(game['rfNoise'])
     #game['rfNoise'] = (groundBreakup*interference+game['eNoise'])+(rxInterference*100000)#((distance/txPower)*.01*groundBreakup*interference+game['eNoise'])+rxInterference
     #game['rfNoise'] = ((distance/txPower)*groundBreakup*interference+game['eNoise'])#+rxInterference
 

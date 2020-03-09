@@ -53,7 +53,6 @@ class RFEnvironment:
                 rx.interference = interference
                 if(interference<=0):
                     interference = 0.1
-                print(str(strongestSignalStrength)+"/"+str(interference))
                 snr = strongestSignalStrength/interference
                 if snr <= 0: #don't let snr = 0
                     snr = 0.1
@@ -68,6 +67,7 @@ class RFEnvironment:
         if(self.receivers!=[]):
             vrx = self.receivers[self.currentRXIndex]
         return vrx
+
     def setCamera(self,newCamera):
         scene = logic.getCurrentScene()
         activeCamera = scene.active_camera
