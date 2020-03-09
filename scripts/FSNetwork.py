@@ -9,12 +9,12 @@ from uuid import getnode as get_mac
 import random
 logic = bge.logic
 scene = logic.getCurrentScene()
-utils = logic.utils
+flowState = logic.flowState
 import mapLoad
 def quitGame():
     print("exiting game")
     try:
-        utils.getNetworkClient().quit()
+        flowState.getNetworkClient().quit()
     except:
         pass
     scenes = logic.getSceneList()
@@ -22,13 +22,14 @@ def quitGame():
     for scene in scenes:
         if(scene!=currentScene):
             scene.end()
-    utils.resetGameState()
-    utils.setViewMode(utils.VIEW_MODE_MENU)
+    flowState.resetGameState()
+    flowState.setViewMode(flowState.VIEW_MODE_MENU)
     currentScene.replace("Menu Background")
 
 def addNewPlayer(playerID):
     print("addNewPlayer("+str(playerID)+")")
     newObj = scene.addObject("playerQuad",logic.player,0)
+    newObj.suspendDynamics(True)
     logic.peers[playerID] = newObj #lets add this new player model to a dict so we can reference it later
 
 def removePlayer(playerID):
@@ -56,7 +57,7 @@ def clientMessageHandler(message):
             #print("- player join event")
             addNewPlayer(message.senderID)
         if(message.eventType == FSNObjects.ServerEvent.ACK):
-            utils.getNetworkClient().serverReady = True
+            flowState.getNetworkClient().serverReady = True
         if(message.eventType == FSNObjects.ServerEvent.MAP_SET):
             print("we should load a map!")
             mapData = message.extra
@@ -96,7 +97,7 @@ def clientMessageHandler(message):
         message = FSNObjects.ServerState.getMessage(message)
         peerStates = message.playerStates
         for key in peerStates:
-            if(key==utils.getNetworkClient().clientID):
+            if(key==flowState.getNetworkClient().clientID):
                 pass
             else:
                 peerState = peerStates[key]
@@ -112,13 +113,13 @@ def clientMessageHandler(message):
 
 def setup():
     print("JOINING SERVER!!!")
-    utils.setGameMode(utils.GAME_MODE_MULTIPLAYER)
+    flowState.setGameMode(flowState.GAME_MODE_MULTIPLAYER)
     #
-    utils.setNetworkClient(FSNClient.FSNClient(utils.getServerIP(),50001))
-    utils.getNetworkClient().connect()
-    playerJoinEvent = FSNObjects.PlayerEvent(FSNObjects.PlayerEvent.PLAYER_JOINED,utils.getNetworkClient().clientID)
-    utils.getNetworkClient().sendEvent(playerJoinEvent)
-    utils.getNetworkClient().setMessageHandler(clientMessageHandler)
+    flowState.setNetworkClient(FSNClient.FSNClient(flowState.getServerIP(),50001))
+    flowState.getNetworkClient().connect()
+    playerJoinEvent = FSNObjects.PlayerEvent(FSNObjects.PlayerEvent.PLAYER_JOINED,flowState.getNetworkClient().clientID)
+    flowState.getNetworkClient().sendEvent(playerJoinEvent)
+    flowState.getNetworkClient().setMessageHandler(clientMessageHandler)
     logic.peers = {}
 
 def run():
@@ -126,10 +127,10 @@ def run():
     o = logic.player.orientation.to_euler()
     orientation = [o[0],o[1],o[2]]
     color = [0,0,1]
-    myState = FSNObjects.PlayerState(utils.getNetworkClient().clientID,None,position,orientation,color)
+    myState = FSNObjects.PlayerState(flowState.getNetworkClient().clientID,None,position,orientation,color)
 
-    utils.getNetworkClient().updateState(myState)
-    utils.getNetworkClient().run()
+    flowState.getNetworkClient().updateState(myState)
+    flowState.getNetworkClient().run()
 
 def main():
     #if hasattr(logic, 'isSettled'):
@@ -141,10 +142,10 @@ def main():
         logic.lastLogicTic
     except:
         logic.lastLogicTic = float(time.perf_counter())
-    if utils.getNetworkClient()!=None:
+    if flowState.getNetworkClient()!=None:
         #if(logic.lastNetworkTick>=0.1):
         #if(logic.lastNetworkTick>=0.01):
-        if utils.getNetworkClient().isConnected():
+        if flowState.getNetworkClient().isConnected():
             run()
             logic.lastNetworkTick = 0
         else:
@@ -156,5 +157,5 @@ def main():
     lastFrameExecution = float(time.perf_counter())-logic.lastLogicTic
     logic.lastNetworkTick+=lastFrameExecution
 
-if(utils.getGameMode()==utils.GAME_MODE_MULTIPLAYER):
+if(flowState.getGameMode()==flowState.GAME_MODE_MULTIPLAYER):
     main()

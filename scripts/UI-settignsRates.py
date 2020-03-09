@@ -5,16 +5,14 @@ render = bge.render
 scene = logic.getCurrentScene()
 cont = logic.getCurrentController()
 owner = cont.owner
+flowState = logic.flowState
 UI = bge.UI
-utils = logic.utils
+flowState = logic.flowState
 
 textColor = [1,1,1,1]
 blockColor = [0,0,0.05,0.75]
 
-profileIndex = logic.globalDict['currentProfile']
-profiles = logic.globalDict['profiles']
-profile = profiles[profileIndex]
-droneSettings = profile['droneSettings']
+droneSettings = flowState.getDroneSettings()
 
 
 def soloGameAction():
@@ -27,76 +25,58 @@ def soloGameAction():
 
 #rate actions
 def setYawRateAction():
-    profileIndex = logic.globalDict['currentProfile']
-    profiles = logic.globalDict['profiles']
-    logic.globalDict['profiles'][profileIndex]['droneSettings']['yawRate'] = yawRateInput.value
+    flowState.getDroneSettings().yawRate = yawRateInput.value
 
 def setRollRateAction():
-    profileIndex = logic.globalDict['currentProfile']
-    profiles = logic.globalDict['profiles']
-    logic.globalDict['profiles'][profileIndex]['droneSettings']['rollRate'] = rollRateInput.value
+    flowState.getDroneSettings().rollRate = rollRateInput.value
 
 def setPitchRateAction():
-    profileIndex = logic.globalDict['currentProfile']
-    profiles = logic.globalDict['profiles']
-    logic.globalDict['profiles'][profileIndex]['droneSettings']['pitchRate'] = pitchRateInput.value
+    flowState.getDroneSettings().pitchRate = pitchRateInput.value
 
 #expo actions
 def setYawExpoAction():
-    profileIndex = logic.globalDict['currentProfile']
-    profiles = logic.globalDict['profiles']
-    logic.globalDict['profiles'][profileIndex]['droneSettings']['yawExpo'] = yawExpoInput.value
+    flowState.getDroneSettings().yawExpo = yawExpoInput.value
 
 def setRollExpoAction():
-    profileIndex = logic.globalDict['currentProfile']
-    profiles = logic.globalDict['profiles']
-    logic.globalDict['profiles'][profileIndex]['droneSettings']['rollExpo'] = rollExpoInput.value
+    flowState.getDroneSettings().rollExpo = rollExpoInput.value
 
 def setPitchExpoAction():
-    profileIndex = logic.globalDict['currentProfile']
-    profiles = logic.globalDict['profiles']
-    logic.globalDict['profiles'][profileIndex]['droneSettings']['pitchExpo'] = pitchExpoInput.value
+    flowState.getDroneSettings().pitchExpo = pitchExpoInput.value
 
 #super rate actions
 def setYawSuperRateAction():
-    profileIndex = logic.globalDict['currentProfile']
-    profiles = logic.globalDict['profiles']
-    logic.globalDict['profiles'][profileIndex]['droneSettings']['yawSuperRate'] = yawSuperRateInput.value
+    flowState.getDroneSettings().yawSuperRate = yawSuperRateInput.value
 
 def setRollSuperRateAction():
-    profileIndex = logic.globalDict['currentProfile']
-    profiles = logic.globalDict['profiles']
-    logic.globalDict['profiles'][profileIndex]['droneSettings']['rollSuperRate'] = rollSuperRateInput.value
+    flowState.getDroneSettings().rollSuperRate = rollSuperRateInput.value
 
 def setPitchSuperRateAction():
-    profileIndex = logic.globalDict['currentProfile']
-    profiles = logic.globalDict['profiles']
-    logic.globalDict['profiles'][profileIndex]['droneSettings']['pitchSuperRate'] = pitchSuperRateInput.value
+    flowState.getDroneSettings().pitchSuperRate = pitchSuperRateInput.value
 
 def applySettings():
     scenes = logic.getSceneList()
     currentScene = logic.getCurrentScene()
+    flowState.saveSettings()
     for scene in scenes:
         if(scene!=currentScene):
             if(scene.name == "Main Game"):
-                print(utils.getGameMode())
-                if(utils.getGameMode()==utils.GAME_MODE_MULTIPLAYER):
-                    print("WE ARE IN MULTIPLAYER!!!! DONT RESTART")
-                else:
-                    currentMap = logic.utils.gameState["selectedMap"]
-                    logic.utils.resetGameState()
-                    logic.utils.gameState["selectedMap"] = currentMap
-                    scene.restart()
-                    print("WE ARE IN SINGLE!!!! COOL TO RESTART")
-
-    logic.saveGlobalDict()
+                print(flowState.getGameMode())
+                #if(flowState.getGameMode()==flowState.GAME_MODE_MULTIPLAYER):
+                #    print("WE ARE IN MULTIPLAYER!!!! DONT RESTART")
+                #else:
+                #    currentMap = logic.flowState.getSelectedMap()
+                #    logic.flowState.resetGameState()
+                #    logic.flowState.selectMap(currentMap)
+                #    #scene.restart()
+                #    print("WE ARE IN SINGLE!!!! COOL TO RESTART")
     backAction()
 
 def backAction():
     currentScene = logic.getCurrentScene()
-    sceneHistory = logic.globalDict['sceneHistory']
+    sceneHistory = flowState.sceneHistory
     print(sceneHistory)
     backScene = sceneHistory[-2]
+    print(sceneHistory)
     removedScene = sceneHistory.pop(-1)
     removedScene = sceneHistory.pop(-1)
     print("removing scene "+str(removedScene))
@@ -118,18 +98,15 @@ def spawnRateInput(label,height,channelKey,action,min,max,increment):
     decreaseButton = UI.UIButton(decreaseText,decreaseBox,action)
 
     indicatorText = UI.TextElement(window,[50,height], textColor, 0, "0")
-    print("spawning "+str(channelKey)+" "+str(droneSettings[channelKey]))
-    channelInput = UI.UINumberInput(increaseButton,decreaseButton,indicatorText,int(droneSettings[channelKey]),min,max,increment)
+    print("spawning "+str(channelKey)+" "+str(getattr(droneSettings,channelKey)))
+    channelInput = UI.UINumberInput(increaseButton,decreaseButton,indicatorText,int(getattr(droneSettings,channelKey)),min,max,increment)
 
     return channelInput
 
 if(owner['init']!=True):
-    render.showMouse(1)
-    logic.globalDict['sceneHistory'].append(logic.getCurrentScene().name)
-    profileIndex = logic.globalDict['currentProfile']
-    profiles = logic.globalDict['profiles']
-    profile = profiles[profileIndex]
-    droneSettings = profile['droneSettings']
+    flowState.setViewMode(flowState.VIEW_MODE_MENU)
+    flowState.sceneHistory.append(logic.getCurrentScene().name)
+    droneSettings = flowState.getDroneSettings()
     owner['init'] = True
     window = UI.Window()
 
@@ -172,5 +149,5 @@ else:
     try:
         UI.run(cont)
     except Exception as e:
-        utils.log(traceback.format_exc())
+        flowState.log(traceback.format_exc())
         owner['init'] = -1

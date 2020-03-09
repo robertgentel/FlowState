@@ -5,34 +5,21 @@ render = bge.render
 scene = logic.getCurrentScene()
 cont = logic.getCurrentController()
 owner = cont.owner
+flowState = logic.flowState
 UI = bge.UI
 textColor = [1,1,1,1]
 blockColor = [0,0,0.05,0.75]
-utils = logic.utils
+flowState = logic.flowState
 
-profileIndex = logic.globalDict['currentProfile']
-profiles = logic.globalDict['profiles']
-profile = profiles[profileIndex]
-graphicsSettings = profile['graphicsSettings']
+graphicsSettings = flowState.getGraphicsSettings()
 
 def settingsAction(key,value):
     print(key,value)
-    graphicsSettings[key] = value
+    setattr(graphicsSettings,key,value)
 
 def applySettings():
-    #scenes = logic.getSceneList()
-    #currentScene = logic.getCurrentScene()
-    #for scene in scenes:
-    #    if(scene!=currentScene):
-    #        if(scene.name == "Main Game"):
-    #             pass
-    #            #currentMap = logic.utils.gameState["selectedMap"]
-    #            #logic.utils.resetGameState()
-    #            #logic.utils.gameState["selectedMap"] = currentMap
-    #            #scene.restart()
-    #
-    logic.saveGlobalDict()
-    if(utils.getGameMode()!=utils.GAME_MODE_MULTIPLAYER):
+    flowState.saveSettings()
+    if(flowState.getGameMode()!=flowState.GAME_MODE_MULTIPLAYER):
         logic.restartGame()
     else:
         backAction()
@@ -47,13 +34,13 @@ def spawnBoolRow(label,height,key,action):
     button = UI.UIButton(text,box,settingsAction)
 
     #indicatorText = UI.TextElement(window,[50,height], textColor, 0, "0")
-    invertedBooleanButton = UI.UIBooleanInput(button,text,key,graphicsSettings[key])
+    invertedBooleanButton = UI.UIBooleanInput(button,text,key,getattr(graphicsSettings,key))
     return invertedBooleanButton
 
 def backAction():
     bge.logic.sendMessage("cam1")
     currentScene = logic.getCurrentScene()
-    sceneHistory = logic.globalDict['sceneHistory']
+    sceneHistory = flowState.sceneHistory
     print(sceneHistory)
     backScene = sceneHistory[-2]
     removedScene = sceneHistory.pop(-1)
@@ -62,8 +49,8 @@ def backAction():
     currentScene.replace(backScene)
 
 if(owner['init']!=True):
-    render.showMouse(1)
-    logic.globalDict['sceneHistory'].append(logic.getCurrentScene().name)
+    flowState.setViewMode(flowState.VIEW_MODE_MENU)
+    flowState.sceneHistory.append(logic.getCurrentScene().name)
     owner['init'] = True
     window = UI.Window()
 
@@ -72,12 +59,13 @@ if(owner['init']!=True):
     mainMenuBlock = UI.BoxElement(window,[50,95],11,1, blockColor, 1)
     mainMenuText = UI.TextElement(window,mainMenuBlock.position, textColor, 0, "GRAPHIC")
 
-    frameRate = spawnBoolRow("Frame Rate",20,"frameRate",settingsAction)
-    shaders = spawnBoolRow("Filters",30,"shaders",settingsAction)
-    specularity = spawnBoolRow("Specularity",40,"specularity",settingsAction)
-    shadows = spawnBoolRow("Shadows",50,"shadows",settingsAction)
-    shading = spawnBoolRow("Shading",60,"shading",settingsAction)
-    raceLine = spawnBoolRow("Race Line",70,"raceLine",settingsAction)
+    frameRate = spawnBoolRow("Frame Rate",30,"frameRate",settingsAction)
+    shaders = spawnBoolRow("Filters",40,"shaders",settingsAction)
+    specularity = spawnBoolRow("Specularity",50,"specularity",settingsAction)
+    shadows = spawnBoolRow("Shadows",60,"shadows",settingsAction)
+    shading = spawnBoolRow("Shading",70,"shading",settingsAction)
+    raceLine = spawnBoolRow("Race Line",80,"raceLine",settingsAction)
+    aspectRatio = spawnBoolRow("Aspect Ratio (4:3)",20,"aspectRatio4x3",settingsAction)
 
     #back button
     backBlockElement = UI.BoxElement(window,[10,10],1,.5, blockColor, 1)
@@ -93,5 +81,5 @@ else:
     try:
         UI.run(cont)
     except Exception as e:
-        utils.log(traceback.format_exc())
+        flowState.log(traceback.format_exc())
         owner['init'] = -1

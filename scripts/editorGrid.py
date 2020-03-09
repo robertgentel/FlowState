@@ -20,12 +20,12 @@ class visibility(bge.types.KX_PythonComponent):
 
     def update(self):
         if(self.units == "meters"):
-            if(logic.utils.getMapEditor().unitsMetric):
+            if(logic.flowState.getMapEditor().unitsMetric):
                 self.object.visible = True
             else:
                 self.object.visible = False
         else:
-            if(not logic.utils.getMapEditor().unitsMetric):
+            if(not logic.flowState.getMapEditor().unitsMetric):
                 self.object.visible = True
             else:
                 self.object.visible = False

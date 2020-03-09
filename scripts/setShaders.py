@@ -2,15 +2,14 @@ import bge
 render = bge.render
 logic = bge.logic
 owner = logic.getCurrentController().owner
-utils = logic.utils
-profileIndex = logic.globalDict['currentProfile']
-profiles = logic.globalDict['profiles']
+flowState = logic.flowState
 
-shaders = profiles[profileIndex]['graphicsSettings']['shaders']
-shading = profiles[profileIndex]['graphicsSettings']['shading']
-specularity = profiles[profileIndex]['graphicsSettings']['specularity']
-shadows = profiles[profileIndex]['graphicsSettings']['shadows']
-frameRate = profiles[profileIndex]['graphicsSettings']['frameRate']
+graphicsSettings = flowState.getGraphicsSettings()
+shaders = graphicsSettings.shaders
+shading = graphicsSettings.shading
+specularity = graphicsSettings.specularity
+shadows = graphicsSettings.shadows
+frameRate = graphicsSettings.frameRate
 
 if not "shaderInit" in owner:
     print("PLAYER FOUND! SETTING SHADERS!!!!!")
@@ -27,12 +26,12 @@ if not "shaderInit" in owner:
             playerCamera.lens = 10
             logic.sendMessage("disable shaders")
             print("disabling shaders")
-            
+
         #render.showFramerate(frameRate)
         render.setGLSLMaterialSetting("lights",shading)
         render.setGLSLMaterialSetting("shaders",specularity)
         render.setGLSLMaterialSetting("shadows",shadows)
-        
+
         print("setting lights "+str(shading))
         if(shading):
             print("setting specularity "+str(specularity))

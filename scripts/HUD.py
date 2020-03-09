@@ -12,12 +12,20 @@ times = logic.getCurrentScene().objects['HUDLapTimes']
 holeshot = logic.getCurrentScene().objects['HUDHoleshot']
 countdown = logic.getCurrentScene().objects['HUDCountdown']
 gForceCounter = logic.getCurrentScene().objects['HUDgForceCounter']
-logic.utils.gameState['notification'] = logic.getCurrentScene().objects['HUDNotification']
+aspectRatioCropper = logic.getCurrentScene().objects['aspectRatioCropper']
+#logic.flowState.setNotification(logic.getCurrentScene().objects['HUDNotification'])
+logic.getCurrentScene().objects['HUDNotification']['Text'] = logic.flowState.getNotification()['Text']
 laps['Text'] = "LAPS: "+logic.currentLap
 lastLap['Text'] = "LAST LAP: "+logic.lastLapTime
 bestLap['Text'] = "BEST LAP: "+logic.bestLapTime
 holeshot['Text'] = "HOLESHOT: "+str(logic.holeshotTime)
 errorLog['Text'] = "Error: "+logic.errorLog
+graphicsSettings = logic.flowState.getGraphicsSettings()
+aspectRatioIs43 = graphicsSettings.aspectRatioIs4x3()
+if(aspectRatioIs43):
+    aspectRatioCropper.visible = True
+else:
+    aspectRatioCropper.visible = False
 try:
     gForceCounter['Text'] = str(round(logic.gForce, 1))+"G"
 except:
@@ -27,7 +35,7 @@ laps['Text'] = "LAPS: "+logic.currentLap
 lastLap['Text'] = "LAST LAP: "+logic.lastLapTime
 bestLap['Text'] = "BEST LAP: "+logic.bestLapTime
 errorLog['Text'] = "Error: "+logic.errorLog
-countdownTime = logic.utils.gameState['track']['countdownTime']
+countdownTime = logic.flowState.track['countdownTime']
 try:
     if logic.countingDown:
 

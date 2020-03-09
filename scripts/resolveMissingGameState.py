@@ -1,13 +1,13 @@
 import bge
-from scripts.gameUtils import utils
+from scripts.abstract.FlowState import FlowState
 logic = bge.logic
 try:
-    logic.utils
+    logic.flowState
 except:
+    #If for some reason we never created a flow state, create a default instance
     print("WARNING GAME STATE WAS INVALID!")
-    logic.utils = utils()
+    logic.flowState = FlowState()
     logic.loadGlobalDict()
-    logic.globalDict['sceneHistory'] = []
-    logic.utils.setDefaultState()
+    flowState.sceneHistory = []
     logic.saveGlobalDict()
-    logic.utils.log("Utils created")
+    logic.flowState.log("Default Flow State created")

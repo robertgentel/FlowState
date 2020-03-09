@@ -19,8 +19,8 @@ void main(void)
 
 	float oy = 0.5; // center, y axis
 
-	float scale = .581;//41; // texture scale
-
+	//float scale = .581;//41; // texture scale
+    float scale = 0.505;//41; // texture scale
 
 	float k1 = 1.0;    // constant for radial distortion correction
 

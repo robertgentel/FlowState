@@ -3,16 +3,16 @@ import traceback
 import os
 from os.path import isfile, join
 logic = bge.logic
-utils = logic.utils
+flowState = logic.flowState
 render = bge.render
 scene = logic.getCurrentScene()
 cont = logic.getCurrentController()
 owner = cont.owner
+flowState = logic.flowState
 UI = bge.UI
 textColor = [1,1,1,1]
 blockColor = [0,0,0.05,0.75]
 mapButtons = []
-render.showMouse(1)
 
 
 if "window" not in owner:
@@ -26,10 +26,9 @@ def mapSelectAction(key,mapName):
     for scene in scenes:
         if(scene!=currentScene):
             scene.end()
-    render.showMouse(0)
-    utils.selectMap(mapName)
-    utils.setGameMode(utils.GAME_MODE_SINGLE_PLAYER)
-    utils.setViewMode(utils.VIEW_MODE_PLAY)
+    flowState.selectMap(mapName)
+    flowState.setGameMode(flowState.GAME_MODE_SINGLE_PLAYER)
+    flowState.setViewMode(flowState.VIEW_MODE_PLAY)
     currentScene.replace("Map Editor")
 
 def multiplayerAction():
@@ -42,7 +41,7 @@ def settingsAction():
 
 def backAction():
     currentScene = logic.getCurrentScene()
-    sceneHistory = logic.globalDict['sceneHistory']
+    sceneHistory = flowState.sceneHistory
     print(sceneHistory)
     backScene = sceneHistory[-2]
     removedScene = sceneHistory.pop(-1)
@@ -102,7 +101,8 @@ def importMapButton(name,spacing):
 
 
 if(owner['init']!=True):
-    logic.globalDict['sceneHistory'].append(logic.getCurrentScene().name)
+    flowState.setViewMode(flowState.VIEW_MODE_MENU)
+    flowState.sceneHistory.append(logic.getCurrentScene().name)
     owner['init'] = True
     window = UI.Window()
 
@@ -146,5 +146,5 @@ else:
         #UI.run(cont)
         UI.runWindow(window,cont)
     except Exception as e:
-        utils.log(traceback.format_exc())
+        flowState.log(traceback.format_exc())
         owner['init'] = -1

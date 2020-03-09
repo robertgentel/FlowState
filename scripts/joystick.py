@@ -7,14 +7,14 @@ import time
 import statistics
 import FSNClient
 import FSNObjects
-utils = logic.utils
+import mathutils
+
+flowState = logic.flowState
 cont = logic.getCurrentController()
 own = cont.owner
-g = {}
-profileIndex = logic.globalDict['currentProfile']
-droneSettings = logic.globalDict['profiles'][profileIndex]['droneSettings']
-radioSettings = logic.globalDict['profiles'][profileIndex]['radioSettings']
-g = {**droneSettings, **radioSettings} #merge the two dictionaries
+logic.player = own
+droneSettings = logic.flowState.getDroneSettings()
+radioSettings = logic.flowState.getRadioSettings()
 scene = logic.getCurrentScene()
 mass = own.mass
 gravity = 98*mass
@@ -44,21 +44,49 @@ def getAngularAcceleration():
         own['lastAngularVel'] = own.getAngularVelocity(True)
 
 def respawn():
-    if(utils.getGameMode()!=utils.GAME_MODE_MULTIPLAYER):
+    if(flowState.getGameMode()!=flowState.GAME_MODE_MULTIPLAYER):
         launchPadNo = 0
+        reconstructRFEnvironment() #we only need to reset the RF environment in single player since ghosts get deleted
     else:
         pass
-    launchPadNo = random.randint(0,len(logic.utils.gameState['launchPads'])-1)
-    launchPos = copy.deepcopy(logic.utils.gameState['launchPads'][launchPadNo].position)
+
+    print("GOT LAUNCH PADS: "+str(logic.flowState.track['launchPads']))
+    print(len(logic.flowState.track['launchPads'])-1)
+    launchPadNo = flowState.getDroneSettings().videoChannel#random.randint(0,len(logic.flowState.track['launchPads'])-1)
+    launchPos = copy.deepcopy(logic.flowState.track['launchPads'][launchPadNo].position)
     own['launchPosition'] = [launchPos[0],launchPos[1],launchPos[2]+1]
     own.position = own['launchPosition']
-    print(logic.utils.gameState['launchPads'])
+    print(logic.flowState.track['launchPads'])
     print("SPAWNING!!!"+str(launchPadNo)+", "+str(launchPos))
 
+
+def reconstructRFEnvironment():#reset RF environment since ghosts and other vtxs and RXs might get deleted
+    flowState.log("reconstructing RF environment")
+    launchPads = logic.flowState.track['launchPads']
+    playerVideoChannel = flowState.getDroneSettings().videoChannel
+
+    flowState.resetRFEnvironment()
+
+    #set all the track launch pads to be video receivers. we may create a dedicated ground station object for this in the future
+    for i in range(0,len(launchPads)):
+        launchPad = launchPads[i]
+        print("launchPad")
+        try:
+            receiver = launchPad['vrx']
+            receiver.setChannel(i)
+            flowState.getRFEnvironment().addReceiver(receiver)
+        except Exception as e:
+            flowState.error("unable to add launch pad "+str(i)+" to rf environment")
+
+    try:
+        flowState.getRFEnvironment().addEmitter(camera['vtx'])
+    except Exception as e:
+        flowState.error("unable to create player vtx on respawn")
+
+
 def initAllThings():
-    logic.player = own
     logic.player['camera'] = scene.objects['cameraMain']
-    logic.utils.gameState['track']['nextCheckpoint'] = logic.defaultGameState['track']['nextCheckpoint']
+    logic.flowState.track['nextCheckpoint'] = 0
 
     #logic.setPhysicsTicRate(120)
     #logic.setLogicTicRate(120)
@@ -80,20 +108,23 @@ def initAllThings():
     own['settleDuration'] = 0
     own['settleFrameRates'] = []
     respawn()
-    own['rxPosition'] = copy.deepcopy(logic.utils.gameState['launchPads'][0].position)
+    own['rxPosition'] = copy.deepcopy(logic.flowState.track['launchPads'][0].position) #needs to be removed now that we have RFEnvironment
     own['rxPosition'][2]+=100
-    own.orientation = logic.utils.gameState['launchPads'][0].orientation
+    own.orientation = logic.flowState.track['launchPads'][0].orientation
     own['oporational'] = True
     own['vtxOporational'] = True
     own['damage'] = 0
-    own.mass = g['weight']/1000
+    own.mass = droneSettings.weight/1000
     logic.countingDown = True
     logic.countdown = -1
     logic.maxGForce = 0
     logic.finishedLastLap = False
-    logic.utils.gameState['notification']['Text'] = ""
+    logic.flowState.setNotification({'Text':""})
     #own['rxPosition'] = [-2279.73,-30.8,90]
-    del game['shaderInit']
+    try:
+        del game['shaderInit']
+    except:
+        pass
 
     print("init")
 def getArrayProduct(array):
@@ -140,14 +171,24 @@ def getStickPercentage(min,max,value):
     (0+(100/2))/100.0
     return percent
 
-def setup(camera,angle):
-    if 'setup' not in own:
-        initAllThings()
-        angle = (angle/180)*math.pi
-        camera.applyRotation([angle,0,0],True)
-        own['setup'] = True
-        own['canReset'] = False
+def setup():
+    if(logic.flowState.mapLoadStage == flowState.MAP_LOAD_STAGE_DONE):
+        if 'setup' not in own:
+            print("Joystick.setup: we aren't setup yet!")
+            own['setup'] = True
+            own['canReset'] = False
+            initAllThings()
 
+
+def setCameraAngle(angle):
+    if("initOri" not in camera): #let's take note of the initial camera orientation if this is our first time (0 degrees)
+        cox,coy,coz = mathutils.Matrix.to_euler(camera.localOrientation)
+        camera['initOri'] = [cox,coy,coz]
+    #let's do the fancy math to set the camera orientation
+    angle = (angle/180)*math.pi
+    initOri = camera['initOri']
+    newCameraOri = [initOri[0]+angle,initOri[1],initOri[2]]
+    camera.localOrientation = newCameraOri
 
 def getSwitchValue(switchPercent,switchSetpoint,inverted):
     #if(switchInverted):
@@ -160,20 +201,15 @@ def getSwitchValue(switchPercent,switchSetpoint,inverted):
         switch = (1-switchPercent)>switchSetpoint
     return switch
 def resetGame():
-    #act = own.actuators["restart"]
-    #act.useRestart = True
-    #cont.activate(act)
-    #own.position = logic.utils.gameState['spawnPoints'][0]#own['startPosition']
-    #print("SPAWNING!!!"+str(logic.utils.gameState['spawnPoints'][0]))
-    #own.orientation = own['startOrientation']
     scene.active_camera = camera
+    setCameraAngle(flowState.getDroneSettings().cameraTilt)
     own.setLinearVelocity([0,0,0],True)
     own.setAngularVelocity([0,0,0],True)
 
     own['lastAv'] = [0,0,0]
     if 'lastVel' in own:
         own['lastVel'] = [0,0,0]
-    lapTimer = logic.utils.gameState['startFinishPlane']
+    lapTimer = logic.flowState.track['startFinishPlane']
     lapTimer['lap'] = -1
     lapTimer['race time'] = 0.0
     for ghost in logic.ghosts:
@@ -183,7 +219,7 @@ def resetGame():
     logic.ghosts = []
     own['canReset'] = False
     initAllThings()
-    logic.utils.gameState['track']['nextCheckpoint'] = 0
+    logic.flowState.track['nextCheckpoint'] = 0
 
 def getRXVector(scale,rxPos):
     vectTo = own.getVectTo(rxPos)
@@ -218,8 +254,16 @@ def applyVideoStatic():
       groundBreakup = 1
     if(interference<1):
       interference = 1
+    txPower = 25
+    distance = scene.active_camera.getDistanceTo(own['rxPosition'])
+    if(flowState.getRFEnvironment().getCurrentVRX()!=None):
+        rxInterference = flowState.getRFEnvironment().getCurrentVRX().snr
+    else:
+        rxInterference = 0.1
 
-    game['rfNoise'] = scene.active_camera.getDistanceTo(own['rxPosition'])*.01*groundBreakup*interference+game['eNoise']
+    game['rfNoise'] = 100/rxInterference
+    #game['rfNoise'] = (groundBreakup*interference+game['eNoise'])+(rxInterference*100000)#((distance/txPower)*.01*groundBreakup*interference+game['eNoise'])+rxInterference
+    #game['rfNoise'] = ((distance/txPower)*groundBreakup*interference+game['eNoise'])#+rxInterference
 
 def killVideo():
     pass
@@ -254,14 +298,13 @@ def main():
     #print("afps: "+str(logic.getAverageFrameRate()))
 
     #Do the things and the stuff
-    setup(camera,g['cameraTilt'])
     joy = cont.sensors["Joystick"]
     propRay = cont.sensors["Ray"]
     axis = joy.axisValues
     #print(axis)
     #xbox controllers....
-    if(g['dedicatedThrottleStick'] == False):
-        axis[g['throttleChannel']] -= (g['maxThrottle']-g['minThrottle'])/2
+    if(radioSettings.dedicatedThrottleStick == False):
+        axis[radioSettings.throttleChannel] -= (radioSettings.maxThrottle-radioSettings.minThrottle)/2
     if(axis != []): #if a radio is connected
 
         #stick offsets
@@ -269,9 +312,9 @@ def main():
         own['channel1'] = axis[1]
         own['channel2'] = axis[2]
         own['channel3'] = axis[3]
-        axis[g['rollChannel']]+=g['rollOffset']
-        axis[g['yawChannel']]+=g['yawOffset']
-        axis[g['pitchChannel']]+=g['pitchOffset']
+        axis[radioSettings.rollChannel]+=radioSettings.rollOffset
+        axis[radioSettings.yawChannel]+=radioSettings.yawOffset
+        axis[radioSettings.pitchChannel]+=radioSettings.pitchOffset
 
         values = []
         center = 7000
@@ -280,28 +323,28 @@ def main():
             values.append((value-center)*sensativity)
 
 
-        throttleInverted = -(int(g['throttleInverted'])-0.5)*2
-        yawInverted = -(int(g['yawInverted'])-0.5)*2
-        pitchInverted = -(int(g['pitchInverted'])-0.5)*2
-        rollnverted = -(int(g['rollInverted'])-0.5)*2
-        armInverted = -(int(g['armInverted'])-0.5)*2
-        resetInverted = -(int(g['resetInverted'])-0.5)*2
+        throttleInverted = -(int(radioSettings.throttleInverted)-0.5)*2
+        yawInverted = -(int(radioSettings.yawInverted)-0.5)*2
+        pitchInverted = -(int(radioSettings.pitchInverted)-0.5)*2
+        rollnverted = -(int(radioSettings.rollInverted)-0.5)*2
+        armInverted = -(int(radioSettings.armInverted)-0.5)*2
+        resetInverted = -(int(radioSettings.resetInverted)-0.5)*2
 
-        throttle = (axis[g['throttleChannel']-1])*throttleInverted
-        yaw = axis[g['yawChannel']-1]*yawInverted
-        pitch = axis[g['pitchChannel']-1]*pitchInverted
-        roll = axis[g['rollChannel']-1]*rollnverted
-        armSwitch = axis[g['armChannel']-1]*armInverted
-        resetSwitch = axis[g['resetChannel']-1]*resetInverted
+        throttle = (axis[radioSettings.throttleChannel-1])*throttleInverted
+        yaw = axis[radioSettings.yawChannel-1]*yawInverted
+        pitch = axis[radioSettings.pitchChannel-1]*pitchInverted
+        roll = axis[radioSettings.rollChannel-1]*rollnverted
+        armSwitch = axis[radioSettings.armChannel-1]*armInverted
+        resetSwitch = axis[radioSettings.resetChannel-1]*resetInverted
 
-        throttlePercent = (getStickPercentage(g['minThrottle'],g['maxThrottle'],throttle))
-        yawPercent = getStickPercentage(g['minYaw'],g['maxYaw'],yaw)
-        pitchPercent = getStickPercentage(g['minPitch'],g['maxPitch'],pitch)
-        rollPercent = getStickPercentage(g['minRoll'],g['maxRoll'],roll)
-        armPercent = getStickPercentage(g['minArm'],g['maxArm'],armSwitch)
-        resetPercent = getStickPercentage(g['minReset'],g['maxReset'],resetSwitch)
-        armed = getSwitchValue(armPercent,g['armSetpoint'],g['armInverted'])
-        reset = getSwitchValue(resetPercent,g['resetSetpoint'],g['resetInverted'])
+        throttlePercent = (getStickPercentage(radioSettings.minThrottle,radioSettings.maxThrottle,throttle))
+        yawPercent = getStickPercentage(radioSettings.minYaw,radioSettings.maxYaw,yaw)
+        pitchPercent = getStickPercentage(radioSettings.minPitch,radioSettings.maxPitch,pitch)
+        rollPercent = getStickPercentage(radioSettings.minRoll,radioSettings.maxRoll,roll)
+        armPercent = getStickPercentage(radioSettings.minArm,radioSettings.maxArm,armSwitch)
+        resetPercent = getStickPercentage(radioSettings.minReset,radioSettings.maxReset,resetSwitch)
+        armed = getSwitchValue(armPercent,radioSettings.armSetpoint,radioSettings.armInverted)
+        reset = getSwitchValue(resetPercent,radioSettings.resetSetpoint,radioSettings.resetInverted)
         logic.throttlePercent = throttlePercent
 
     else: #if no radio is connected
@@ -316,9 +359,9 @@ def main():
     rotationActuator = cont.actuators["movement"]
 
     #apply rotational force
-    PE = g['pitchExpo']
-    RE = g['rollExpo']
-    YE = g['yawExpo']
+    PE = droneSettings.pitchExpo
+    RE = droneSettings.rollExpo
+    YE = droneSettings.yawExpo
     pp = (pitchPercent-.5)*2
     rp = (rollPercent-.5)*2
     yp = (yawPercent-.5)*2
@@ -350,14 +393,14 @@ def main():
     #roleForce = rs*pow((abs(rp)*(g['rollRate']*200)),(abs(rp)*(RE)*a)+b)*dps
     #yawForce = -ys*pow((abs(yp)*(g['yawRate']*200)),(abs(yp)*(YE)*a)+b)*dps
 
-    pitchForce = -stickInputToDPS((pitchPercent*1000)+1000,g['pitchSuperRate'],g['pitchRate'],g['pitchExpo'],True)
-    roleForce = stickInputToDPS((rollPercent*1000)+1000,g['rollSuperRate'],g['rollRate'],g['rollExpo'],True)
-    yawForce = -stickInputToDPS((yawPercent*1000)+1000,g['yawSuperRate'],g['yawRate'],g['yawExpo'],True)
+    pitchForce = -stickInputToDPS((pitchPercent*1000)+1000,droneSettings.pitchSuperRate,droneSettings.pitchRate,droneSettings.pitchExpo,True)
+    roleForce = stickInputToDPS((rollPercent*1000)+1000,droneSettings.rollSuperRate,droneSettings.rollRate,droneSettings.rollExpo,True)
+    yawForce = -stickInputToDPS((yawPercent*1000)+1000,droneSettings.yawSuperRate,droneSettings.yawRate,droneSettings.yawExpo,True)
     getAngularAcceleration()
     getAcc()
     if (own['oporational'] == True)&armed:
         if own['settled']:
-            if(utils.getGameMode()!=utils.GAME_MODE_MULTIPLAYER):
+            if(flowState.getGameMode()!=flowState.GAME_MODE_MULTIPLAYER):
                 #WAYS YOU CAN KILL YOUR QUAD
                 if(cont.sensors['PropStrike'].positive):
 
@@ -465,13 +508,13 @@ def main():
                         #own.setAngularVelocity([av[0],av[1],0],False)
                 #thrust = thrust/((propwash*0.89)+1)
                 #maxRPM = g['rpm']#29.7230769
-                motorKV = g['motorKV']
-                cellCount = g['batteryCellCount']
+                motorKV = droneSettings.motorKV
+                cellCount = droneSettings.batteryCellCount
                 cellVoltage = 4.2
                 maxRPM = motorKV*cellCount*cellVoltage
                 propAdvance = 5
 
-                maxThrust = g['thrust']/10
+                maxThrust = droneSettings.thrust/10
                 propLoad = (((lvl[0]*.8)+(lvl[1]*.8)+(lvl[2]*1.2))*1000)/maxRPM
                 #propLoad = (lvl[2]*10000)/maxRPM
                 propAgressiveness = 1.4
@@ -489,7 +532,7 @@ def main():
 
                 staticThrust = ((thrustSetpoint**propThrottleCurve))*maxThrust#*1000)#-(currentSpeed/maxSpeed)
 
-                staticThrust = (thrustSetpoint**propThrottleCurve)*g['thrust']
+                staticThrust = (thrustSetpoint**propThrottleCurve)*droneSettings.thrust
 
                 thrust = (staticThrust/10)-(propLoad)-(propwash*100)
                 #thrust = staticThrust-(propLoad)-(propwash*100)
@@ -516,7 +559,7 @@ def main():
 
                     own.applyForce([0,0,thrust],True)
 
-            if(g['autoLevel']):
+            if(droneSettings.autoLevel):
                 maxAngle = 100
                 #own.setAngularVelocity([0,0,0], True)
                 own.angularVelocity[0] = 0
@@ -540,11 +583,11 @@ def main():
         own['canReset'] = True
         print("canReset = True")
     if((reset)&own['canReset']):
-        if(utils.getGameMode()!=utils.GAME_MODE_MULTIPLAYER):
+        if(flowState.getGameMode()!=flowState.GAME_MODE_MULTIPLAYER):
             resetGame()
         else:
-            resetEvent = FSNObjects.PlayerEvent(FSNObjects.PlayerEvent.PLAYER_MESSAGE,utils.getNetworkClient().clientID,"reset")
-            utils.getNetworkClient().sendEvent(resetEvent)
+            resetEvent = FSNObjects.PlayerEvent(FSNObjects.PlayerEvent.PLAYER_MESSAGE,flowState.getNetworkClient().clientID,"reset")
+            flowState.getNetworkClient().sendEvent(resetEvent)
             print("sending reset message")
             own['canReset'] = False
 
@@ -553,14 +596,14 @@ def main():
     #    logic.setTimeScale(1)
 own.applyForce([0,0,-98*own.mass],False)
 def settle():
-    logic.setTimeScale(1)
+    logic.setTimeScale(droneSettings.timeScale/100.0)
     own['settled'] = True
     logic.isSettled = True
-    utils.log("SETTLING!!!!!!!")
+    flowState.log("SETTLING!!!!!!!")
 def isSettled():
     if not own['settled']:
         logic.setTimeScale(0.001)
-        if(utils.getGameMode()!=utils.GAME_MODE_MULTIPLAYER):
+        if(flowState.getGameMode()!=flowState.GAME_MODE_MULTIPLAYER):
             logic.isSettled = False
             fps = logic.getAverageFrameRate()
             avgFPSList = own['settleFrameRates']
@@ -578,19 +621,21 @@ def isSettled():
             if len(avgFPSList)>1000:
                 del avgFPSList[0]
                 settle()
-                utils.log("WARNING!!!: FPS did not become stable after 2000 frames. Expect physics instability...")
-                utils.log("standard deviation: "+str(deviation))
+                flowState.log("WARNING!!!: FPS did not become stable after 2000 frames. Expect physics instability...")
+                flowState.log("standard deviation: "+str(deviation))
         else: #we are in multiplayer and should wait a fixed time
             if ((time.perf_counter()-own['settleStartTime'])>3):
                 settle()
-                utils.log("settling due to time expiration in multiplayer")
+                flowState.log("settling due to time expiration in multiplayer")
     else:
         if(logic.finishedLastLap):
             logic.setTimeScale(0.001)
             #own.setLinearVelocity([0,0,0],True)
-
-if(own.sensors['clock'].positive):
-    main()
-isSettled()
+setup()
+setCameraAngle(droneSettings.cameraTilt)
+if(own['setup']):
+    if(own.sensors['clock'].positive):
+        main()
+    isSettled()
 if(own.sensors['Message'].positive):
     resetGame()

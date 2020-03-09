@@ -6,6 +6,7 @@ if not hasattr(bge, "__component__"):
     # e.g:
     # scene = bge.logic.getCurrentScene()
     logic = bge.logic
+    flowState = logic.flowState
 
 class visibility(bge.types.KX_PythonComponent):
     # Put your arguments here of the format ("key", default_value).
@@ -20,12 +21,12 @@ class visibility(bge.types.KX_PythonComponent):
 
     def update(self):
         if(self.units == "meters"):
-            if(logic.utils.getMapEditor().unitsMetric):
+            if(flowState.getMapEditor().unitsMetric):
                 self.object.visible = True
             else:
                 self.object.visible = False
         else:
-            if(not logic.utils.getMapEditor().unitsMetric):
+            if(not flowState.getMapEditor().unitsMetric):
                 self.object.visible = True
             else:
                 self.object.visible = False

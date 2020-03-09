@@ -5,7 +5,7 @@ import copy
 import bge.render as render
 import numpy
 import os
-utils = logic.utils
+flowState = logic.flowState
 cont = logic.getCurrentController()
 own = cont.owner
 scene = logic.getCurrentScene()
@@ -27,21 +27,19 @@ def main():
             else:
                 print("deleting object placed below ground")
                 object.endObject()
-    logic.globalDict['gameState'] = {"selectedMap":"2018 Regional Qualifier.fmp"}
-    #saveMapToFile(map,"maps"+os.sep+logic.globalDict['gameState']['selectedMap'])
-    
-    saveMapToFile(map,utils.getSelectedMap())
-        
+
+    saveMapToFile(map,flowState.getSelectedMap())
+
 def saveMapToFile(map,fileName):
     fileName = blendPath+"maps"+os.sep+fileName
-    logic.utils.log("saving map: "+fileName)
+    logic.flowState.log("saving map: "+fileName)
     print("saving map to: "+fileName)
     try:
         with open(fileName, 'w+') as saveFile:
             saveFile.write(str(map))
             saveFile.close()
     except Exception as e:
-        logic.utils.log("map save error: "+str(e))
-    logic.utils.log("map save complete: "+fileName)
-        
+        logic.flowState.log("map save error: "+str(e))
+    logic.flowState.log("map save complete: "+fileName)
+
 main()

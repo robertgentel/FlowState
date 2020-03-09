@@ -4,7 +4,6 @@ import os
 import math
 cont = logic.getCurrentController()
 owner = cont.owner
-logic.utils.gameState = {"gameState":None}
 def readFile(fileName):
     fileName = "maps"+os.sep+fileName
     print("loading map data from "+str(fileName))
@@ -33,14 +32,14 @@ def main():
         newObj = scene.addObject(asset['n'],owner,0)
         newObj['solid'] = True
         if(asset['n'] == "asset start finish"):
-            logic.utils.gameState['startFinishPlane'] = newObj
+            logic.flowState.track['startFinishPlane'] = newObj
 
         if(asset['n'] == "asset launch pad"):
             newSpawnPoint = newObj
-            if "spawnPoints" in logic.utils.gameState:
-                logic.utils.gameState['launchPads'].append(newSpawnPoint)
+            if logic.flowState.track['launchPads']!=[]:
+                logic.flowState.track['launchPads'].append(newSpawnPoint)
             else:
-                logic.utils.gameState['launchPads'] = [newSpawnPoint]
-            print("setting spawn point "+str(logic.utils.gameState))
+                logic.flowState.track['launchPads'] = [newSpawnPoint]
+            print("setting launch pads "+str(logic.flowState.track['launchPads']))
 
 main()

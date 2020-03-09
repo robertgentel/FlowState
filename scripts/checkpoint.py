@@ -2,7 +2,7 @@ import time
 import bge
 import aud
 logic = bge.logic
-utils = logic.utils
+flowState = logic.flowState
 #try:
 #    currentTime = time.perf_counter()
 #    print(logic.lastTime-currentTime)
@@ -27,8 +27,8 @@ def angle(v1, v2, acute):
     #    return 2 * np.pi - angle
     return angle
 def setCheckpointVisibilities():
-    for checkpoint in logic.utils.gameState['track']['checkpoints']:
-        if(checkpoint['metadata']['checkpoint order'] == logic.utils.gameState['track']['nextCheckpoint']):
+    for checkpoint in logic.flowState.track['checkpoints']:
+        if(checkpoint['metadata']['checkpoint order'] == logic.flowState.track['nextCheckpoint']):
             #checkpoint.visible = False
             checkpoint.visible = True
         else:
@@ -73,15 +73,15 @@ if colSensor.positive and colSensor.triggered:
         v = hitObject.getLinearVelocity(False)
         #print("v: "+str(v))
         #print("o: "+str(o))
-        nextCheckpoint = logic.utils.gameState['track']['nextCheckpoint']
+        nextCheckpoint = logic.flowState.track['nextCheckpoint']
         hitCheckpointNumber = owner['metadata']['checkpoint order']
         if(nextCheckpoint==hitCheckpointNumber):
             difAngle = m.degrees(angle(v,o,True))
             if(difAngle>90):
-                if logic.utils.gameState['track']['lastCheckpoint']==hitCheckpointNumber:
-                    logic.utils.gameState['track']['nextCheckpoint'] = 1
+                if logic.flowState.track['lastCheckpoint']==hitCheckpointNumber:
+                    logic.flowState.track['nextCheckpoint'] = 1
                 else:
-                    logic.utils.gameState['track']['nextCheckpoint']+=1
+                    logic.flowState.track['nextCheckpoint']+=1
                 setCheckpointVisibilities()
                 soundActuator = cont.actuators['Sound']
                 soundActuator.volume = 1
