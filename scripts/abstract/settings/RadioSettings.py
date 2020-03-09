@@ -14,10 +14,10 @@ class RadioSettings:
         self.rollInverted = False
         self.armInverted = True
         self.resetInverted = False
-        self.yawChannel = 3
+        self.yawChannel = 1
         self.pitchChannel = 4
         self.throttleChannel = 2
-        self.rollChannel = 1
+        self.rollChannel = 3
         self.resetChannel = 6
         self.armChannel = 5
         self.yawOffset = 0

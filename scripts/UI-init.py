@@ -13,9 +13,11 @@ flowState = logic.flowState
 flowState.setViewMode(flowState.VIEW_MODE_MENU)
 def beginnerAction():
     logic.flowState.setEasyDefaults()
+    logic.flowState.saveSettings()
     proceedAction()
 
 def proAction():
+    logic.flowState.saveSettings()
     proceedAction()
 
 def proceedAction():

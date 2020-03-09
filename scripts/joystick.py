@@ -108,7 +108,7 @@ def initAllThings():
     own['settleDuration'] = 0
     own['settleFrameRates'] = []
     respawn()
-    own['rxPosition'] = copy.deepcopy(logic.flowState.track['launchPads'][0].position)
+    own['rxPosition'] = copy.deepcopy(logic.flowState.track['launchPads'][0].position) #needs to be removed now that we have RFEnvironment
     own['rxPosition'][2]+=100
     own.orientation = logic.flowState.track['launchPads'][0].orientation
     own['oporational'] = True
