@@ -3,13 +3,24 @@
 
 # Windows
 #FPV
+#TBS Tango 2 (tested)
+d8041057000000000000504944564944,TBS Joystick,platform:Windows,leftx:a3,lefty:a0,rightx:a1,righty:a2,lefttrigger:a4,righttrigger:a5,
+#spektrum dongle (tested with Spektrum DXe)
 83042b57000000000000504944564944,SPEKTRUM RECEIVER,platform:Windows,leftx:a0,lefty:a1,rightx:a2,righty:a3,righttrigger:b0,dpup:b1,
+#BF joystick passthrough (tested with omnibus)
 83045632000000000000504944564944,BF FC,leftx:a1,lefty:a0,rightx:a4,righty:a5,lefttrigger:a6,righttrigger:a2,platform:Windows,
+#Taranis (tested with X-lite)
 83041057000000000000504944564944,FrSky Taranis Joystick,leftx:a3,lefty:a0,rightx:a1,righty:a2,lefttrigger:a4,righttrigger:a5,leftshoulder:a7,rightshoulder:a6, lefttrigger:b0,righttrigger:b1,leftshoulder:b2,rightshoulder:b3,platform:Windows,
+#Turnigy Evolution (tested)
 4e28f97f000000000000504944564944,HK-MT6 emulator,leftshoulder:b0,leftx:a3,lefty:a2,rightx:a0,righty:a1,lefttrigger:b2,righttrigger:b4,platform:Windows,
 8117560e000000000000504944564944,InterLink Elite,leftx:a4,lefty:a2,rightx:a0,righty:a1,lefttrigger:b0,righttrigger:b1,platform:Windows,
-#83041057000000000000504944564944,FlySky NV14 Joystick,platform:Windows,leftx:a3,lefty:a2,rightx:a0,righty:a1,
+#FlySky Nirvana (tested, duplicate)
+4e281057000000000000504944564944,FlySky NV14 Joystick,platform:Windows,a:a6,b:a7,y:a5,start:a4,leftx:a3,lefty:a2,rightx:a0,righty:a1,lefttrigger:b1,righttrigger:b2,
+#FrSky sim dongle (tested with x-lite)
 83042057000000000000504944564944,FrSky Simulator,platform:Windows,leftshoulder:a7,rightshoulder:a6,leftx:a3,lefty:a2,rightx:a1,righty:a0,lefttrigger:a4,righttrigger:a5,
+#Esky 0905A (untested)
+02040204000000000000504944564944,ADC,platform:Windows,rightx:a1,righty:a0,leftx:a4,lefty:a2,
+
 #gamecontrollers
 03000000fa2d00000100000000000000,3DRUDDER,leftx:a0,lefty:a1,rightx:a5,righty:a2,platform:Windows,
 03000000022000000090000000000000,8Bitdo NES30 Pro,a:b1,b:b0,back:b10,dpdown:h0.4,dpleft:h0.8,dpright:h0.2,dpup:h0.1,leftshoulder:b6,leftstick:b13,lefttrigger:b8,leftx:a0,lefty:a1,rightshoulder:b7,rightstick:b14,righttrigger:b9,rightx:a3,righty:a4,start:b11,x:b4,y:b3,platform:Windows,

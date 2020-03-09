@@ -63,15 +63,18 @@ def spawnMapElements(mapData):
             if 'spawn' in child: #we don't want spawners adding junk when we edit them
                 child.endObject()
         if('m' in asset):
-
+            flowState.debug("found metadata for asset: "+str(asset))
             m = asset['m']
             newObj['metadata'] = m
         if('m' not in  asset):
+            flowState.debug("found no metadata for asset: "+str(asset))
             flowState.addMetadata(newObj)
             asset['m'] = newObj['metadata']
         if(asset['m'] == {}):
+            flowState.debug("found empty metadata for asset: "+str(asset))
             flowState.addMetadata(newObj)
         if('id' not in asset['m']):
+            flowState.debug("found no ID in metadata for asset: "+str(asset))
             flowState.addMetadata(newObj)
         #print("loading metadata: "+str(newObj['metadata']))
         if(asset['n'] == flowState.ASSET_START_FINISH):

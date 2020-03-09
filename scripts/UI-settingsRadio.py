@@ -16,19 +16,19 @@ radioSettings = flowState.getRadioSettings()
 joy = cont.sensors["Joystick"]
 axis = joy.axisValues
 def setThrottleChannel(key,value):
-    print("got final value "+str(int(throttleInput.value)))
+    flowState.log("got final value "+str(int(throttleInput.value)))
     setattr(radioSettings,key,int(value))
 
 def setYawChannel(key,value):
-    print("got final value "+str(int(yawInput.value)))
+    flowState.log("got final value "+str(int(yawInput.value)))
     setattr(radioSettings,key,int(value))
 
 def setPitchChannel(key,value):
-    print("got final value "+str(int(pitchInput.value)))
+    flowState.log("got final value "+str(int(pitchInput.value)))
     setattr(radioSettings,key,int(value))
 
 def setRollChannel(key,value):
-    print("got final value "+str(int(rollInput.value)))
+    flowState.log("got final value "+str(int(rollInput.value)))
     setattr(radioSettings,key,int(value))
 
 def setArmChannel(key,value):
@@ -38,7 +38,8 @@ def setResetChannel(key,value):
     setattr(radioSettings,key,int(value))
 
 def handleButtonCallback(dictKey,value):
-    setattr(radioSettings,key,int(value))
+    flowState.log("handling button callback for "+str(dictKey)+", "+str(value))
+    setattr(radioSettings,dictKey,bool(value))
 
 def applySettings():
     scenes = logic.getSceneList()
@@ -47,7 +48,7 @@ def applySettings():
     for scene in scenes:
         if(scene!=currentScene):
             if(scene.name == "Main Game"):
-                print(flowState.getGameMode())
+                flowState.log(flowState.getGameMode())
                 #if(flowState.getGameMode()==flowState.GAME_MODE_MULTIPLAYER):
                 #    print("WE ARE IN MULTIPLAYER!!!! DONT RESTART")
                 #else:
@@ -61,15 +62,15 @@ def applySettings():
 def backAction():
     currentScene = logic.getCurrentScene()
     sceneHistory = flowState.sceneHistory
-    print(sceneHistory)
+    flowState.log(sceneHistory)
     backScene = sceneHistory[-2]
     removedScene = sceneHistory.pop(-1)
     removedScene = sceneHistory.pop(-1)
-    print("removing scene "+str(removedScene))
+    flowState.log("removing scene "+str(removedScene))
     currentScene.replace(backScene)
 
 def spawnRadioInput(label,height,channelKey,invertedKey,action,min,max,increment):
-
+    flowState.log("spawnRadioInput("+str(label)+", "+str(channelKey)+", "+str(invertedKey))
     rowBox = UI.BoxElement(window,[50,height],11,0.5, blockColor, 5)
     titleText = UI.TextElement(window,[rowBox.position[0]-30,rowBox.position[1]], textColor, 4, label)
 
@@ -88,7 +89,7 @@ def spawnRadioInput(label,height,channelKey,invertedKey,action,min,max,increment
 
     indicatorText = UI.TextElement(window,[50,height], textColor, 0, "0")
     channelInput = UI.UINumberInput(increaseButton,decreaseButton,indicatorText,int(getattr(radioSettings,channelKey)),min,max,increment)
-    invertedBooleanButton = UI.UIBooleanInput(invertedButton,invertedText,invertedKey,getattr(radioSettings,invertedKey))
+    invertedBooleanButton = UI.UIBooleanInput(invertedButton,invertedText,invertedKey,bool(getattr(radioSettings,invertedKey)))
     return channelInput,invertedBooleanButton
 
 if(owner['init']!=True):
@@ -124,12 +125,12 @@ if(owner['init']!=True):
     #aux switch indicators
     resetBox = UI.BoxElement(window,[30,10],0.5,1, blockColor, 1)
     titleText = UI.TextElement(window,[resetBox.position[0]-5.5,resetBox.position[1]], textColor, 4, "reset",1)
-    owner['resetSwitch'] = UI.BoxElement(window,resetBox.position,0.5,0.1, textColor, 1)
+    owner['resetSwitch'] = UI.BoxElement(window,resetBox.position,0.5,0.1, textColor, 0)
     owner['resetInverted'] = UI.BoxElement(window,resetBox.position,0.5,0.01, [1,0,0,1], 0)
 
     armBox = UI.BoxElement(window,[70,10],0.5,1, blockColor, 1)
     titleText = UI.TextElement(window,[armBox.position[0]+5,armBox.position[1]], textColor, 4, "arm")
-    owner['armSwitch'] = UI.BoxElement(window,armBox.position,0.5,0.1, textColor, 1)
+    owner['armSwitch'] = UI.BoxElement(window,armBox.position,0.5,0.1, textColor, 0)
     owner['resetInverted'] = UI.BoxElement(window,armBox.position,0.5,0.01, [1,0,0,1], 0)
 
     #back button
@@ -184,7 +185,6 @@ else:
             resetCenter = resetSwitch.getRealTranslatedPosition()
             leftStick.owner.position = [lsCenter[0]+((axis[yawChannel]/yawRes)*yawInverted),lsCenter[1]+((axis[throttleChannel]/throttleRes)*throttleInverted),leftStick.depth]
             rightStick.owner.position = [rsCenter[0]+((axis[rollChannel]/rollRes)*rollInverted),rsCenter[1]+((axis[pitchChannel]/pitchRes)*pitchInverted),rightStick.depth]
-            print(axis[armChannel]/armRes)
             armSwitch.owner.position = [armCenter[0],armCenter[1]-((0.5-(axis[armChannel]/armRes))*armInverted),armSwitch.depth]
             resetSwitch.owner.position = [resetCenter[0],resetCenter[1]-((0.5-(axis[resetChannel]/resetRes))*resetInverted),resetSwitch.depth]
     except Exception as e:

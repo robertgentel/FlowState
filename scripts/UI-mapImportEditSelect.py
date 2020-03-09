@@ -62,13 +62,13 @@ def convertAsset(gate,assetID):
     #561=shacks
     #249=goal posts
     #344=total unkown
-    idMap = {275:flowState.ASSET_MGP_HURDLE,247:flowState.ASSET_CONCRETE_BLOCK,344:flowState.ASSET_CONCRETE_BLOCK,326:flowState.ASSET_MGP_FLAG,303:flowState.ASSET_CONE,319:flowState.ASSET_MGP_FLAG,249:flowState.ASSET_MGP_POLE,590:flowState.ASSET_CONCRETE_BLOCK,561:flowState.ASSET_CONCRETE_BLOCK,399:flowState.ASSET_CONCRETE_BLOCK,246:flowState.ASSET_MGP_POLE,292:flowState.ASSET_CONCRETE_BLOCK,248:flowState.ASSET_MGP_POLE,394:flowState.ASSET_CONCRETE_BLOCK,30:flowState.ASSET_PINE_TREE_TALL,18:flowState.ASSET_PINE_TREE_TALL,274:flowState.ASSET_MGP_POLE,311:flowState.ASSET_CONCRETE_BLOCK,261:flowState.ASSET_PINE_TREE_TALL,260:flowState.ASSET_PINE_TREE_TALL,401:flowState.ASSET_CONCRETE_BLOCK,155:flowState.ASSET_CONCRETE_BLOCK,48:flowState.ASSET_CONCRETE_BLOCK,52:flowState.ASSET_CONCRETE_BLOCK,20:flowState.ASSET_PINE_TREE_TALL,70:flowState.ASSET_PINE_TREE_TALL,50:flowState.ASSET_CONCRETE_BLOCK,100:flowState.ASSET_PINE_TREE_TALL,28:flowState.ASSET_PINE_TREE_TALL,108:flowState.ASSET_CHECKPOINT,151:flowState.ASSET_MGP_GATE_HANGING_LARGE,282:flowState.ASSET_MGP_GATE_HIGH_LARGE,279:flowState.ASSET_CONCRETE_BLOCK,285:flowState.ASSET_MGP_GATE_LARGE,357:flowState.ASSET_CONE,279:flowState.ASSET_MGP_GATE,286:flowState.ASSET_MGP_GATE_HANGING_LARGE,88:flowState.ASSET_CHECKPOINT}
+    idMap = {740:flowState.ASSET_MGP_POLE,150:flowState.ASSET_MGP_GATE,170:flowState.ASSET_MGP_FLAG,275:flowState.ASSET_MGP_HURDLE,247:flowState.ASSET_CONCRETE_BLOCK,344:flowState.ASSET_CONCRETE_BLOCK,326:flowState.ASSET_MGP_FLAG,303:flowState.ASSET_CONE,319:flowState.ASSET_MGP_FLAG,249:flowState.ASSET_MGP_POLE,590:flowState.ASSET_CONCRETE_BLOCK,561:flowState.ASSET_CONCRETE_BLOCK,399:flowState.ASSET_CONCRETE_BLOCK,246:flowState.ASSET_MGP_POLE,292:flowState.ASSET_CONCRETE_BLOCK,248:flowState.ASSET_MGP_POLE,394:flowState.ASSET_CONCRETE_BLOCK,30:flowState.ASSET_PINE_TREE_TALL,18:flowState.ASSET_PINE_TREE_TALL,274:flowState.ASSET_MGP_POLE,311:flowState.ASSET_CONCRETE_BLOCK,261:flowState.ASSET_PINE_TREE_TALL,260:flowState.ASSET_PINE_TREE_TALL,401:flowState.ASSET_CONCRETE_BLOCK,155:flowState.ASSET_CONCRETE_BLOCK,48:flowState.ASSET_CONCRETE_BLOCK,52:flowState.ASSET_CONCRETE_BLOCK,20:flowState.ASSET_PINE_TREE_TALL,70:flowState.ASSET_PINE_TREE_TALL,50:flowState.ASSET_CONCRETE_BLOCK,100:flowState.ASSET_PINE_TREE_TALL,28:flowState.ASSET_PINE_TREE_TALL,108:flowState.ASSET_CHECKPOINT,151:flowState.ASSET_MGP_GATE_HANGING_LARGE,282:flowState.ASSET_MGP_GATE_HIGH_LARGE,279:flowState.ASSET_CONCRETE_BLOCK,285:flowState.ASSET_MGP_GATE_LARGE,357:flowState.ASSET_CONE,279:flowState.ASSET_MGP_GATE,286:flowState.ASSET_MGP_GATE_HANGING_LARGE,88:flowState.ASSET_CHECKPOINT}
 
     prefab = gate['prefab']
     vdPos = gate['trans']['pos']
     vdOri = gate['trans']['rot']
     vdScale = gate['trans']['scale']
-    pos = [vdPos[0]/10,vdPos[2]/10,vdPos[1]/10]
+    pos = [vdPos[0]/10,vdPos[2]/10,(vdPos[1]/10)]
     ori = list(mathutils.Quaternion((math.radians(vdOri[0]),math.radians(vdOri[1]), math.radians(vdOri[2]), math.radians(vdOri[3]))).to_euler())
     ori = [math.degrees(-ori[0]),math.degrees(-ori[2]),math.degrees(-ori[1])]
     scale = [vdScale[0]/100,vdScale[2]/100,vdScale[1]/100]
@@ -83,6 +83,7 @@ def convertAsset(gate,assetID):
     #    asset['s'] = [2,2,2]
     #else:
     asset["s"] = scale
+    asset["m"] = {'id':assetID,'prefab':prefab}
     print(asset)
     return asset
 
@@ -106,7 +107,8 @@ def convertVDMap(path,name):
     #let's clamp the lowest point on the map to the ground
     for asset in newMap['assets']:
         if(asset['p'][2] < depth):
-            depth = asset['p'][2]
+            #depth = asset['p'][2]
+            asset['p'][2] = depth
             print("new depth "+str(depth))
     for asset in newMap['assets']:
         asset['p'][2] = asset['p'][2]-depth

@@ -32,6 +32,7 @@ class FPVModel(bge.types.KX_PythonComponent):
     ])
 
     def start(self, args):
+        flowState.log("fpvModel: start("+str(args)+")")
         self._raceband = {1:5658,2:5695,3:5732,4:5769,5:5806,6:5843,7:5880,8:5917}
         self.vtxFrequency = self._raceband[1]
         self.vtxPower = 0
@@ -60,6 +61,7 @@ class FPVModel(bge.types.KX_PythonComponent):
                     spawnedPart = self.spawnPart(args[partType],child)
                     if(partType=="Camera"):
                         self.object['fpvCamera'] = spawnedPart.children[0]
+        self.object['fpvModel'] = self
 
     def spawnPart(self,partName,spawnObject):
         newPart = self.addObject(parts[partName])

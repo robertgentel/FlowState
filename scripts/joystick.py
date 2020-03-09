@@ -8,6 +8,7 @@ import statistics
 import FSNClient
 import FSNObjects
 import mathutils
+
 flowState = logic.flowState
 cont = logic.getCurrentController()
 own = cont.owner
@@ -45,16 +46,43 @@ def getAngularAcceleration():
 def respawn():
     if(flowState.getGameMode()!=flowState.GAME_MODE_MULTIPLAYER):
         launchPadNo = 0
+        reconstructRFEnvironment() #we only need to reset the RF environment in single player since ghosts get deleted
     else:
         pass
+
     print("GOT LAUNCH PADS: "+str(logic.flowState.track['launchPads']))
     print(len(logic.flowState.track['launchPads'])-1)
-    launchPadNo = random.randint(0,len(logic.flowState.track['launchPads'])-1)
+    launchPadNo = flowState.getDroneSettings().videoChannel#random.randint(0,len(logic.flowState.track['launchPads'])-1)
     launchPos = copy.deepcopy(logic.flowState.track['launchPads'][launchPadNo].position)
     own['launchPosition'] = [launchPos[0],launchPos[1],launchPos[2]+1]
     own.position = own['launchPosition']
     print(logic.flowState.track['launchPads'])
     print("SPAWNING!!!"+str(launchPadNo)+", "+str(launchPos))
+
+
+def reconstructRFEnvironment():#reset RF environment since ghosts and other vtxs and RXs might get deleted
+    flowState.log("reconstructing RF environment")
+    launchPads = logic.flowState.track['launchPads']
+    playerVideoChannel = flowState.getDroneSettings().videoChannel
+
+    flowState.resetRFEnvironment()
+
+    #set all the track launch pads to be video receivers. we may create a dedicated ground station object for this in the future
+    for i in range(0,len(launchPads)):
+        launchPad = launchPads[i]
+        print("launchPad")
+        try:
+            receiver = launchPad['vrx']
+            receiver.setChannel(i)
+            flowState.getRFEnvironment().addReceiver(receiver)
+        except Exception as e:
+            flowState.error("unable to add launch pad "+str(i)+" to rf environment")
+
+    try:
+        flowState.getRFEnvironment().addEmitter(camera['vtx'])
+    except Exception as e:
+        flowState.error("unable to create player vtx on respawn")
+
 
 def initAllThings():
     logic.player['camera'] = scene.objects['cameraMain']
@@ -226,8 +254,17 @@ def applyVideoStatic():
       groundBreakup = 1
     if(interference<1):
       interference = 1
+    txPower = 25
+    distance = scene.active_camera.getDistanceTo(own['rxPosition'])
+    if(flowState.getRFEnvironment().getCurrentVRX()!=None):
+        rxInterference = flowState.getRFEnvironment().getCurrentVRX().snr
+    else:
+        rxInterference = 0.1
 
-    game['rfNoise'] = scene.active_camera.getDistanceTo(own['rxPosition'])*.01*groundBreakup*interference+game['eNoise']
+    game['rfNoise'] = 100/rxInterference
+    print(game['rfNoise'])
+    #game['rfNoise'] = (groundBreakup*interference+game['eNoise'])+(rxInterference*100000)#((distance/txPower)*.01*groundBreakup*interference+game['eNoise'])+rxInterference
+    #game['rfNoise'] = ((distance/txPower)*groundBreakup*interference+game['eNoise'])#+rxInterference
 
 def killVideo():
     pass

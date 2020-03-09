@@ -8,6 +8,7 @@ class DroneSettings:
     def __init__(self, flowState, **kwargs):
         self.autoLevel = False
         self.cameraTilt = 40
+        self.videoChannel = 0
         self.thrust = 3100
         self.motorKV = 1700
         self.pDrag = 50

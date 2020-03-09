@@ -1,9 +1,11 @@
 import bge
 import copy
 import os
+import traceback
 from scripts.abstract.settings.DroneSettings import DroneSettings
 from scripts.abstract.settings.RadioSettings import RadioSettings
 from scripts.abstract.settings.GraphicsSettings import GraphicsSettings
+from scripts.abstract.RFEnvironment import RFEnvironment
 logic = bge.logic
 render = bge.render
 
@@ -84,6 +86,7 @@ class FlowState:
         self._serverIP = "localhost"
         self.lastId = 0
 
+        self._rfEnvironment = RFEnvironment(self)
         self._droneSettings = DroneSettings(self)
         self._radioSettings = RadioSettings(self)
         self._graphicsSettings = GraphicsSettings(self)
@@ -105,8 +108,10 @@ class FlowState:
 
     def error(self,output):
         output = str(output)
+
         if(self.LOG_LEVEL<=self.LOG_LEVEL_ERROR):
             print("ERROR: "+output)
+        traceback.print_exc()
         with open(self.__logFile, 'a+') as saveFile:
             saveFile.write(str(output)+"\n")
             saveFile.close()
@@ -172,6 +177,27 @@ class FlowState:
         self.__init__()
         self.sceneHistory = history #we don't typically want the scene history to be reset
         self.loadSaveSettings()
+
+    def getRFEnvironment(self):
+        return self._rfEnvironment
+
+    def addRFEmitter(self,emitter):
+        self._rfEnvironment.addEmitter(emitter)
+
+    def removeRFEmitter(self,emitter):
+        self._rfEnvironment.removeEmitter(emitter)
+
+    def addRFReceiver(self,receiver):
+        self._rfEnvironment.addReceiver(receiver)
+
+    def removeRFReceiver(self,receiver):
+        self._rfEnvironment.removeReceiver(receiver)
+
+    def updateRFEnvironment(self, noiseFloor):
+        self._rfEnvironment.update(noiseFloor)
+
+    def resetRFEnvironment(self):
+        self._rfEnvironment = RFEnvironment(self)
 
     def addMetadata(self,asset):
         self.log("mapEditor.addMetadata("+str(asset)+")")

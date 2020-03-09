@@ -19,7 +19,6 @@ def main():
                 if lap < 0:
                     logic.ghosts = []
                 else:
-
                     if len(logic.ghosts)-1<lap:
                         ghostObject = addGhostQuad()
                         ghostObject["lap"] = lap
@@ -88,6 +87,13 @@ def setGhostData(ghost):
        disableGhostCollision(ghost["obj"])
     else:
         enableGhostCollision(ghost["obj"])
+        lap = ghost["obj"]["lap"]
+        #we don't want a ghost to be on the same video channel as the player
+        if lap >= flowState.getDroneSettings().videoChannel:
+            ghost['obj']['fpvCamera']['vtx'].setChannel(lap+1)
+        else:
+            ghost['obj']['fpvCamera']['vtx'].setChannel(lap+1)
+        ghost['obj']['fpvCamera']['vtx'].setVTXPitMode(0)
     ghost["obj"].position = ghost["frames"][frame]["pos"]
     ghost["obj"].orientation = ghost["frames"][frame]["ori"]
     #else:
@@ -97,17 +103,15 @@ def setGhostData(ghost):
     endTime = time.perf_counter()
     #print("createGhostData("+str(endTime-startTime))
 def addGhostQuad():
-
     actuator = owner.actuators["addGhost"]
     actuator.object = "ghostQuad"
     startTime = time.perf_counter()
     actuator.instantAddObject()
     endTime = time.perf_counter()
-    #print("addGhostQuad("+str(endTime-startTime))
     obj = actuator.objectLastCreated
     disableGhostCollision(obj)
     obj.position = [0,0,-100000]
-
+    #obj['fpvCamera']['vtx'].setVTXPitMode(0)
     return obj
 
 def disableGhostCollision(obj):
