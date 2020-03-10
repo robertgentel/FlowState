@@ -291,9 +291,13 @@ def rcCommand(rcData, rcRate, rcExpo):
         result = -result
     return result
 
-
+def forceAboveGround():
+    if own.position[2] <0:
+        p = own.position
+        own.position = [p[0],p[1],0.1]
 
 def main():
+    forceAboveGround()
     #print("perf: "+str(1.0/frameTime))
     #print("afps: "+str(logic.getAverageFrameRate()))
 
@@ -501,9 +505,6 @@ def main():
                 #    zav = ((yawForce+pwrz)*(0.5*dm))+(lav[2]*(1-(0.5*dm)))
                 #    #print("z "+str(zavDiff))
                 own.setAngularVelocity([xav,yav,zav], True)
-                if own.position[2] <0:
-                    p = own.position
-                    own.position = [p[0],p[1],0]
                     #if av [2] <0:
                         #own.setAngularVelocity([av[0],av[1],0],False)
                 #thrust = thrust/((propwash*0.89)+1)
