@@ -33,8 +33,9 @@ def handleUserInputs(keyboard):
             if(keyPressed):
 
                 flowState.getRFEnvironment().getReceiver().setChannel(index-1)
-                if(flowState.getGameMode()==flowState.GAME_MODE_TEAM_RACE):
+                if(flowState.getGameMode()!=flowState.GAME_MODE_SINGLE_PLAYER):
                     try:
+                        print("setting player vtx "+str(logic.player.name))
                         vtx = logic.player['camera']['vtx']
                         vtx.setFrequency(flowState.getRFEnvironment().getReceiver().getFrequency())
                     except Exception as e:
