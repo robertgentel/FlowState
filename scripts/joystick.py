@@ -43,21 +43,7 @@ def getAngularAcceleration():
         own['angularAcc'] = getArrayProduct([av[0]-lastAv[0],av[1]-lastAv[1],av[2]-lastAv[2]])
         own['lastAngularVel'] = own.getAngularVelocity(True)
 
-def respawn():
-    if(flowState.getGameMode()!=flowState.GAME_MODE_MULTIPLAYER):
-        launchPadNo = 0
-        reconstructRFEnvironment() #we only need to reset the RF environment in single player since ghosts get deleted
-    else:
-        pass
 
-    print("GOT LAUNCH PADS: "+str(logic.flowState.track['launchPads']))
-    print(len(logic.flowState.track['launchPads'])-1)
-    launchPadNo = flowState.getDroneSettings().videoChannel#random.randint(0,len(logic.flowState.track['launchPads'])-1)
-    launchPos = copy.deepcopy(logic.flowState.track['launchPads'][launchPadNo].position)
-    own['launchPosition'] = [launchPos[0],launchPos[1],launchPos[2]+1]
-    own.position = own['launchPosition']
-    print(logic.flowState.track['launchPads'])
-    print("SPAWNING!!!"+str(launchPadNo)+", "+str(launchPos))
 
 
 def reconstructRFEnvironment():#reset RF environment since ghosts and other vtxs and RXs might get deleted
@@ -70,7 +56,6 @@ def reconstructRFEnvironment():#reset RF environment since ghosts and other vtxs
     #set all the track launch pads to be video receivers. we may create a dedicated ground station object for this in the future
     for i in range(0,len(launchPads)):
         launchPad = launchPads[i]
-        print("launchPad")
         try:
             receiver = launchPad['vrx']
             receiver.setChannel(i)
@@ -110,10 +95,7 @@ def initAllThings():
     respawn()
     own['rxPosition'] = copy.deepcopy(logic.flowState.track['launchPads'][0].position) #needs to be removed now that we have RFEnvironment
     own['rxPosition'][2]+=100
-    own.orientation = logic.flowState.track['launchPads'][0].orientation
-    own['oporational'] = True
-    own['vtxOporational'] = True
-    own['damage'] = 0
+    own['lastArmState'] = False
     own.mass = droneSettings.weight/1000
     logic.countingDown = True
     logic.countdown = -1
@@ -127,6 +109,61 @@ def initAllThings():
         pass
 
     print("init")
+
+def respawn():
+    if(flowState.getGameMode()==flowState.GAME_MODE_SINGLE_PLAYER):
+        launchPadNo = 0
+        reconstructRFEnvironment() #we only need to reset the RF environment in single player since ghosts get deleted
+
+    #fix the quad
+    own['damage'] = 0
+    own['oporational'] = True
+    own['vtxOporational'] = True
+
+    #make sure the quad isn't moving
+    own.setLinearVelocity([0,0,0],True)
+    own.setAngularVelocity([0,0,0],True)
+    own['lastAv'] = [0,0,0]
+    if 'lastVel' in own:
+        own['lastVel'] = [0,0,0]
+
+    #put the quad on the launch pad
+    print("GOT LAUNCH PADS: "+str(logic.flowState.track['launchPads']))
+    print(len(logic.flowState.track['launchPads'])-1)
+
+    launchPadNo = 0
+    try:
+        print("GOT LAUNCH PADS: "+str(launchPadNo))
+        rx = flowState.getRFEnvironment().getReceiver()
+        print("rx = "+str(rx))
+        launchPadNo = rx.getChannel()#random.randint(0,len(logic.flowState.track['launchPads'])-1)
+        print("SET LAUNCH PAD NO!!!!"+str(launchPadNo))
+    except Exception as e:
+        print(e)
+
+    launchPos = copy.deepcopy(logic.flowState.track['launchPads'][launchPadNo].position)
+    launchOri = copy.deepcopy(logic.flowState.track['launchPads'][launchPadNo].orientation)
+    own['launchPosition'] = [launchPos[0],launchPos[1],launchPos[2]+1]
+    own.position = own['launchPosition']
+    own.orientation = launchOri
+    print(logic.flowState.track['launchPads'])
+    print("SPAWNING!!!"+str(launchPadNo)+", "+str(launchPos))
+
+def resetGame():
+    scene.active_camera = camera
+    setCameraAngle(flowState.getDroneSettings().cameraTilt)
+    lapTimer = logic.flowState.track['startFinishPlane']
+    lapTimer['lap'] = -1
+    lapTimer['race time'] = 0.0
+    for ghost in logic.ghosts:
+        ghost['obj']['fpvCamera'].endObject()
+        ghost['obj']['spectatorCamera'].endObject()
+        ghost['obj'].endObject()
+    logic.ghosts = []
+    own['canReset'] = False
+    initAllThings()
+    logic.flowState.track['nextCheckpoint'] = 0
+
 def getArrayProduct(array):
     a = array[0]
     b = array[1]
@@ -145,7 +182,6 @@ def getAcc():
                 if own['armed']:
                     if logic.maxGForce < force:
                         logic.maxGForce = force
-                        print(str(logic.maxGForce)+"G")
                 else:
                     logic.maxGForce = 0
                 logic.gForce = force
@@ -200,26 +236,6 @@ def getSwitchValue(switchPercent,switchSetpoint,inverted):
     else:
         switch = (1-switchPercent)>switchSetpoint
     return switch
-def resetGame():
-    scene.active_camera = camera
-    setCameraAngle(flowState.getDroneSettings().cameraTilt)
-    own.setLinearVelocity([0,0,0],True)
-    own.setAngularVelocity([0,0,0],True)
-
-    own['lastAv'] = [0,0,0]
-    if 'lastVel' in own:
-        own['lastVel'] = [0,0,0]
-    lapTimer = logic.flowState.track['startFinishPlane']
-    lapTimer['lap'] = -1
-    lapTimer['race time'] = 0.0
-    for ghost in logic.ghosts:
-        ghost['obj']['fpvCamera'].endObject()
-        ghost['obj']['spectatorCamera'].endObject()
-        ghost['obj'].endObject()
-    logic.ghosts = []
-    own['canReset'] = False
-    initAllThings()
-    logic.flowState.track['nextCheckpoint'] = 0
 
 def getRXVector(scale,rxPos):
     vectTo = own.getVectTo(rxPos)
@@ -229,33 +245,6 @@ def getRXVector(scale,rxPos):
     return vect
 
 def applyVideoStatic():
-
-    hitList = []
-
-    lastHitPos = own.position
-    for interference in range(1,100):
-        hit = scene.active_camera.rayCast(own['rxPosition'], lastHitPos, 0.0, "", 0, 0, 0)
-        hitPos = hit[1]
-        if(hitPos == None):
-            hitList.append(own['rxPosition'])
-            break
-        else:
-            if(own.getDistanceTo(hitPos)<2):
-                hitList.append(own['rxPosition'])
-                break
-            vScale = 2
-            rxVect = getRXVector(vScale,own['rxPosition'])
-            hitPos = [hitPos[0]+rxVect[0],hitPos[1]+rxVect[1],hitPos[2]+rxVect[2]]
-            hitList.append(hitPos)
-        lastHitPos = hitPos
-    interference *= .1
-    groundBreakup = (12-own.position[2])*0.3
-    if(groundBreakup<1):
-      groundBreakup = 1
-    if(interference<1):
-      interference = 1
-    txPower = 25
-    distance = scene.active_camera.getDistanceTo(own['rxPosition'])
     if(flowState.getRFEnvironment().getCurrentVRX()!=None):
         rxInterference = flowState.getRFEnvironment().getCurrentVRX().snr
     else:
@@ -360,6 +349,10 @@ def main():
         reset = False
 
     own['armed'] = armed
+    if(own['armed'] != own['lastArmState']):
+        print(own['armed'])
+        own['lastArmState'] = own['armed']
+
     rotationActuator = cont.actuators["movement"]
 
     #apply rotational force
@@ -403,6 +396,7 @@ def main():
     getAngularAcceleration()
     getAcc()
     if (own['oporational'] == True)&armed:
+        camera['vtx'].setPitMode(0)
         if own['settled']:
             if(flowState.getGameMode()!=flowState.GAME_MODE_MULTIPLAYER):
                 #WAYS YOU CAN KILL YOUR QUAD
@@ -430,9 +424,12 @@ def main():
                 if (own['damage'] > 2.5):
                     own['oporational'] = False
                     #pass
+    else:
+        camera['vtx'].setPitMode(1)
     lv = own.getLinearVelocity(True)
+    applyVideoStatic()
     if(own['oporational']):
-        applyVideoStatic()
+
         if(armed):
             try:
                 if own['airSpeedDiff'] < 0:
@@ -582,15 +579,24 @@ def main():
 
     if(reset == False)&(own['canReset']==False):
         own['canReset'] = True
-        print("canReset = True")
     if((reset)&own['canReset']):
-        if(flowState.getGameMode()!=flowState.GAME_MODE_MULTIPLAYER):
+        if(flowState.getGameMode()==flowState.GAME_MODE_SINGLE_PLAYER):
+            flowState.log("resetting single player game")
             resetGame()
-        else:
+        if(flowState.getGameMode()==flowState.GAME_MODE_MULTIPLAYER):
+            flowState.log("resetting multiplayer game")
             resetEvent = FSNObjects.PlayerEvent(FSNObjects.PlayerEvent.PLAYER_MESSAGE,flowState.getNetworkClient().clientID,"reset")
             flowState.getNetworkClient().sendEvent(resetEvent)
             print("sending reset message")
             own['canReset'] = False
+        if(flowState.getGameMode()==flowState.GAME_MODE_TEAM_RACE):
+            flowState.log("resetting team race")
+            #resetEvent = FSNObjects.PlayerEvent(FSNObjects.PlayerEvent.PLAYER_MESSAGE,flowState.getNetworkClient().clientID,"reset")
+            #flowState.getNetworkClient().sendEvent(resetEvent)
+            #print("sending reset message")
+            own['canReset'] = False
+            respawn()
+
 
     own['lastAv'] = own.getAngularVelocity(True)
     #if(logic.getAverageFrameRate()>60):

@@ -14,14 +14,14 @@ class VTX(bge.types.KX_PythonComponent):
     args = OrderedDict([
         ("Power Output (mw)", 25),
         ("Pit Mode",False),
-        ("Channel", raceband[1])
+        ("Frequency", raceband[1])
     ])
 
     def start(self, args):
         flowState.log("vtx: start("+str(args)+")")
         self.power = args['Power Output (mw)']
         self.pitMode = int(args['Pit Mode'] == True)
-        self.channel = args['Channel']
+        self.frequency = args['Channel']
         self.signalStrength = 0
         self.object['vtx'] = self
         flowState.addRFEmitter(self)
@@ -31,16 +31,28 @@ class VTX(bge.types.KX_PythonComponent):
             channelNumber = 7
         if(channelNumber<0):
             channelNumber = 0
-        self.channel = raceband[channelNumber]
+        self.frequency = raceband[channelNumber]
 
-    def setVTXPower(self,power):
+    def getFrequency(self):
+        return self.frequency
+
+    def setFrequency(self,frequency):
+        self.frequency = frequency
+
+    def getPower(self):
+        return self.power
+
+    def setPower(self,power):
         if(power>1000):
             power = 1000
-        if(power<5):
-            power = 5
+        if(power<0):
+            power = 0
         self.power = power
 
-    def setVTXPitMode(self,pitMode):
+    def getPitMode(self):
+        return self.pitMode
+
+    def setPitMode(self,pitMode):
         self.pitMode = int(pitMode == True)
 
     def update(self):

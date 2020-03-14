@@ -46,6 +46,7 @@ class FlowState:
     GAME_MODE_EDITOR = 0
     GAME_MODE_SINGLE_PLAYER = 1
     GAME_MODE_MULTIPLAYER = 2
+    GAME_MODE_TEAM_RACE = 3
 
     #view modes
     VIEW_MODE_MENU=0
@@ -91,6 +92,8 @@ class FlowState:
         self._radioSettings = RadioSettings(self)
         self._graphicsSettings = GraphicsSettings(self)
         self._networkClient = None
+
+        self.menuButtonColor = [0.3,0.3,0.3,0.6]
 
     #eventually we should implement propper logging
     def debug(self,output):
@@ -247,6 +250,7 @@ class FlowState:
         return self._gameMode
 
     def setGameMode(self,gameMode):
+        self.log("setting game mode "+str(gameMode))
         self._gameMode = gameMode
 
     def getMapEditor(self):

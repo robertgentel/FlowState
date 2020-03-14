@@ -11,7 +11,7 @@ def main():
         owner["lastGhostUpdate"] = time.perf_counter()
     if abs(time.perf_counter()-owner["lastGhostUpdate"]) > (1/60.0):
         owner["lastGhostUpdate"] = time.perf_counter()
-        if(flowState.getGameMode()!=flowState.GAME_MODE_MULTIPLAYER):
+        if(flowState.getGameMode()==flowState.GAME_MODE_SINGLE_PLAYER):
             if(logic.flowState.track['startFinishPlane'] != None):
                 startFinishPlane = logic.flowState.track['startFinishPlane']
                 lap = startFinishPlane["lap"]
@@ -93,7 +93,7 @@ def setGhostData(ghost):
             ghost['obj']['fpvCamera']['vtx'].setChannel(lap+1)
         else:
             ghost['obj']['fpvCamera']['vtx'].setChannel(lap+1)
-        ghost['obj']['fpvCamera']['vtx'].setVTXPitMode(0)
+        ghost['obj']['fpvCamera']['vtx'].setPitMode(0)
     ghost["obj"].position = ghost["frames"][frame]["pos"]
     ghost["obj"].orientation = ghost["frames"][frame]["ori"]
     #else:
@@ -111,7 +111,6 @@ def addGhostQuad():
     obj = actuator.objectLastCreated
     disableGhostCollision(obj)
     obj.position = [0,0,-100000]
-    #obj['fpvCamera']['vtx'].setVTXPitMode(0)
     return obj
 
 def disableGhostCollision(obj):
