@@ -38,8 +38,8 @@ class VRX(bge.types.KX_PythonComponent):
             frequency = raceband[channel]
             if(frequency==self.frequency):
                 break
-        print("got channel "+str(channel))
-        print("we are on frequency "+str(frequency))
+        #print("got channel "+str(channel))
+        #print("we are on frequency "+str(frequency))
         return channel
 
     def update(self):

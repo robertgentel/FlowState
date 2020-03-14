@@ -26,6 +26,15 @@ class VTX(bge.types.KX_PythonComponent):
         self.object['vtx'] = self
         flowState.addRFEmitter(self)
 
+    def getChannel(self):
+        for channel in range(0,len(raceband)):
+            frequency = raceband[channel]
+            if(frequency==self.frequency):
+                break
+        #print("got channel "+str(channel))
+        #print("we are on frequency "+str(frequency))
+        return channel
+
     def setChannel(self,channelNumber):
         if(channelNumber>7):
             channelNumber = 7

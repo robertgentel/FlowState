@@ -70,8 +70,10 @@ class RFEnvironment:
             interference = noiseFloor #we will use this to find out how much of the received signal is intentional or interference
             for vtx in self.emitters:
                 try:
-                    disonance = ((abs(vtx.getFrequency()-rx.getFrequency())*1000)+1) #let's get a number between 1 and ~11 to represent how far detuned our vrx is from our vtx
-                    distance = vtx.object.getDistanceTo(rx.object)+0.1 #let's get the distance between the vtx and the vrx (but don't let it be 0)
+                    disonance = ((abs(vtx.getFrequency()-rx.getFrequency())*1)**2)+1 #let's get a number between 1 and ~11 to represent how far detuned our vrx is from our vtx
+                    rxPos = rx.object.position
+                    rxPos = [rxPos[0],rxPos[1],rxPos[2]+100]
+                    distance = vtx.object.getDistanceTo(rxPos)+0.1 #let's get the distance between the vtx and the vrx (but don't let it be 0)
                     pitModePower = (1-vtx.getPitMode())
                     signalStrength = (vtx.getPower()*pitModePower)/((distance/1000)**2)/disonance #let's use the inverse square law to determine the signal strength, then device it by the disonance of the channels.
 
