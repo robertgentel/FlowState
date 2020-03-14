@@ -128,7 +128,7 @@ def clientMessageHandler(message):
 def setup():
     print("JOINING SERVER!!!")
     #
-    flowState.setNetworkClient(FSNClient.FSNClient(flowState.getServerIP(),50002))
+    flowState.setNetworkClient(FSNClient.FSNClient(flowState.getServerIP(),50001))
     flowState.getNetworkClient().connect()
     playerJoinEvent = FSNObjects.PlayerEvent(FSNObjects.PlayerEvent.PLAYER_JOINED,flowState.getNetworkClient().clientID)
     flowState.getNetworkClient().sendEvent(playerJoinEvent)
