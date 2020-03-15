@@ -405,7 +405,7 @@ def main():
                     #print("PROP STRIKE!")
                     own['damage'] += own['acc']*0.1*throttlePercent
                     #print(own['damage'])
-                if (own['acc'] > 65*2):
+                if (own['acc'] > 250):
                     own['oporational'] = False
                     own['vtxOporational'] = False
                     #pass
@@ -478,7 +478,7 @@ def main():
                 #own.setLinearVelocity([lv[0]/(1+qd[0]),lv[1]/(1+qd[1]),lv[2]/(1+qd[2])],True)
                 #own.setLinearVelocity([lv[0]/(1+qd[0]),lv[1]/(1+qd[1]),lv[2]],True)
                 #print(dm)
-                st = 0.95*dm #how quick can the motor/pid orient the quad
+                st = 1*dm #how quick can the motor/pid orient the quad
                 lav = own.getAngularVelocity(True)
                 xav = (((pitchForce)*st)+(lav[0]*(1-st)))+pwrx
                 yav = ((roleForce)*st)+(lav[1]*(1-st))+pwry

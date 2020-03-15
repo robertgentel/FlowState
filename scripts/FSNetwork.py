@@ -109,6 +109,17 @@ def clientMessageHandler(message):
         print("handling server state")
         print("message = "+str(message))
         message = FSNObjects.ServerState.getMessage(message)
+
+        gameMode = message.gameMode
+        print("game mode = "+str(gameMode))
+        if(gameMode == FSNObjects.MULTIPLAYER_MODE_1V1):
+            flowState.log("server setting game mode to 1v1")
+            flowState.setGameMode(flowState.GAME_MODE_MULTIPLAYER)
+        if(gameMode == FSNObjects.MULTIPLAYER_MODE_TEAM):
+            flowState.log("server setting game mode to team race")
+            flowState.setGameMode(flowState.GAME_MODE_TEAM_RACE)
+
+        #handle the states of our peers
         peerStates = message.playerStates
         for key in peerStates:
             if(key==flowState.getNetworkClient().clientID):
@@ -125,10 +136,11 @@ def clientMessageHandler(message):
                 peerObject.position = message.position
                 peerObject.orientation = message.orientation
 
+
 def setup():
     print("JOINING SERVER!!!")
     #
-    flowState.setNetworkClient(FSNClient.FSNClient(flowState.getServerIP(),50001))
+    flowState.setNetworkClient(FSNClient.FSNClient(flowState.getServerIP(),50002))
     flowState.getNetworkClient().connect()
     playerJoinEvent = FSNObjects.PlayerEvent(FSNObjects.PlayerEvent.PLAYER_JOINED,flowState.getNetworkClient().clientID)
     flowState.getNetworkClient().sendEvent(playerJoinEvent)

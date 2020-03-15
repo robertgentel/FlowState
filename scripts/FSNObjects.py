@@ -15,6 +15,8 @@ MESSAGE_EXTRA_KEY = "MX"
 SERVER_EVENT_TYPE_KEY = "SET"
 PLAYER_EVENT_TYPE_KEY = "PET"
 
+MULTIPLAYER_MODE_1V1 = "1v1"
+MULTIPLAYER_MODE_TEAM = "tm"
 #message types
 SERVER_STATE = 1
 SERVER_EVENT = 2
@@ -73,19 +75,22 @@ class ServerEvent:
 class ServerState(Message):
     #player state keys
     PLAYER_STATES_KEY = "PS"
-    def __init__(self, playerStates, extra=None):
+    GAME_MODE_KEY = "GM"
+    def __init__(self, playerStates, gameMode=MULTIPLAYER_MODE_TEAM, extra=None):
         self.messageType = SERVER_STATE
+        self.gameMode = gameMode
         self.playerStates = playerStates
         self.extra = extra
 
     @staticmethod
     def getMessage(message):
-        obj = ServerState(message[ServerState.PLAYER_STATES_KEY],message[MESSAGE_EXTRA_KEY])
+        obj = ServerState(message[ServerState.PLAYER_STATES_KEY],message[ServerState.GAME_MODE_KEY],message[MESSAGE_EXTRA_KEY])
         return obj
 
     def __str__(self):
         message = {}
         message[MESSAGE_TYPE_KEY] = self.messageType
+        message[ServerState.GAME_MODE_KEY] = self.gameMode
         message[ServerState.PLAYER_STATES_KEY] = self.playerStates
         message[MESSAGE_EXTRA_KEY] = self.extra
         return str(message)

@@ -62,7 +62,7 @@ class FlowState:
     MAP_LOAD_STAGE_LOADING = 0
     MAP_LOAD_STAGE_DONE = 1
 
-    LOG_LEVEL = LOG_LEVEL_DEBUG
+    LOG_LEVEL = LOG_LEVEL_INFO
 
     def __init__(self):
         self.__logFile = os.path.join(str(logic.expandPath("//")),"flowstate.log") #remove once propper logging is implemented
