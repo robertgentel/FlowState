@@ -43,7 +43,7 @@ def multiplayerGameAction():
     scenes = logic.getSceneList()
     currentScene = logic.getCurrentScene()
     render.showMouse(0)
-    currentScene.replace("UI-server-ip")
+    currentScene.replace("UI-server-select")
 
 def doNothing():
     pass

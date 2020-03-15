@@ -83,12 +83,12 @@ if(owner['init']!=True):
     maps = [f for f in os.listdir(mapsPath) if os.path.isfile(os.path.join(mapsPath, f))]
 
     #let's get the maps from the web server
-    import requests
-    import json
-    url = "https://boxoprops.com/flow-state/flow-control/1.0.0/maps.json"
-    response = requests.get(url, data="")
-    print(response.status_code)
-    print(response.json())
+    #import requests
+    #import json
+    #url = "https://boxoprops.com/flow-state/flow-control/1.0.0/maps.json"
+    #response = requests.get(url, data="")
+    #print(response.status_code)
+    #print(response.json())
     #maps = json.loads(response.text)
 
     #maps = ["2018 Regional Final.fmp", "2018 Regional Qualifier.fmp", "custom.fmp"]
@@ -99,7 +99,7 @@ if(owner['init']!=True):
 
     itemNumber = len(mapButtons)
     mapListBox = UI.BoxElement(window,[50,50],5,((itemNumber)*spacing)/10, blockColor, 15)
-    mapList = UI.UIList(mapListBox,mapButtons,1)
+    mapList = UI.UIList(mapListBox,mapButtons,spacing)
 
     #back button
     backBlockElement = UI.BoxElement(window,[10,10],1,.5, blockColor, 1)

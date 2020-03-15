@@ -118,6 +118,7 @@ def clientMessageHandler(message):
         if(gameMode == FSNObjects.MULTIPLAYER_MODE_TEAM):
             flowState.log("server setting game mode to team race")
             flowState.setGameMode(flowState.GAME_MODE_TEAM_RACE)
+            flowState.setTimeLimit(600)
 
         #handle the states of our peers
         peerStates = message.playerStates
