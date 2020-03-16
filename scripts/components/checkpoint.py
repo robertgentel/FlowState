@@ -81,15 +81,17 @@ class Checkpoint(bge.types.KX_PythonComponent):
         obj.collisionGroup = mask
 
     def playSound(self):
+        print("MAKE SOUND!!! DERP!")
         sound = aud.Factory.file(bge.logic.expandPath('//sounds/checkpoint.wav'))
         scene = bge.logic.getCurrentScene()
 
         sound_device = aud.device()
         sound_device.distance_model = aud.AUD_DISTANCE_MODEL_LINEAR
-        sound_device.listener_location = self.object.worldPosition
-        sound_device.listener_velocity = [0,0,0]
-
+        sound_device.listener_location = logic.player.worldPosition
+        sound_device.listener_velocity = logic.player.getLinearVelocity(True)
+        sound_device.volume = 0.5
         sound_handle = sound_device.play(sound)
+        #sound_handle.volume = 0.5
         sound_handle.relative = False
         sound_handle.location = self.object.worldPosition
         sound_handle.velocity = self.object.getLinearVelocity()
