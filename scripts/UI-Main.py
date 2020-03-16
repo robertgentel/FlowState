@@ -8,7 +8,7 @@ owner = cont.owner
 flowState = logic.flowState
 UI = bge.UI
 textColor = [1,1,1,1]
-blockColor = [0,0,0.05,0.75]
+blockColor = flowState.menuButtonColor
 #flowState = logic.flowState
 
 def joystickMenuNav():
@@ -43,7 +43,7 @@ def multiplayerGameAction():
     scenes = logic.getSceneList()
     currentScene = logic.getCurrentScene()
     render.showMouse(0)
-    currentScene.replace("UI-server-ip")
+    currentScene.replace("UI-server-select")
 
 def doNothing():
     pass
@@ -55,7 +55,7 @@ def editorAction():
     currentScene.replace("UI-map-edit-select")
 
 def settingsAction():
-    bge.logic.sendMessage("cam2")
+    #bge.logic.sendMessage("cam2") #we used to do this to set the background scene camera
     currentScene = logic.getCurrentScene()
     currentScene.replace("UI-settings")
 

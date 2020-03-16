@@ -73,6 +73,20 @@ def clientMessageHandler(message):
             peerObject = logic.peers[message.senderID]
             peerObject.position = message.position
             peerObject.orientation = message.orientation
+            try:
+                vtx = logic.player['camera']['vtx']
+                frequency = vtx.getFrequency()
+                power = vtx.getPower()*(1-vtx.getPitMode())
+                #print("player frequency = "+str(frequency))
+            except:
+                pass
+            if("fpvCamera" in peerObject):
+                camera = peerObject['fpvCamera']
+                if("vtx" in camera):
+                    vtx = camera['vtx']
+                    vtx.setPower(message.vtxPower)
+                    vtx.setFrequency(message.vtxFrequency)
+                    vtx.setPitMode(0)
 
     #player event
     if messageType == FSNObjects.PLAYER_EVENT:
@@ -95,6 +109,18 @@ def clientMessageHandler(message):
         print("handling server state")
         print("message = "+str(message))
         message = FSNObjects.ServerState.getMessage(message)
+
+        gameMode = message.gameMode
+        print("game mode = "+str(gameMode))
+        if(gameMode == FSNObjects.MULTIPLAYER_MODE_1V1):
+            flowState.log("server setting game mode to 1v1")
+            flowState.setGameMode(flowState.GAME_MODE_MULTIPLAYER)
+        if(gameMode == FSNObjects.MULTIPLAYER_MODE_TEAM):
+            flowState.log("server setting game mode to team race")
+            flowState.setGameMode(flowState.GAME_MODE_TEAM_RACE)
+            flowState.setTimeLimit(600)
+
+        #handle the states of our peers
         peerStates = message.playerStates
         for key in peerStates:
             if(key==flowState.getNetworkClient().clientID):
@@ -111,11 +137,11 @@ def clientMessageHandler(message):
                 peerObject.position = message.position
                 peerObject.orientation = message.orientation
 
+
 def setup():
-    print("JOINING SERVER!!!")
-    flowState.setGameMode(flowState.GAME_MODE_MULTIPLAYER)
+    flowState.log("FSNetwork: joining server: "+str(flowState.getServerIP())+":"+str(flowState.getServerPort()))
     #
-    flowState.setNetworkClient(FSNClient.FSNClient(flowState.getServerIP(),50001))
+    flowState.setNetworkClient(FSNClient.FSNClient(flowState.getServerIP(),flowState.getServerPort()))
     flowState.getNetworkClient().connect()
     playerJoinEvent = FSNObjects.PlayerEvent(FSNObjects.PlayerEvent.PLAYER_JOINED,flowState.getNetworkClient().clientID)
     flowState.getNetworkClient().sendEvent(playerJoinEvent)
@@ -127,7 +153,14 @@ def run():
     o = logic.player.orientation.to_euler()
     orientation = [o[0],o[1],o[2]]
     color = [0,0,1]
-    myState = FSNObjects.PlayerState(flowState.getNetworkClient().clientID,None,position,orientation,color)
+    try:
+        vtx = logic.player['camera']['vtx']
+        frequency = vtx.getFrequency()
+        power = vtx.getPower()*(1-vtx.getPitMode())
+    except:
+        power = 0
+        frequency = 0
+    myState = FSNObjects.PlayerState(flowState.getNetworkClient().clientID,None,position,orientation,color,frequency,power)
 
     flowState.getNetworkClient().updateState(myState)
     flowState.getNetworkClient().run()
@@ -157,5 +190,5 @@ def main():
     lastFrameExecution = float(time.perf_counter())-logic.lastLogicTic
     logic.lastNetworkTick+=lastFrameExecution
 
-if(flowState.getGameMode()==flowState.GAME_MODE_MULTIPLAYER):
+if(flowState.getGameMode()==flowState.GAME_MODE_MULTIPLAYER) or (flowState.getGameMode()==flowState.GAME_MODE_TEAM_RACE):
     main()

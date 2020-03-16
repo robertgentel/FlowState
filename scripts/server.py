@@ -16,10 +16,16 @@ server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 server.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
 delim = b'\x1E'
 # takes the first argument from command prompt as IP address
-IP_address = "192.168.0.19"#"192.168.0.19"#socket.gethostname()
+IP_address = socket.gethostname()
 
 # takes second argument from command prompt as port number
-port = 50001
+port = input("Please input the port you'd like to use (or press return for default): ")
+if(str(port)==""):
+    port = 50002
+else:
+    port = int(port)
+
+print("admin selected port "+str(port))
 
 serverName = "noobs only"
 
@@ -42,9 +48,23 @@ clientStates = {}
 clientConnections = {}
 outboundMessages = []
 clientThreads = []
-mapFileName = input("Map file name: ")
+
+#let's ask the user which map they'd like
+mapFileName = input("Please input map file name: ")
 if(mapFileName==""):
     mapFileName = "2019 MultiGP Qualifier.fmp"
+
+#let's ask the user which game mode they'd like
+gameModeList = [FSNObjects.MULTIPLAYER_MODE_1V1,FSNObjects.MULTIPLAYER_MODE_TEAM]
+gameModes = {0:"Free For All", 1: "Team Race"}
+gameModeString = ""
+for index in gameModes:
+    mode = gameModes[index]
+    gameModeString += str(index)+": "+mode+"\n"
+gameModeString += "Please input game mode: "
+gameModeSelection = int(input(gameModeString))
+gameMode = gameModeList[gameModeSelection]
+
 mapContents = FSFileHandler.FileHandler().getMapContents(mapFileName)
 runEvent = threading.Event()
 runEvent.set()
@@ -88,7 +108,7 @@ def clientThread(conn, addr,runEvent):
                         send(mapSetEvent,conn)
 
                         #let's let him know the state of the game
-                        serverState = FSNObjects.ServerState(clientStates)
+                        serverState = FSNObjects.ServerState(clientStates,gameMode)
                         send(serverState,conn)
                         #let's associate the player state with this socket
                         print(clientStates)

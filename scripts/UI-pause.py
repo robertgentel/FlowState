@@ -11,7 +11,7 @@ flowState = logic.flowState
 UI = bge.UI
 flowState = logic.flowState
 textColor = [1,1,1,1]
-blockColor = [0,0,0.05,0.75]
+blockColor = flowState.menuButtonColor
 textColorGrey = [0.5,0.5,0.5,1]
 
 def restartAction():
@@ -27,7 +27,7 @@ def restartAction():
     currentScene.replace("Main Game")
 
 def mainMenuAction():
-    if(logic.flowState.getGameMode()==logic.flowState.GAME_MODE_MULTIPLAYER):
+    if(logic.flowState.getGameMode()!=logic.flowState.GAME_MODE_SINGLE_PLAYER):
         flowState.getNetworkClient().quit()
     else:
         scenes = logic.getSceneList()
@@ -50,7 +50,7 @@ def resumeAction():
     render.showMouse(0)
     currentScene = logic.getCurrentScene()
     currentScene.end()
-    if(flowState.getGameMode()!=flowState.GAME_MODE_MULTIPLAYER):
+    if(flowState.getGameMode()==flowState.GAME_MODE_SINGLE_PLAYER):
         logic.getSceneList()[0].resume()
 
 def doNothingAction():
@@ -63,7 +63,7 @@ if(owner['init']!=True):
     scenes = logic.getSceneList()
     currentScene = logic.getCurrentScene()
     print(scenes)
-    if(flowState.getGameMode()!=flowState.GAME_MODE_MULTIPLAYER):
+    if(flowState.getGameMode()==flowState.GAME_MODE_SINGLE_PLAYER):
         scenes[0].suspend()
 
     flowState.sceneHistory.append(logic.getCurrentScene().name)
@@ -81,7 +81,7 @@ if(owner['init']!=True):
 
     doNothingAction
 
-    if(flowState.getGameMode()!=flowState.GAME_MODE_MULTIPLAYER):
+    if(flowState.getGameMode()==flowState.GAME_MODE_SINGLE_PLAYER):
         restartBlock = UI.BoxElement(window,[50,50],2,1, blockColor, 1)
         restartText = UI.TextElement(window,restartBlock.position, textColor, 0, "RESTART")
         restartButton = UI.UIButton(restartText,restartBlock,restartAction)

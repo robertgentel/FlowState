@@ -21,7 +21,7 @@ class FSNClient:
         self.networkReady = False
         self.delim = b'\x1E'
         self.buffer = b''
-        self.state = FSNObjects.PlayerState(None, None, None, None, None)
+        self.state = FSNObjects.PlayerState(None, None, None, None, None, None, None)
         self.messageHandler = None
         self.serverReady = True
         self.readyToQuit = False

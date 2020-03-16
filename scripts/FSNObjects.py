@@ -15,6 +15,8 @@ MESSAGE_EXTRA_KEY = "MX"
 SERVER_EVENT_TYPE_KEY = "SET"
 PLAYER_EVENT_TYPE_KEY = "PET"
 
+MULTIPLAYER_MODE_1V1 = "1v1"
+MULTIPLAYER_MODE_TEAM = "tm"
 #message types
 SERVER_STATE = 1
 SERVER_EVENT = 2
@@ -73,19 +75,22 @@ class ServerEvent:
 class ServerState(Message):
     #player state keys
     PLAYER_STATES_KEY = "PS"
-    def __init__(self, playerStates, extra=None):
+    GAME_MODE_KEY = "GM"
+    def __init__(self, playerStates, gameMode=MULTIPLAYER_MODE_TEAM, extra=None):
         self.messageType = SERVER_STATE
+        self.gameMode = gameMode
         self.playerStates = playerStates
         self.extra = extra
 
     @staticmethod
     def getMessage(message):
-        obj = ServerState(message[ServerState.PLAYER_STATES_KEY],message[MESSAGE_EXTRA_KEY])
+        obj = ServerState(message[ServerState.PLAYER_STATES_KEY],message[ServerState.GAME_MODE_KEY],message[MESSAGE_EXTRA_KEY])
         return obj
 
     def __str__(self):
         message = {}
         message[MESSAGE_TYPE_KEY] = self.messageType
+        message[ServerState.GAME_MODE_KEY] = self.gameMode
         message[ServerState.PLAYER_STATES_KEY] = self.playerStates
         message[MESSAGE_EXTRA_KEY] = self.extra
         return str(message)
@@ -95,19 +100,25 @@ class PlayerState(Message):
     PLAYER_POSITION_KEY = "PP"
     PLAYER_ORIENTATION_KEY = "PO"
     PLAYER_COLOR_KEY = "PC"
-    def __init__(self, senderID, extra, position, orientation, color):
+    PLAYER_VTX_FREQUENCY_KEY = "PVF"
+    PLAYER_VTX_POWER_KEY = "PVP"
+    def __init__(self, senderID, extra, position, orientation, color, vtxFrequency, vtxPower):
         self.senderID = senderID
         self.messageType = PLAYER_STATE
         self.extra = extra
         self.position = position
         self.orientation = orientation
         self.color = color
+        self.vtxFrequency = vtxFrequency
+        self.vtxPower = vtxPower
 
+    #this is where we deserialize a PlayerState object that we recieved from the server
     @staticmethod
     def getMessage(message):
-        obj = PlayerState(message[SENDER_ID_KEY],message[MESSAGE_EXTRA_KEY],message[PlayerState.PLAYER_POSITION_KEY],message[PlayerState.PLAYER_ORIENTATION_KEY],message[PlayerState.PLAYER_COLOR_KEY])
+        obj = PlayerState(message[SENDER_ID_KEY],message[MESSAGE_EXTRA_KEY],message[PlayerState.PLAYER_POSITION_KEY],message[PlayerState.PLAYER_ORIENTATION_KEY],message[PlayerState.PLAYER_COLOR_KEY], message[PlayerState.PLAYER_VTX_FREQUENCY_KEY], message[PlayerState.PLAYER_VTX_POWER_KEY])
         return obj
 
+    #this is where we serialize the PlayerState object for sending across the wire
     def __str__(self):
         message = {}
         message[SENDER_ID_KEY] = self.senderID
@@ -116,6 +127,8 @@ class PlayerState(Message):
         message[self.PLAYER_POSITION_KEY] = self.position
         message[self.PLAYER_ORIENTATION_KEY] = self.orientation
         message[self.PLAYER_COLOR_KEY] = self.color
+        message[self.PLAYER_VTX_FREQUENCY_KEY] = self.vtxFrequency
+        message[self.PLAYER_VTX_POWER_KEY] = self.vtxPower
         return str(message)
 
 class PlayerEvent:

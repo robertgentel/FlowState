@@ -5,6 +5,7 @@ import os
 cont = logic.getCurrentController()
 own = cont.owner
 errorLog = logic.getCurrentScene().objects['HUDError']
+rxChannel = logic.getCurrentScene().objects['HUDRXChannel']
 laps = logic.getCurrentScene().objects['HUDLapCount']
 lastLap = logic.getCurrentScene().objects['HUDLastLap']
 bestLap = logic.getCurrentScene().objects['HUDBestLap']
@@ -20,6 +21,16 @@ lastLap['Text'] = "LAST LAP: "+logic.lastLapTime
 bestLap['Text'] = "BEST LAP: "+logic.bestLapTime
 holeshot['Text'] = "HOLESHOT: "+str(logic.holeshotTime)
 errorLog['Text'] = "Error: "+logic.errorLog
+try:
+    camera = logic.player['camera']
+    #print("HUD camera = "+camera.name)
+    vtx = camera['vtx']
+    #print("HUD VTX = "+str(vtx))
+    #print(str(type(vtx)))
+    #print("set rx channel")
+    rxChannel['Text'] = "VTX Channel: "+str(vtx.getChannel()+1)
+except Exception as e:
+    logic.flowState.error(e)
 graphicsSettings = logic.flowState.getGraphicsSettings()
 aspectRatioIs43 = graphicsSettings.aspectRatioIs4x3()
 if(aspectRatioIs43):

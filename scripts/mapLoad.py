@@ -17,7 +17,7 @@ def readFile(fileName):
     return ast.literal_eval(saveDataString)
 
 def main():
-    if(flowState.getGameMode()!=flowState.GAME_MODE_MULTIPLAYER):
+    if(flowState.getGameMode()!=flowState.GAME_MODE_MULTIPLAYER) and (flowState.getGameMode()!=flowState.GAME_MODE_TEAM_RACE):
         selectedMap = logic.flowState.getSelectedMap()
         mapData = readFile(selectedMap)
         spawnMapElements(mapData)

@@ -3,6 +3,7 @@ import traceback
 import os
 from os.path import isfile, join
 import numpy
+import copy
 logic = bge.logic
 flowState = logic.flowState
 render = bge.render
@@ -12,7 +13,7 @@ owner = cont.owner
 flowState = logic.flowState
 UI = bge.UI
 textColor = [1,1,1,1]
-blockColor = [0,0,0.05,0.75]
+blockColor = flowState.menuButtonColor
 #mapButtons = []
 
 
@@ -47,23 +48,13 @@ def loadMultiplayerServer(serverName):
         if(scene!=currentScene):
             scene.end()
     render.showMouse(0)
-
+    print("setting server name: "+serverName)
+    logic.lastServerIP = serverName
     flowState.setGameMode(flowState.GAME_MODE_MULTIPLAYER)
     flowState.setViewMode(flowState.VIEW_MODE_PLAY)
     #flowState.selectMap("multiplayer.fmp")
     currentScene.replace("Main Game")
     flowState.setServerIP(serverName)
-
-def mapSelectAction(key,mapName):
-    scenes = logic.getSceneList()
-    currentScene = logic.getCurrentScene()
-    for scene in scenes:
-        if(scene!=currentScene):
-            scene.end()
-    render.showMouse(0)
-    flowState.selectMap(mapName)
-    flowState.setGameMode(flowState.MODE_SINGLE_PLAYER)
-    currentScene.replace("Map Editor")
 
 def multiplayerAction():
     pass
@@ -85,19 +76,6 @@ def backAction():
 
 def passAction():
     pass
-
-def addMapButton(name,spacing):
-    buttonIndex = len(mapButtons)
-    height = 70-(buttonIndex*spacing)
-    print(height)
-    mapButtonBlock = UI.BoxElement(window,[50,height],5,0.5, blockColor, 1)
-    mapButtonText = UI.TextElement(window,mapButtonBlock.position, textColor, 0,name)
-    mapButton = UI.UIButton(mapButtonText,mapButtonBlock,mapSelectAction,"map",name)
-    mapButtons.append(mapButton)
-
-    owner['window'].add("mapButtonBlock"+name,mapButtonBlock)
-    owner['window'].add("mapButtonText"+name,mapButtonText)
-    owner['window'].add("mapButton"+name,mapButton)
 
 def createMapAction():
     currentScene = logic.getCurrentScene()
@@ -123,11 +101,14 @@ if(owner['init']!=True):
     headerBox = UI.BoxElement(window,[45,95],11,1, blockColor, 1)
     headerText = UI.TextElement(window,headerBox.position, textColor, 0, "SELECT MAP")
 
+
+    serverNameText = "server ip address"
+
     #back button
     nameLabelBlockElement = UI.BoxElement(window,[40,50],10,.5, blockColor, 1)
     nameLabelText = UI.TextElement(window,nameLabelBlockElement.position, textColor, 0, "SERVER NAME:")
     nameLabelButton = UI.UIButton(nameLabelText,nameLabelBlockElement,clearAction)
-    textInput = UI.TextInputElement(window,[60,50], textColor, 0, "server ip address",elementObject="UIInput.001")
+    textInput = UI.TextInputElement(window,[60,50], textColor, 0, serverNameText,elementObject="UIInput.001")
 
     #back button
     backBlockElement = UI.BoxElement(window,[10,10],1,.5, blockColor, 1)
@@ -157,7 +138,7 @@ else:
                 #owner['Text'].replace('\t',''
                 owner['Text'] = owner['Text'].rstrip()
                 serverIP = owner['Text']
-                print(serverIP)
+                print("loading server at ip"+str(serverIP))
                 loadMultiplayerServer(serverIP)
             else:
                 print(pressedKeys)

@@ -8,19 +8,23 @@ def execute():
     ctx = bpy.context.copy()
     #Ensure  context area is not None
     ctx['area'] = ctx['screen'].areas[0]
-    for t in bpy.data.texts:
+    
+    #let's find the text editor area. Otherwise it's been set above to the info area
+    for area in ctx['screen'].areas:
+        if(area.type == "TEXT_EDITOR"):
+            ctx['area'] = area
+            
+    for t in bpy.data.texts: #for each script we'd like to update...
         try:
-            print("attempting to reload script: "+str(t.name))
-            if t.is_modified and not t.is_in_memory:
-                print("  * Warning: Updating external script", t.name)
+            if t.is_modified and not t.is_in_memory: #if the script needs to be synced
+                
                 # Change current context to contain a TEXT_EDITOR
-                oldAreaType = ctx['area'].type
-                ctx['area'].type = 'TEXT_EDITOR'
-                ctx['edit_text'] = t
-                bpy.ops.text.resolve_conflict(ctx, resolution='RELOAD')
-                #Restore context
-                ctx['area'].type = oldAreaType
-        except:
-            print("failed to update last script")
+                ctx['edit_text'] = t #switch the text edit window to the script we'd like to update
+                bpy.ops.text.resolve_conflict(ctx, resolution='RELOAD') #reload the script
+                print("Success: "+str(t.name)+ " updated")
+            else:
+                print("No action: "+str(t.name)+" is already up to date")
+        except Exception as e:
+            print("Error: "+str(str(t.name))+" failed to update. It may be linked from an external blend! Make sure you sync it in that blend")
 
 execute()

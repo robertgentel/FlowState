@@ -11,7 +11,7 @@ owner = cont.owner
 flowState = logic.flowState
 UI = bge.UI
 textColor = [1,1,1,1]
-blockColor = [0,0,0.05,0.75]
+blockColor = flowState.menuButtonColor
 mapButtons = []
 
 
@@ -127,7 +127,7 @@ if(owner['init']!=True):
 
     itemNumber = len(mapButtons)
     mapListBox = UI.BoxElement(window,[50,50],5,((itemNumber)*spacing)/10, blockColor, 15)
-    mapList = UI.UIList(mapListBox,mapButtons,1)
+    mapList = UI.UIList(mapListBox,mapButtons,spacing)
 
     #back button
     backBlockElement = UI.BoxElement(window,[10,10],1,.5, blockColor, 1)

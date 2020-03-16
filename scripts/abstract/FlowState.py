@@ -46,6 +46,7 @@ class FlowState:
     GAME_MODE_EDITOR = 0
     GAME_MODE_SINGLE_PLAYER = 1
     GAME_MODE_MULTIPLAYER = 2
+    GAME_MODE_TEAM_RACE = 3
 
     #view modes
     VIEW_MODE_MENU=0
@@ -61,7 +62,7 @@ class FlowState:
     MAP_LOAD_STAGE_LOADING = 0
     MAP_LOAD_STAGE_DONE = 1
 
-    LOG_LEVEL = LOG_LEVEL_DEBUG
+    LOG_LEVEL = LOG_LEVEL_INFO
 
     def __init__(self):
         self.__logFile = os.path.join(str(logic.expandPath("//")),"flowstate.log") #remove once propper logging is implemented
@@ -75,7 +76,7 @@ class FlowState:
         self._HUDController = None #needs to be implemented
         self._gameMode = self.GAME_MODE_SINGLE_PLAYER
         self._mapEditor = None
-        self._serverIp = "localhost"
+
         self._networkClient = None
         self._notification = {"Text":""}
         self._viewMode = self.VIEW_MODE_MENU
@@ -84,6 +85,7 @@ class FlowState:
         self.sceneHistory = []
         self.track = {"launchPads":[], "startFinishPlane":None,"countdownTime":3,"checkpoints":[],"nextCheckpoint":0,"lastCheckpoint":0}
         self._serverIP = "localhost"
+        self._serverPort = 50002
         self.lastId = 0
 
         self._rfEnvironment = RFEnvironment(self)
@@ -91,6 +93,8 @@ class FlowState:
         self._radioSettings = RadioSettings(self)
         self._graphicsSettings = GraphicsSettings(self)
         self._networkClient = None
+
+        self.menuButtonColor = [0.3,0.3,0.3,0.6]
 
     #eventually we should implement propper logging
     def debug(self,output):
@@ -247,6 +251,7 @@ class FlowState:
         return self._gameMode
 
     def setGameMode(self,gameMode):
+        self.log("setting game mode "+str(gameMode))
         self._gameMode = gameMode
 
     def getMapEditor(self):
@@ -260,6 +265,12 @@ class FlowState:
 
     def setServerIp(self,serverIp):
         self._serverIp = serverIp
+
+    def getServerPort(self):
+        return self._serverPort
+
+    def setServerPort(self,serverPort):
+        self._serverPort = serverPort
 
     def getNetworkClient(self):
         return self._networkClient

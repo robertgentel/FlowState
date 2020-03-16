@@ -14,7 +14,12 @@ propellerParts = {"Generic Propeller":"part generic propeller"}
 if not hasattr(bge, "__component__"):
     render = bge.render
     logic = bge.logic
-    flowState = logic.flowState
+    try:
+        flowState = logic.flowState
+    except:
+        from scripts.abstract.FlowState import FlowState
+        logic.flowState = FlowState()
+        flowState = logic.flowState
     parts = {}
     parts.update(frameParts)
     parts.update(motorParts)
@@ -74,6 +79,9 @@ class FPVModel(bge.types.KX_PythonComponent):
         scene = logic.getCurrentScene()
         newObject = scene.addObject(object)
         return newObject
+
+    def getFPVCameras(self):
+        return self.cameras["fpv"]
 
     def setCamera(self,newCamera):
         scene = logic.getCurrentScene()

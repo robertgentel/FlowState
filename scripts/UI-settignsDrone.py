@@ -9,7 +9,7 @@ UI = bge.UI
 flowState = logic.flowState
 
 textColor = [1,1,1,1]
-blockColor = [0,0,0.05,0.75]
+blockColor = flowState.menuButtonColor
 droneSettings = flowState.getDroneSettings()
 def soloGameAction():
     scenes = logic.getSceneList()

@@ -465,14 +465,17 @@ class UI:
             if(self.scrollPosition<self.maxScrollPosition*2):
                 self.scrollPosition += 1
                 for element in self.items:
-                    self.moveElements(element,1)
+                    print(element.__dict__)
+                    #self.moveElements(element,element.box.height+self.spacing)
+                    self.moveElements(element,self.spacing*0.1)
                 print(self.scrollPosition)
 
         def scrollDown(self):
             if(self.scrollPosition>self.minScrollPosition):
                 self.scrollPosition -= 1
                 for element in self.items:
-                    self.moveElements(element,-self.spacing)
+                    #self.moveElements(element,-(element.box.height+self.spacing))
+                    self.moveElements(element,-(self.spacing*0.1))
                 print(self.scrollPosition)
 
         def moveElements(self,element,distance):
