@@ -19,7 +19,13 @@ delim = b'\x1E'
 IP_address = socket.gethostname()
 
 # takes second argument from command prompt as port number
-port = 50002
+port = input("Please input the port you'd like to use (or press return for default): ")
+if(str(port)==""):
+    port = 50002
+else:
+    port = int(port)
+
+print("admin selected port "+str(port))
 
 serverName = "noobs only"
 

@@ -76,7 +76,7 @@ class FlowState:
         self._HUDController = None #needs to be implemented
         self._gameMode = self.GAME_MODE_SINGLE_PLAYER
         self._mapEditor = None
-        self._serverIp = "localhost"
+
         self._networkClient = None
         self._notification = {"Text":""}
         self._viewMode = self.VIEW_MODE_MENU
@@ -85,6 +85,7 @@ class FlowState:
         self.sceneHistory = []
         self.track = {"launchPads":[], "startFinishPlane":None,"countdownTime":3,"checkpoints":[],"nextCheckpoint":0,"lastCheckpoint":0}
         self._serverIP = "localhost"
+        self._serverPort = 50002
         self.lastId = 0
 
         self._rfEnvironment = RFEnvironment(self)
@@ -264,6 +265,12 @@ class FlowState:
 
     def setServerIp(self,serverIp):
         self._serverIp = serverIp
+
+    def getServerPort(self):
+        return self._serverPort
+
+    def setServerPort(self,serverPort):
+        self._serverPort = serverPort
 
     def getNetworkClient(self):
         return self._networkClient

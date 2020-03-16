@@ -34,6 +34,7 @@ def mapSelectAction(key,mapName):
 
 def loadMultiplayerServer(key,server):
     serverIP = server['address']
+    serverPort = server['port']
     scenes = logic.getSceneList()
     currentScene = logic.getCurrentScene()
     for scene in scenes:
@@ -47,6 +48,7 @@ def loadMultiplayerServer(key,server):
     #flowState.selectMap("multiplayer.fmp")
     currentScene.replace("Main Game")
     flowState.setServerIP(serverIP)
+    flowState.setServerPort(serverPort)
     flowState.log("loading server "+str(server))
 
 def multiplayerAction():
