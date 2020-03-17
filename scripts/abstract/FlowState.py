@@ -81,20 +81,20 @@ class FlowState:
         self._notification = {"Text":""}
         self._viewMode = self.VIEW_MODE_MENU
         self._isFirstRun = True
-        self.mapLoadStage = self.MAP_LOAD_STAGE_LOADING
-        self.sceneHistory = []
-        self.track = {"launchPads":[], "startFinishPlane":None,"countdownTime":3,"checkpoints":[],"nextCheckpoint":0,"lastCheckpoint":0}
         self._serverIP = "localhost"
         self._serverPort = 50002
-        self.lastId = 0
 
         self._rfEnvironment = RFEnvironment(self)
         self._droneSettings = DroneSettings(self)
         self._radioSettings = RadioSettings(self)
         self._graphicsSettings = GraphicsSettings(self)
         self._networkClient = None
-
         self.menuButtonColor = [0.3,0.3,0.3,0.6]
+        self.mapLoadStage = self.MAP_LOAD_STAGE_LOADING
+        self.sceneHistory = []
+        self.track = {"launchPads":[], "startFinishPlane":None,"countdownTime":3,"checkpoints":[],"nextCheckpoint":0,"lastCheckpoint":0}
+        self.lastId = 0
+        self.lapTimer = None
 
     #eventually we should implement propper logging
     def debug(self,output):

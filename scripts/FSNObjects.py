@@ -4,6 +4,7 @@ import sys
 import pickle
 import time
 import ast
+from time import perf_counter
 
 #dictionary keys
 SENDER_ID_KEY = "SID"

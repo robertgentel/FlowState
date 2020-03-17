@@ -77,7 +77,7 @@ def clientThread(conn, addr,runEvent):
     buffer = b''
     while runEvent.is_set():
         if(time.perf_counter()-lastRecv > 10.0):
-            print("client became unresponseive")
+            #print("client became unresponseive")
             break
         try:
             buffer += conn.recv(1)
@@ -99,7 +99,7 @@ def clientThread(conn, addr,runEvent):
                     #a new player is joining the game
                     if(message.eventType==FSNObjects.PlayerEvent.PLAYER_JOINED):
                         print("player joined")
-                        print(message)
+                        #print(message)
                         clientStates[message.senderID] = {}
                         clientConnections[message.senderID] = {"socket":conn}
 
@@ -111,7 +111,7 @@ def clientThread(conn, addr,runEvent):
                         serverState = FSNObjects.ServerState(clientStates,gameMode)
                         send(serverState,conn)
                         #let's associate the player state with this socket
-                        print(clientStates)
+                        #print(clientStates)
                         for key in clientStates:
                             clientSocket = clientConnections[key]['socket']
                             if(clientSocket == conn):
@@ -126,7 +126,7 @@ def clientThread(conn, addr,runEvent):
 
                     #A player event has occured
                     if(message.eventType==FSNObjects.PlayerEvent.PLAYER_MESSAGE):
-                        print("player sent game message :"+str(message.extra))
+                        #print("player sent game message :"+str(message.extra))
                         send(message, conn)
 
 
@@ -197,7 +197,7 @@ def send(message, socket):
 def remove(socketToRemove):
     global clientStates
     global clientConnections
-    print("remove()")
+    #print("remove()")
     connectionToDelete = None
     stateToDelete = None
     removedID = None
@@ -212,8 +212,8 @@ def remove(socketToRemove):
         del clientStates[removedID]
         del clientConnections[removedID]
 
-    print("remaning clientStates: "+str(clientStates))
-    print("remaning clientConnections: "+str(clientStates))
+    #print("remaning clientStates: "+str(clientStates))
+    #print("remaning clientConnections: "+str(clientStates))
 
     print("notifying other clients of client removal")
     quitEvent = FSNObjects.PlayerEvent(FSNObjects.PlayerEvent.PLAYER_QUIT,removedID)
