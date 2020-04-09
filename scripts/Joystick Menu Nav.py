@@ -7,8 +7,8 @@ cont = logic.getCurrentController()
 owner = cont.owner
 UI = bge.UI
 textColor = [1,1,1,1]
-blockColor = flowState.menuButtonColor
 flowState = logic.flowState
+blockColor = flowState.menuButtonColor
 
 def joystickMenuNav():
     joy = cont.sensors["JoystickButtons"]#cont.sensors["JoystickAxis"]

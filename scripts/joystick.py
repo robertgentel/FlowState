@@ -398,7 +398,7 @@ def main():
     if (own['oporational'] == True)&armed:
         camera['vtx'].setPitMode(0)
         if own['settled']:
-            if(flowState.getGameMode()!=flowState.GAME_MODE_MULTIPLAYER):
+            if(flowState.getGameMode()==flowState.GAME_MODE_SINGLE_PLAYER):
                 #WAYS YOU CAN KILL YOUR QUAD
                 if(cont.sensors['PropStrike'].positive):
 
@@ -585,9 +585,9 @@ def main():
             resetGame()
         if(flowState.getGameMode()==flowState.GAME_MODE_MULTIPLAYER):
             flowState.log("resetting multiplayer game")
-            resetEvent = FSNObjects.PlayerEvent(FSNObjects.PlayerEvent.PLAYER_MESSAGE,flowState.getNetworkClient().clientID,"reset")
-            flowState.getNetworkClient().sendEvent(resetEvent)
-            print("sending reset message")
+            #resetEvent = FSNObjects.PlayerEvent(FSNObjects.PlayerEvent.PLAYER_MESSAGE,flowState.getNetworkClient().clientID,"reset")
+            #flowState.getNetworkClient().sendEvent(resetEvent)
+            #print("sending reset message")
             own['canReset'] = False
         if(flowState.getGameMode()==flowState.GAME_MODE_TEAM_RACE):
             flowState.log("resetting team race")
