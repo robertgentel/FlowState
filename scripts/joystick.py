@@ -395,37 +395,32 @@ def main():
     yawForce = -stickInputToDPS((yawPercent*1000)+1000,droneSettings.yawSuperRate,droneSettings.yawRate,droneSettings.yawExpo,True)
     getAngularAcceleration()
     getAcc()
-    if (own['oporational'] == True)&armed:
-        camera['vtx'].setPitMode(0)
-        if own['settled']:
-            if(flowState.getGameMode()!=flowState.GAME_MODE_MULTIPLAYER):
-                #WAYS YOU CAN KILL YOUR QUAD
-                if(cont.sensors['PropStrike'].positive):
+    if armed:
+        if (own['oporational'] == True)&armed:
+            camera['vtx'].setPitMode(0)
+            if own['settled']:
+                if(flowState.getGameMode()==flowState.GAME_MODE_SINGLE_PLAYER) or (flowState.getGameMode()==flowState.GAME_MODE_TEAM_RACE):
+                    #WAYS YOU CAN KILL YOUR QUAD
+                    if (own['acc'] > 250):
+                        flowState.log("You exploded your quad")
+                        own['oporational'] = False
+                        own['vtxOporational'] = False
 
-                    #print("PROP STRIKE!")
-                    own['damage'] += own['acc']*0.1*throttlePercent
-                    #print(own['damage'])
-                if (own['acc'] > 250):
-                    own['oporational'] = False
-                    own['vtxOporational'] = False
-                    #pass
-                    print("Linear acceleration limit reached")
-                if (abs(own['angularAcc']) > 50):
-                    own['oporational'] = False
-                    own['vtxOporational'] = False
-                    #pass
-                    print("Rotational acceleration limit reached")
-                if (own['acc'] > 35):
-                    if(own['propContact']):
-                        own['damage'] += own['acc']*0.005
-                if (abs(own['angularAcc']) > 25):
-                    if(own['propContact']):
-                        own['damage'] += own['angularAcc']*0.01
-                if (own['damage'] > 2.5):
-                    own['oporational'] = False
-                    #pass
-    else:
-        camera['vtx'].setPitMode(1)
+
+                    if (own['acc'] > 45):
+                        if(cont.sensors['PropStrike'].positive):
+                            flowState.log("Rotational prop strike")
+                            own['damage'] += own['acc']*0.004
+
+
+                    if (own['damage'] > 2.5):
+                        flowState.log("Blown power train")
+                        own['oporational'] = False
+
+    #some boolean math to determin if the vtx is working and on
+    vtxPitMode = int(own['vtxOporational'] & armed)
+    camera['vtx'].setPitMode(not vtxPitMode)
+
     lv = own.getLinearVelocity(True)
     applyVideoStatic()
     if(own['oporational']):
@@ -450,7 +445,7 @@ def main():
             av = own.getAngularVelocity(True)
 
             #if(propRay.positive==False):
-            if(not own['propContact']):
+            if(not cont.sensors['PropStrike'].positive):
                 rx = (random.randrange(0,200)-100)/300
                 ry = (random.randrange(0,200)-100)/300
                 rz = (random.randrange(0,200)-100)/300
@@ -584,10 +579,9 @@ def main():
             flowState.log("resetting single player game")
             resetGame()
         if(flowState.getGameMode()==flowState.GAME_MODE_MULTIPLAYER):
-            flowState.log("resetting multiplayer game")
+            flowState.log("sending reset message")
             resetEvent = FSNObjects.PlayerEvent(FSNObjects.PlayerEvent.PLAYER_MESSAGE,flowState.getNetworkClient().clientID,"reset")
             flowState.getNetworkClient().sendEvent(resetEvent)
-            print("sending reset message")
             own['canReset'] = False
         if(flowState.getGameMode()==flowState.GAME_MODE_TEAM_RACE):
             flowState.log("resetting team race")

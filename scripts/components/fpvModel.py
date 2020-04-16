@@ -4,7 +4,7 @@ import time
 from collections import OrderedDict
 
 partTypes = ["Frame","Motor","VTX Antenna","Camera","Propeller"]
-frameParts = {"Zypher Frame":"part zypher frame","Generic Frame":"part generic X frame"}#{"Zypher Frame":"part zypher frame","Generic Frame":"part generic X frame"}
+frameParts = {"Zypher Frame":"part zypher frame","Switchback Frame":"part switchback frame","Generic Frame":"part generic X frame"}#{"Zypher Frame":"part zypher frame","Generic Frame":"part generic X frame"}
 motorParts = {"2205 Motor":"part motor 2205"}
 vtxAntennaParts = {"Lumenier AXII":"part antenna vtx lolipop"}
 cameraParts = {"Micro Camera":"part camera micro"}
@@ -29,7 +29,7 @@ if not hasattr(bge, "__component__"):
 
 class FPVModel(bge.types.KX_PythonComponent):
     args = OrderedDict([
-        ("Frame", {"Zypher Frame","Generic Frame"}),
+        ("Frame", {"Zypher Frame","Switchback Frame","Generic Frame"}),
         ("Motor", {"2205 Motor"}),
         ("VTX Antenna",{"Lumenier AXII"}),
         ("Camera",{"Micro Camera"}),

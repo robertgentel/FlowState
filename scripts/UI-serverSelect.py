@@ -54,10 +54,11 @@ def loadMultiplayerServer(key,server):
 def multiplayerAction():
     pass
 
-def settingsAction():
+def directConnectAction():
     bge.logic.sendMessage("cam2")
     currentScene = logic.getCurrentScene()
-    currentScene.replace("UI-settings")
+    currentScene.replace("UI-server-ip")
+
 
 def backAction():
     currentScene = logic.getCurrentScene()
@@ -140,9 +141,19 @@ if(owner['init']!=True):
     backText = UI.TextElement(window,backBlockElement.position, textColor, 0, "BACK")
     backButton = UI.UIButton(backText,backBlockElement,backAction)
 
+    #direct connect button
+    dcBlockElement = UI.BoxElement(window,[80,10],2,.5, blockColor, 1)
+    dcText = UI.TextElement(window,dcBlockElement.position, textColor, 0, "DIRECT CONNECT")
+    dcButton = UI.UIButton(dcText,dcBlockElement,directConnectAction)
+
     owner['window'].add("backBlockElement",backBlockElement)
     owner['window'].add("backText",backText)
     owner['window'].add("backButton",backButton)
+
+    owner['window'].add("dcBlockElement",dcBlockElement)
+    owner['window'].add("dcText",dcText)
+    owner['window'].add("dcButton",dcButton)
+
     owner['window'].add("headerBox",headerBox)
     owner['window'].add("headerText",headerText)
     owner['window'].add("mapList",mapList)

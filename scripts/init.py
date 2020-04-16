@@ -9,6 +9,7 @@ flowState = logic.flowState
 logic.loadGlobalDict() #load the settings from the save file
 flowState.loadSaveSettings() #load those settings into our game state
 
+#TODO: consider getting rid of this since it's in flowstate
 flowState.sceneHistory = [] #let's keep a list of what scene/menu we are in so we can use a "back" button
 logic.saveGlobalDict()
 
